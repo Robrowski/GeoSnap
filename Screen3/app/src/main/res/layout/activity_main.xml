@@ -19,8 +19,8 @@
             android:layout_height="wrap_content"
             android:text="Website 1"
             android:id="@+id/button1"
-            android:clickable="false"
-            android:textColor="#ffff3120" />
+            android:textColor="#ffff3120"
+            android:onClick="website1"/>
 
         <Button
             android:layout_width="wrap_content"
