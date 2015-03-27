@@ -1,7 +1,6 @@
 package com.bignerdranch.android.criminalintent;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,7 +94,6 @@ public class Crime {
 
     public void addPhoto(Photo photo,Context ctx) {
         if (mList.size() > 3){
-            Log.v("CriminalIntent","list size: " + mList.size() );
             Photo remove = mList.get(mList.size()-1);
             ctx.deleteFile(remove.getFilename());
             mList.remove(mList.size() - 1);
