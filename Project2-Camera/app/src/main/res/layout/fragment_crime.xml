@@ -22,7 +22,7 @@
                 android:layout_height="80dp"
                 android:background="@android:color/darker_gray"
                 android:cropToPadding="true"
-                android:scaleType="centerInside" />
+                android:scaleType="centerInside"/>
 
             <ImageButton
                 android:id="@+id/crime_imageButton"
@@ -99,7 +99,7 @@
                 android:layout_height="80dp"
                 android:background="@android:color/darker_gray"
                 android:cropToPadding="true"
-                android:scaleType="centerInside" />
+                android:scaleType="centerInside"/>
         </LinearLayout>
 
         <LinearLayout
@@ -114,7 +114,7 @@
                 android:layout_height="80dp"
                 android:background="@android:color/darker_gray"
                 android:cropToPadding="true"
-                android:scaleType="centerInside" />
+                android:scaleType="centerInside"/>
         </LinearLayout>
 
         <LinearLayout
@@ -129,7 +129,7 @@
                 android:layout_height="80dp"
                 android:background="@android:color/darker_gray"
                 android:cropToPadding="true"
-                android:scaleType="centerInside" />
+                android:scaleType="centerInside"/>
         </LinearLayout>
     </LinearLayout>
 

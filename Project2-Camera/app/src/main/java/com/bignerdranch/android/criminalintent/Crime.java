@@ -1,10 +1,15 @@
 package com.bignerdranch.android.criminalintent;
 
-import java.util.Date;
-import java.util.UUID;
+import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.UUID;
 
 public class Crime {
 
@@ -19,6 +24,8 @@ public class Crime {
     private Date mDate;
     private boolean mSolved;
     private Photo mPhoto;
+    private ArrayList<Photo> mPhotoQueue = new ArrayList<Photo>();
+    private LinkedList<Photo> mList = new LinkedList<Photo>();
     
     public Crime() {
         mId = UUID.randomUUID();
@@ -85,5 +92,17 @@ public class Crime {
 	public void setPhoto(Photo photo) {
 		mPhoto = photo;
 	}
+
+    public void addPhoto(Photo photo,Context ctx) {
+        if (mList.size() > 3){
+            Log.v("CriminalIntent","list size: " + mList.size() );
+            Photo remove = mList.get(mList.size()-1);
+            ctx.deleteFile(remove.getFilename());
+            mList.remove(mList.size() - 1);
+        }
+        mList.addFirst(photo);
+    }
+
+    public LinkedList<Photo> getPhotos() { return mList; }
     
 }
