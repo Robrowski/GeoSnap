@@ -195,18 +195,6 @@ public class CrimeFragment extends Fragment {
         ImageFragment.createInstance(path)
                 .show(fm, DIALOG_IMAGE);
     }
-    
-    private void showPhoto() {
-        // (re)set the image button's image based on our photo
-        Photo p = mCrime.getPhoto();
-        BitmapDrawable b = null;
-        if (p != null) {
-            String path = getActivity()
-                .getFileStreamPath(p.getFilename()).getAbsolutePath();
-            b = PictureUtils.getScaledDrawable(getActivity(), path);
-        }
-        mPhotoView.setImageDrawable(b);
-    }
 
     private void showPhotos() {
         // (re)set the image button's image based on our photo

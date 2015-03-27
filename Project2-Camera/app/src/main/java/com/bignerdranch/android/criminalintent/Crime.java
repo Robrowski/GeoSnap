@@ -1,11 +1,11 @@
 package com.bignerdranch.android.criminalintent;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -19,11 +19,9 @@ public class Crime {
     private static final String JSON_PHOTO = "photo";
     
     private UUID mId;
-    private String mTitle;
+    private String mTitle = "";
     private Date mDate;
     private boolean mSolved;
-    private Photo mPhoto;
-    private ArrayList<Photo> mPhotoQueue = new ArrayList<Photo>();
     private LinkedList<Photo> mList = new LinkedList<Photo>();
     
     public Crime() {
@@ -36,18 +34,26 @@ public class Crime {
         mTitle = json.getString(JSON_TITLE);
         mSolved = json.getBoolean(JSON_SOLVED);
         mDate = new Date(json.getLong(JSON_DATE));
-        if (json.has(JSON_PHOTO))
-            mPhoto = new Photo(json.getJSONObject(JSON_PHOTO));
+        for (int i=0; i < 4; i++){
+            if (json.has(JSON_PHOTO+Integer.toString(i))){
+                Log.v("CriminalIntent","loaded photo: " + JSON_PHOTO+i);
+                mList.addLast(new Photo(json.getJSONObject(JSON_PHOTO+Integer.toString(i))));
+            }
+        }
     }
 
     public JSONObject toJSON() throws JSONException {
         JSONObject json = new JSONObject();
         json.put(JSON_ID, mId.toString());
         json.put(JSON_TITLE, mTitle);
+
+
         json.put(JSON_SOLVED, mSolved);
         json.put(JSON_DATE, mDate.getTime());
-        if (mPhoto != null)
-            json.put(JSON_PHOTO, mPhoto.toJSON());
+        for (int i = 0; i < mList.size(); i++){
+            Log.v("CriminalIntent","saved photo: " + i);
+            json.put(JSON_PHOTO+Integer.toString(i),mList.get(i).toJSON());
+        }
         return json;
     }
 
@@ -83,14 +89,6 @@ public class Crime {
     public void setDate(Date date) {
         mDate = date;
     }
-
-	public Photo getPhoto() {
-		return mPhoto;
-	}
-
-	public void setPhoto(Photo photo) {
-		mPhoto = photo;
-	}
 
     public void addPhoto(Photo photo,Context ctx) {
         if (mList.size() > 3){
