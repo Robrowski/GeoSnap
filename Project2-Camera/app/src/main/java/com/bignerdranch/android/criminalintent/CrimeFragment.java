@@ -33,14 +33,15 @@ public class CrimeFragment extends Fragment {
     private static final String DIALOG_IMAGE = "image";
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_PHOTO = 1;
+    private static final int NUM_PHOTOS = 4;
 
     Crime mCrime;
     EditText mTitleField;
     Button mDateButton;
     CheckBox mSolvedCheckBox;
     ImageButton mPhotoButton;
-    ImageView mPhotoView, mPhotoView2, mPhotoView3, mPhotoView4;
-    int next_view = 1;
+    ImageView[] mPhotoViews = new ImageView[NUM_PHOTOS];
+    int next_view = 0;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -129,17 +130,16 @@ public class CrimeFragment extends Fragment {
             mPhotoButton.setEnabled(false);
         }
 
-        mPhotoView = (ImageView)v.findViewById(R.id.crime_imageView);
-        mPhotoView.setOnClickListener(new PhotoViewClickListener());
+        // Initialize each photo view
+        mPhotoViews[0] = (ImageView)v.findViewById(R.id.crime_imageView);
+        mPhotoViews[1] = (ImageView)v.findViewById(R.id.crime_imageView1);
+        mPhotoViews[2] = (ImageView)v.findViewById(R.id.crime_imageView2);
+        mPhotoViews[3] = (ImageView)v.findViewById(R.id.crime_imageView3);
 
-        mPhotoView2 = (ImageView)v.findViewById(R.id.crime_imageView2);
-        mPhotoView2.setOnClickListener(new PhotoViewClickListener());
+        for (int i = 0; i < NUM_PHOTOS; i ++){
+            mPhotoViews[i].setOnClickListener(new PhotoViewClickListener(i));
+        }
 
-        mPhotoView3 = (ImageView)v.findViewById(R.id.crime_imageView3);
-        mPhotoView3.setOnClickListener(new PhotoViewClickListener());
-
-        mPhotoView4 = (ImageView)v.findViewById(R.id.crime_imageView4);
-        mPhotoView4.setOnClickListener(new PhotoViewClickListener());
         return v; 
     }
 
@@ -148,8 +148,16 @@ public class CrimeFragment extends Fragment {
      * a photo is clicked
      */
     class PhotoViewClickListener implements View.OnClickListener {
+        /** The number of the photo/view that this listener is attached to */
+        private int photo_num;
+
+        public PhotoViewClickListener(int photo_num) {
+            super();
+            this.photo_num = photo_num;
+        }
+
         public void onClick(View v) {
-            Photo p = mCrime.getPhoto();
+            Photo p = mCrime.getPhoto(photo_num);
             if (p == null)
                 return;
 
@@ -164,14 +172,16 @@ public class CrimeFragment extends Fragment {
 
     private void showPhoto() {
         // (re)set the image button's image based on our photo
-        Photo p = mCrime.getPhoto();
-        BitmapDrawable b = null;
-        if (p != null) {
-            String path = getActivity()
-                .getFileStreamPath(p.getFilename()).getAbsolutePath();
-            b = PictureUtils.getScaledDrawable(getActivity(), path);
+        for (int i = 0; i < NUM_PHOTOS; i++) {
+            Photo p = mCrime.getPhoto(i); 
+            BitmapDrawable b = null;
+            if (p != null) {
+                String path = getActivity()
+                        .getFileStreamPath(p.getFilename()).getAbsolutePath();
+                b = PictureUtils.getScaledDrawable(getActivity(), path);
+            }
+            mPhotoViews[i].setImageDrawable(b);
         }
-        mPhotoView.setImageDrawable(b);
     }
 
     @Override
@@ -183,7 +193,9 @@ public class CrimeFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        PictureUtils.cleanImageView(mPhotoView);
+        for (ImageView iv: mPhotoViews){
+            PictureUtils.cleanImageView(iv);
+        }
     }
 
     
@@ -200,7 +212,8 @@ public class CrimeFragment extends Fragment {
                 .getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
             if (filename != null) {
                 Photo p = new Photo(filename);
-                mCrime.setPhoto(p);
+                mCrime.setPhoto(p, next_view);
+                next_view = (next_view + 1) % NUM_PHOTOS;
                 showPhoto();
             }
         }

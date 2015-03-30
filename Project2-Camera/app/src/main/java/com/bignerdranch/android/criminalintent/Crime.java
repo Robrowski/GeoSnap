@@ -1,10 +1,10 @@
 package com.bignerdranch.android.criminalintent;
 
-import java.util.Date;
-import java.util.UUID;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Date;
+import java.util.UUID;
 
 public class Crime {
 
@@ -13,12 +13,13 @@ public class Crime {
     private static final String JSON_DATE = "date";
     private static final String JSON_SOLVED = "solved";
     private static final String JSON_PHOTO = "photo";
+    private static final int NUM_PHOTOS = 4;
     
     private UUID mId;
     private String mTitle;
     private Date mDate;
     private boolean mSolved;
-    private Photo mPhoto;
+    private Photo[] mPhotos = new Photo[NUM_PHOTOS];
     
     public Crime() {
         mId = UUID.randomUUID();
@@ -30,8 +31,11 @@ public class Crime {
         mTitle = json.getString(JSON_TITLE);
         mSolved = json.getBoolean(JSON_SOLVED);
         mDate = new Date(json.getLong(JSON_DATE));
-        if (json.has(JSON_PHOTO))
-            mPhoto = new Photo(json.getJSONObject(JSON_PHOTO));
+        for (int i = 0; i < NUM_PHOTOS; i++) {
+            // TODO - need to error check here, might not have a photo
+            if (json.has(JSON_PHOTO))
+                mPhotos[i] = new Photo(json.getJSONObject(JSON_PHOTO));
+        }
     }
 
     public JSONObject toJSON() throws JSONException {
@@ -40,8 +44,10 @@ public class Crime {
         json.put(JSON_TITLE, mTitle);
         json.put(JSON_SOLVED, mSolved);
         json.put(JSON_DATE, mDate.getTime());
-        if (mPhoto != null)
-            json.put(JSON_PHOTO, mPhoto.toJSON());
+        for (int i = 0; i < NUM_PHOTOS; i++) {
+            if (mPhotos[i] != null)
+                json.put(JSON_PHOTO, mPhotos[i].toJSON());
+        }
         return json;
     }
 
@@ -78,12 +84,12 @@ public class Crime {
         mDate = date;
     }
 
-	public Photo getPhoto() {
-		return mPhoto;
+	public Photo getPhoto(int i) {
+		return mPhotos[i];
 	}
 
-	public void setPhoto(Photo photo) {
-		mPhoto = photo;
+	public void setPhoto(Photo photo, int i) {
+		mPhotos[i] = photo;
 	}
     
 }
