@@ -110,7 +110,7 @@
         android:layout_width="218dp"
         android:layout_height="wrap_content"
         android:text="DELETE ALL IMAGES"
-        android:id="@+id/button"
+        android:id="@+id/delete_all"
         android:layout_marginLeft="31dp"
         android:onClick="onDeleteAllPhotos"/>
 

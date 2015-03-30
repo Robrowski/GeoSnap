@@ -37,7 +37,7 @@ public class CrimeFragment extends Fragment {
 
     Crime mCrime;
     EditText mTitleField;
-    Button mDateButton;
+    Button mDateButton, mDeleteAllButton;
     CheckBox mSolvedCheckBox;
     ImageButton mPhotoButton;
     ImageView[] mPhotoViews = new ImageView[NUM_PHOTOS];
@@ -104,7 +104,18 @@ public class CrimeFragment extends Fragment {
                 dialog.show(fm, DIALOG_DATE);
             }
         });
-        
+
+        mDeleteAllButton = (Button)v.findViewById(R.id.delete_all);
+        mDeleteAllButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                for (int i = 0;  i < NUM_PHOTOS; i++){
+                    mCrime.setPhoto(null, i);
+                }
+                showPhoto();
+                next_view = 0;
+            }
+        });
+
         mSolvedCheckBox = (CheckBox)v.findViewById(R.id.crime_solved);
         mSolvedCheckBox.setChecked(mCrime.isSolved());
         mSolvedCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -236,12 +247,4 @@ public class CrimeFragment extends Fragment {
         } 
     }
 
-
-    public void onDeleteAllPhotos(View v){
-        for (int i = 0;  i < NUM_PHOTOS; i++){
-            mCrime.setPhoto(null, i);
-        }
-        showPhoto();
-        next_view = 0;
-    }
 }

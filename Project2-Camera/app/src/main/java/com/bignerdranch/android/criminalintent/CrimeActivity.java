@@ -1,7 +1,6 @@
 package com.bignerdranch.android.criminalintent;
 
 import android.support.v4.app.Fragment;
-import android.view.View;
 
 import java.util.UUID;
 
@@ -16,7 +15,4 @@ public class CrimeActivity extends SingleFragmentActivity {
         return cf;
     }
 
-    public void onDeleteAllPhotos(View v) {
-        cf.onDeleteAllPhotos(v);
-    }
 }
