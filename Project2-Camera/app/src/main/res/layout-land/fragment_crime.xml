@@ -46,6 +46,13 @@
         android:layout_marginRight="16dp"
         android:hint="@string/crime_title_hint"
         />
+        <Button
+            android:layout_width="218dp"
+            android:layout_height="wrap_content"
+            android:text="DELETE ALL IMAGES"
+            android:id="@+id/delete_all"
+            android:onClick="onDeleteAllPhotos"
+            android:layout_marginTop="11dp" />
     </LinearLayout>
   </LinearLayout>
   <TextView
@@ -71,6 +78,34 @@
         android:layout_weight="1"
         android:text="@string/crime_solved_label" />
   </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.19"
+        android:layout_gravity="center"
+        android:gravity="center_vertical|center_horizontal">
+        <ImageView android:id="@+id/crime_imageView1"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerInside"
+            android:background="@android:color/darker_gray"
+            android:cropToPadding="true"/>
+        <ImageView android:id="@+id/crime_imageView2"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerInside"
+            android:background="@android:color/darker_gray"
+            android:cropToPadding="true"
+            android:layout_marginLeft="37dp"
+            android:layout_marginRight="37dp" />
+        <ImageView android:id="@+id/crime_imageView3"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerInside"
+            android:background="@android:color/darker_gray"
+            android:cropToPadding="true"/>
+    </LinearLayout>
   </LinearLayout>
 
 
