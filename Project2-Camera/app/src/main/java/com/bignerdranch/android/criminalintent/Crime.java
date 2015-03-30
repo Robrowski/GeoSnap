@@ -33,8 +33,8 @@ public class Crime {
         mDate = new Date(json.getLong(JSON_DATE));
         for (int i = 0; i < NUM_PHOTOS; i++) {
             // TODO - need to error check here, might not have a photo
-            if (json.has(JSON_PHOTO))
-                mPhotos[i] = new Photo(json.getJSONObject(JSON_PHOTO));
+            if (json.has(JSON_PHOTO + i))
+                mPhotos[i] = new Photo(json.getJSONObject(JSON_PHOTO + i));
         }
     }
 
@@ -46,7 +46,7 @@ public class Crime {
         json.put(JSON_DATE, mDate.getTime());
         for (int i = 0; i < NUM_PHOTOS; i++) {
             if (mPhotos[i] != null)
-                json.put(JSON_PHOTO, mPhotos[i].toJSON());
+                json.put(JSON_PHOTO + i, mPhotos[i].toJSON());
         }
         return json;
     }
