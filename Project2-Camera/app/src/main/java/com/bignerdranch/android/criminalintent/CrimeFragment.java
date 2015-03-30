@@ -173,7 +173,7 @@ public class CrimeFragment extends Fragment {
     private void showPhoto() {
         // (re)set the image button's image based on our photo
         for (int i = 0; i < NUM_PHOTOS; i++) {
-            Photo p = mCrime.getPhoto(i); 
+            Photo p = mCrime.getPhoto(i);
             BitmapDrawable b = null;
             if (p != null) {
                 String path = getActivity()
@@ -234,5 +234,14 @@ public class CrimeFragment extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         } 
+    }
+
+
+    public void onDeleteAllPhotos(View v){
+        for (int i = 0;  i < NUM_PHOTOS; i++){
+            mCrime.setPhoto(null, i);
+        }
+        showPhoto();
+        next_view = 0;
     }
 }
