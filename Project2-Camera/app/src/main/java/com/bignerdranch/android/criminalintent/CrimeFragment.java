@@ -1,8 +1,5 @@
 package com.bignerdranch.android.criminalintent;
 
-import java.util.Date;
-import java.util.UUID;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
@@ -27,6 +24,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import java.util.Date;
+import java.util.UUID;
+
 public class CrimeFragment extends Fragment {
     public static final String EXTRA_CRIME_ID = "criminalintent.CRIME_ID";
     private static final String DIALOG_DATE = "date";
@@ -39,7 +39,8 @@ public class CrimeFragment extends Fragment {
     Button mDateButton;
     CheckBox mSolvedCheckBox;
     ImageButton mPhotoButton;
-    ImageView mPhotoView;
+    ImageView mPhotoView, mPhotoView2, mPhotoView3, mPhotoView4;
+    int next_view = 1;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -129,25 +130,38 @@ public class CrimeFragment extends Fragment {
         }
 
         mPhotoView = (ImageView)v.findViewById(R.id.crime_imageView);
-        mPhotoView.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Photo p = mCrime.getPhoto();
-                if (p == null) 
-                    return;
+        mPhotoView.setOnClickListener(new PhotoViewClickListener());
 
-                FragmentManager fm = getActivity()
-                    .getSupportFragmentManager();
-                String path = getActivity()
-                    .getFileStreamPath(p.getFilename()).getAbsolutePath();
-                ImageFragment.createInstance(path)
-                    .show(fm, DIALOG_IMAGE);
-            }
-        });
-        
-        
+        mPhotoView2 = (ImageView)v.findViewById(R.id.crime_imageView2);
+        mPhotoView2.setOnClickListener(new PhotoViewClickListener());
+
+        mPhotoView3 = (ImageView)v.findViewById(R.id.crime_imageView3);
+        mPhotoView3.setOnClickListener(new PhotoViewClickListener());
+
+        mPhotoView4 = (ImageView)v.findViewById(R.id.crime_imageView4);
+        mPhotoView4.setOnClickListener(new PhotoViewClickListener());
         return v; 
     }
-    
+
+    /**
+     * An implementation of a click listener to handle what happens when
+     * a photo is clicked
+     */
+    class PhotoViewClickListener implements View.OnClickListener {
+        public void onClick(View v) {
+            Photo p = mCrime.getPhoto();
+            if (p == null)
+                return;
+
+            FragmentManager fm = getActivity()
+                    .getSupportFragmentManager();
+            String path = getActivity()
+                    .getFileStreamPath(p.getFilename()).getAbsolutePath();
+            ImageFragment.createInstance(path)
+                    .show(fm, DIALOG_IMAGE);
+        }
+    }
+
     private void showPhoto() {
         // (re)set the image button's image based on our photo
         Photo p = mCrime.getPhoto();
