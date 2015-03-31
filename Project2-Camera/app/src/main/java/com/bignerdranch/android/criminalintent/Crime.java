@@ -99,6 +99,10 @@ public class Crime {
         mList.addFirst(photo);
     }
 
+    public void deleteAll(){
+        mList.clear();
+    }
+
     public LinkedList<Photo> getPhotos() { return mList; }
     
 }

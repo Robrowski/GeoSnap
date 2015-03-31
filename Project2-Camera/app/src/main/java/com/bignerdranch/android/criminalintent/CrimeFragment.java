@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -166,16 +167,17 @@ public class CrimeFragment extends Fragment {
         mDeleteAllButton = (Button) v.findViewById(R.id.deleteButton);
         mDeleteAllButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                PictureUtils.cleanImageView(mPhotoView);
-                PictureUtils.cleanImageView(mPhotoView2);
-                PictureUtils.cleanImageView(mPhotoView3);
-                PictureUtils.cleanImageView(mPhotoView4);
 
                 LinkedList<Photo> photos = mCrime.getPhotos();
                 for (Photo p: photos){
                     getActivity().deleteFile(p.getFilename());
                 }
-                photos.clear();
+                mCrime.deleteAll();
+
+                PictureUtils.cleanImageView(mPhotoView);
+                PictureUtils.cleanImageView(mPhotoView2);
+                PictureUtils.cleanImageView(mPhotoView3);
+                PictureUtils.cleanImageView(mPhotoView4);
             }
         });
         
@@ -184,16 +186,19 @@ public class CrimeFragment extends Fragment {
     }
 
     private void showBigPicture(int photoId){
-        Photo p = mCrime.getPhotos().get(photoId);
-        if (p == null)
-            return;
+        LinkedList<Photo> photos = mCrime.getPhotos();
+        if (photoId < photos.size()) {
 
-        FragmentManager fm = getActivity()
-                .getSupportFragmentManager();
-        String path = getActivity()
-                .getFileStreamPath(p.getFilename()).getAbsolutePath();
-        ImageFragment.createInstance(path)
-                .show(fm, DIALOG_IMAGE);
+            Photo p = photos.get(photoId);
+
+            FragmentManager fm = getActivity()
+                    .getSupportFragmentManager();
+            String path = getActivity()
+                    .getFileStreamPath(p.getFilename()).getAbsolutePath();
+            Log.v("crime", path);
+            ImageFragment.createInstance(path)
+                    .show(fm, DIALOG_IMAGE);
+        }
     }
 
     private void showPhotos() {
