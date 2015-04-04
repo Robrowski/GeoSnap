@@ -8,8 +8,13 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CounterActivity extends Activity implements SensorEventListener {
 
@@ -18,11 +23,13 @@ public class CounterActivity extends Activity implements SensorEventListener {
     private TextView count;
     boolean activityRunning;
     boolean startLogging = false;
-    private Handler handler = new Handler();
+    private Timer timer = new Timer();
     private int stepsSinceStartUp;
 
-    Runnable timer;
+    TimerTask timerTask;
     private int segment = 0;
+
+    public Handler mHandler;
 
     private int[] segmentTextViewIds = {
             R.id.value1,
@@ -35,10 +42,9 @@ public class CounterActivity extends Activity implements SensorEventListener {
             R.id.value8
     };
 
-    public class stepCountTimer implements Runnable{
+    public class stepCountTimer extends TimerTask {
         int ms = 0;
         int initSteps;
-//        int segmentSteps = 0;
 
         public stepCountTimer(int firstSteps){
             initSteps = firstSteps;
@@ -46,7 +52,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
 
         @Override
         public void run() {
-            if (ms >= 10000){
+            if (ms >= 60000){
                 ms = 0;
                 int finalSteps = stepsSinceStartUp - initSteps;
                 initSteps = stepsSinceStartUp;
@@ -55,10 +61,10 @@ public class CounterActivity extends Activity implements SensorEventListener {
             else{
                 ms += 100;
                 int segmentSteps = stepsSinceStartUp - initSteps;
-                currentViewSegment.setText(Integer.toString(segmentSteps));
-                count.setText(Integer.toString(ms));
+                Message m = new Message();
+                m.arg1 = segmentSteps;
+                mHandler.sendMessage(m);
             }
-            handler.postDelayed(this, 100);
         }
     }
 
@@ -70,6 +76,12 @@ public class CounterActivity extends Activity implements SensorEventListener {
         count = (TextView) findViewById(R.id.count);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+        mHandler = new Handler() {
+            public void handleMessage(Message msg) {
+                currentViewSegment.setText(Integer.toString(msg.arg1));
+            }
+        };
 
     }
 
@@ -87,7 +99,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
     }
 
     public void stopCounting(){
-        handler.removeCallbacks(timer);
+        timer.cancel();
     }
 
     public void addToDatabase(int segment,int segmentTotal){
@@ -121,8 +133,9 @@ public class CounterActivity extends Activity implements SensorEventListener {
         if (activityRunning) {
             if (startLogging == false){
                 startLogging = true;
-                timer = new stepCountTimer((int) event.values[0]);
-                handler.post(timer);
+                timerTask = new stepCountTimer((int) event.values[0]);
+                timer.schedule(timerTask, 0, 100);
+                Log.v("sensorchanged","startlogging");
 
             }
             stepsSinceStartUp = (int) event.values[0];
