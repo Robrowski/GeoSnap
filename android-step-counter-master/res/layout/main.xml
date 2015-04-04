@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:gravity="center"
+              android:gravity="top|center"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <fragment
+        android:layout_width="256dp"
+        android:layout_height="400dp"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:id="@+id/map_fragment"
+        android:layout_weight="0.47" />
+
     <TextView android:textColor="@android:color/white"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"

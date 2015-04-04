@@ -9,6 +9,10 @@ buildscript {
 
 apply plugin: 'android'
 
+dependencies {
+    compile 'com.google.android.gms:play-services:4.2.42'
+    compile 'com.android.support:appcompat-v7:19.+'
+}
 android {
     sourceSets {
         main {
