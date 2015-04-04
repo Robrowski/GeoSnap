@@ -22,7 +22,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
     private int stepsSinceStartUp;
 
     Runnable timer;
-    private int segment = 1;
+    private int segment = 0;
 
     private int[] segmentTextViewIds = {
             R.id.value1,
@@ -38,7 +38,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
     public class stepCountTimer implements Runnable{
         int ms = 0;
         int initSteps;
-        int segmentSteps = 0;
+//        int segmentSteps = 0;
 
         public stepCountTimer(int firstSteps){
             initSteps = firstSteps;
@@ -46,16 +46,18 @@ public class CounterActivity extends Activity implements SensorEventListener {
 
         @Override
         public void run() {
-            if (ms >= 60000){
+            if (ms >= 10000){
                 ms = 0;
-                int finalSteps = segmentSteps - initSteps;
-                initSteps = finalSteps;
-                finishSegment(stepsSinceStartUp - initSteps);
+                int finalSteps = stepsSinceStartUp - initSteps;
+                initSteps = stepsSinceStartUp;
+                finishSegment(finalSteps);
             }
-            ms += 100;
-            segmentSteps = stepsSinceStartUp - initSteps;
-            currentViewSegment.setText(Float.toString(segmentSteps));
-            count.setText(Integer.toString(initSteps));
+            else{
+                ms += 100;
+                int segmentSteps = stepsSinceStartUp - initSteps;
+                currentViewSegment.setText(Integer.toString(segmentSteps));
+                count.setText(Integer.toString(ms));
+            }
             handler.postDelayed(this, 100);
         }
     }
@@ -75,7 +77,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
         addToDatabase(segment,segmentTotal);
 
         segment++;
-        if (segment >= 9){
+        if (segment >= 8){
             stopCounting();
         }
         else{
