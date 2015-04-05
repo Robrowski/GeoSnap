@@ -31,7 +31,8 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        count = (TextView) findViewById(R.id.count);
+        count = (TextView) findViewById(R.id.seg1_count);
+        count.setHighlightColor(50);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         setUpMapIfNeeded();
