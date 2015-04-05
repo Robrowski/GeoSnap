@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.MapFragment;
 import com.starboardland.pedometer.StepContract.StepEntry;
 
 import java.util.Timer;
@@ -38,6 +39,8 @@ public class CounterActivity extends Activity implements SensorEventListener {
     StepDbHelper mDbHelper;
 
     public Handler mHandler;
+
+    MapFragment mMapFragment;
 
     private int[] segmentTextViewIds = {
             R.id.segment1,
@@ -97,6 +100,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
             }
         };
 
+        mMapFragment = ((MapFragment)getFragmentManager().findFragmentById(R.id.map));
         // Create the database helper for storing and accessing steps at each segment
         mDbHelper = new StepDbHelper(this);
 
@@ -112,7 +116,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
         for (int i = 0; i < segmentTextViewIds.length; i++){
             View segmentView = findViewById(segmentTextViewIds[i]);
             TextView segmentTextView = (TextView) segmentView.findViewById(R.id.label);
-            segmentTextView.setText("Segment " + Integer.toString(i+1) + " steps: ");
+            segmentTextView.setText("Segment " + Integer.toString(i+1) + " steps:");
         }
     }
 
