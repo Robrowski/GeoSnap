@@ -1,7 +1,10 @@
 package com.starboardland.pedometer;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,6 +15,8 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.starboardland.pedometer.StepContract.StepEntry;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,6 +33,8 @@ public class CounterActivity extends Activity implements SensorEventListener {
 
     TimerTask timerTask;
     private int segment = 0;
+
+    StepDbHelper mDbHelper;
 
     public Handler mHandler;
 
@@ -52,7 +59,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
 
         @Override
         public void run() {
-            if (ms >= 60000){
+            if (ms >= 5000){
                 ms = 0;
                 int finalSteps = stepsSinceStartUp - initSteps;
                 initSteps = stepsSinceStartUp;
@@ -83,11 +90,22 @@ public class CounterActivity extends Activity implements SensorEventListener {
             }
         };
 
+        mDbHelper = new StepDbHelper(this);
+
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        mDbHelper.deleteAllRecords(db);
+
     }
 
     public void finishSegment(int segmentTotal){
-        addToDatabase(segment,segmentTotal);
+        // Set the segment steps one last time to make sure it definitley
+        // reflects what will be in the database
+        Message m = new Message();
+        m.arg1 = segmentTotal;
+        mHandler.sendMessageAtFrontOfQueue(m);
 
+        addToDatabase(segment,segmentTotal);
+        Log.v("steps","current Segment: " + segment + " steps: " + segmentTotal);
         segment++;
         if (segment >= 8){
             stopCounting();
@@ -100,9 +118,39 @@ public class CounterActivity extends Activity implements SensorEventListener {
 
     public void stopCounting(){
         timer.cancel();
+
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        Cursor results = db.query(StepEntry.TABLE_NAME, null, null, null, null, null, null);
+
+        int totalSteps = 0;
+        while (results.moveToNext()) {
+            int segmentTotal = results.getInt(results.getColumnIndex(StepEntry.COLUMN_SEGMENT_STEPS));
+            totalSteps += segmentTotal;
+        }
+
+        currentViewSegment = (TextView) findViewById(R.id.valueTotal);
+        Message m = new Message();
+        m.arg1 = totalSteps;
+        mHandler.sendMessageAtFrontOfQueue(m);
+
+        Log.v("stepper","total steps: " + totalSteps);
     }
 
     public void addToDatabase(int segment,int segmentTotal){
+        // Gets the data repository in write mode
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(StepEntry.COLUMN_SEGMENT, segment);
+        values.put(StepEntry.COLUMN_SEGMENT_STEPS, segmentTotal);
+
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId;
+        newRowId = db.insert(
+                StepEntry.TABLE_NAME,
+                null,
+                values);
 
     }
 
