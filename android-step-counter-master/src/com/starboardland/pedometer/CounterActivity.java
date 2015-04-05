@@ -9,6 +9,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Criteria;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,13 +19,14 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.starboardland.pedometer.StepContract.StepEntry;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class CounterActivity extends Activity implements SensorEventListener {
+public class CounterActivity extends Activity implements SensorEventListener{
 
     private SensorManager sensorManager;
     private TextView currentSegmentValueTextView;
@@ -41,6 +44,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
     public Handler mHandler;
 
     MapFragment mMapFragment;
+    GoogleMap googleMap;
 
     private int[] segmentTextViewIds = {
             R.id.segment1,
@@ -79,6 +83,8 @@ public class CounterActivity extends Activity implements SensorEventListener {
         }
     }
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,7 +106,29 @@ public class CounterActivity extends Activity implements SensorEventListener {
             }
         };
 
+        /**
+         * Initialize the map and have it update every ~20 seconds
+         */
+
         mMapFragment = ((MapFragment)getFragmentManager().findFragmentById(R.id.map));
+        // Getting GoogleMap object from the fragment
+        googleMap = mMapFragment.getMap();
+
+        // Getting LocationManager object from System Service LOCATION_SERVICE
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        // Creating a criteria object to retrieve provider
+        Criteria criteria = new Criteria();
+
+        // Getting the name of the best provider
+        String provider = locationManager.getBestProvider(criteria, true);
+
+        locationManager.requestLocationUpdates(provider,1000,0, new LocationUpdater(googleMap));
+
+
+        /**
+         * Initialize Database
+         */
         // Create the database helper for storing and accessing steps at each segment
         mDbHelper = new StepDbHelper(this);
 
