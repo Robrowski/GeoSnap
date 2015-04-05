@@ -7,11 +7,10 @@
     android:weightSum="1">
 
     <fragment
-        android:layout_width="256dp"
-        android:layout_height="400dp"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:id="@+id/map_fragment"
-        android:layout_weight="0.47" />
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:id="@+id/map_fragment" />
 
     <TextView android:textColor="@android:color/white"
               android:layout_width="wrap_content"
