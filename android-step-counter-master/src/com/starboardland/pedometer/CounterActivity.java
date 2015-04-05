@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +25,7 @@ import java.util.TimerTask;
 public class CounterActivity extends Activity implements SensorEventListener {
 
     private SensorManager sensorManager;
-    private TextView currentViewSegment;
+    private TextView currentSegmentValueTextView;
     private TextView count;
     boolean activityRunning;
     boolean startLogging = false;
@@ -39,14 +40,14 @@ public class CounterActivity extends Activity implements SensorEventListener {
     public Handler mHandler;
 
     private int[] segmentTextViewIds = {
-            R.id.value1,
-            R.id.value2,
-            R.id.value3,
-            R.id.value4,
-            R.id.value5,
-            R.id.value6,
-            R.id.value7,
-            R.id.value8
+            R.id.segment1,
+            R.id.segment2,
+            R.id.segment3,
+            R.id.segment4,
+            R.id.segment5,
+            R.id.segment6,
+            R.id.segment7,
+            R.id.segment8
     };
 
     public class stepCountTimer extends TimerTask {
@@ -79,22 +80,40 @@ public class CounterActivity extends Activity implements SensorEventListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        currentViewSegment = (TextView) findViewById(R.id.value1);
-        count = (TextView) findViewById(R.id.count);
+        populateSegmentLabels();
 
+        // get the first segment text view an mark it as current
+        View segmentView = findViewById(R.id.segment1);
+        currentSegmentValueTextView = (TextView) segmentView.findViewById(R.id.value);
+
+        // get the sensor manager
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
+        // Create a handler in charge of updating the UI whenever the timertask sends
+        // an update on the steps so far
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
-                currentViewSegment.setText(Integer.toString(msg.arg1));
+                currentSegmentValueTextView.setText(Integer.toString(msg.arg1));
             }
         };
 
+        // Create the database helper for storing and accessing steps at each segment
         mDbHelper = new StepDbHelper(this);
 
+        // Clear the database of all records in order to ensure only data from the current
+        // session are used when calculating total
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         mDbHelper.deleteAllRecords(db);
+    }
 
+    public void populateSegmentLabels(){
+        // We have to manually set the labels for each Segment Text View Label since we
+        // are using the same included xml layout for each segment
+        for (int i = 0; i < segmentTextViewIds.length; i++){
+            View segmentView = findViewById(segmentTextViewIds[i]);
+            TextView segmentTextView = (TextView) segmentView.findViewById(R.id.label);
+            segmentTextView.setText("Segment " + Integer.toString(i+1) + " steps: ");
+        }
     }
 
     public void finishSegment(int segmentTotal){
@@ -111,7 +130,9 @@ public class CounterActivity extends Activity implements SensorEventListener {
             stopCounting();
         }
         else{
-            currentViewSegment = (TextView) findViewById(segmentTextViewIds[segment]);
+            // get the segment label_value view, which contains a value TextView that we update
+            View segmentView = findViewById(segmentTextViewIds[segment]);
+            currentSegmentValueTextView = (TextView) segmentView.findViewById(R.id.value);
         }
 
     }
@@ -127,13 +148,12 @@ public class CounterActivity extends Activity implements SensorEventListener {
             int segmentTotal = results.getInt(results.getColumnIndex(StepEntry.COLUMN_SEGMENT_STEPS));
             totalSteps += segmentTotal;
         }
-
-        currentViewSegment = (TextView) findViewById(R.id.valueTotal);
+        currentSegmentValueTextView = (TextView) findViewById(R.id.valueTotal);
         Message m = new Message();
         m.arg1 = totalSteps;
         mHandler.sendMessageAtFrontOfQueue(m);
 
-        Log.v("stepper","total steps: " + totalSteps);
+        Log.v("stepper", "total steps: " + totalSteps);
     }
 
     public void addToDatabase(int segment,int segmentTotal){
