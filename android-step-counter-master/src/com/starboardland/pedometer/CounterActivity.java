@@ -23,7 +23,8 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 public class CounterActivity extends Activity implements SensorEventListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-    private static final int TOTAL = 9, TOTAL_SO_FAR = 10, SECONDS_PER_SEGMENT = 10;
+    private static final int TOTAL = 9, TOTAL_SO_FAR = 10;
+    private static final boolean DEBUG = true;
     private static final String TAG = "StepCounterDebugTag";
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     GoogleApiClient mGoogleApiClient;
@@ -35,7 +36,7 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
 
     private SegmentDatabaseHelper sdh;
 
-    private int current_segment = 0;
+    private int current_segment = 0, SECONDS_PER_SEGMENT = 60;
     private Sensor countSensor;
 
     @Override
@@ -48,6 +49,10 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
         setUpMapIfNeeded();
 
         buildGoogleApiClient();
+
+        if (DEBUG){
+            SECONDS_PER_SEGMENT = 10;
+        }
     }
 
     /**
@@ -117,7 +122,9 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
 
             // Tick once every second
             public void onTick(long millisUntilFinished) {
-                ((TextView) findViewById(R.id.count_down)).setText("Seconds remaining: " + (millisUntilFinished / 1000) % SECONDS_PER_SEGMENT);
+                if (DEBUG) {
+                    ((TextView) findViewById(R.id.count_down)).setText("Seconds remaining: " + (millisUntilFinished / 1000) % SECONDS_PER_SEGMENT);
+                }
                 ticks = (ticks + 1) % SECONDS_PER_SEGMENT;
 
                 // After 60 ticks, increment the segment
@@ -127,13 +134,16 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
                     current.setTextColor(Color.WHITE);
                     sdh.insertRun(TOTAL_SO_FAR, sdh.queryRun(TOTAL));
 
+                    toast_segment(current_segment, sdh.queryRun(current_segment));
+
                     // Set the next segment index
                     current_segment++;
 
                     // Set the next line to a different color
                     current = getCountView(current_segment);
                     current.setText("0");
-                    current.setTextColor(Color.MAGENTA);
+                    if (DEBUG)
+                        current.setTextColor(Color.MAGENTA);
                 }
             }
 
@@ -141,7 +151,7 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
                 activityRunning = false;
 
                 // Correct the color of the last segment
-                getCountView(8).setTextColor(Color.WHITE);
+                getCountView(8).setTextColor(Color.GRAY);
 
                 int total = 0;
                 for (int i = 1; i <= 8; i ++){
@@ -149,7 +159,9 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
                     Log.i(TAG, "Summing up:" + String.valueOf(total));
                 }
                 ((TextView) findViewById(R.id.total_counts)).setText(String.valueOf(total));
-                ((TextView) findViewById(R.id.count_down)).setText("Done");
+                if (DEBUG) {
+                    ((TextView) findViewById(R.id.count_down)).setText("Done");
+                }
             }
 
             public void start(int segment) {
@@ -159,10 +171,20 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
         }.start();
     }
 
+    private void toast_segment(int current_segment, int steps){
+        Toast.makeText(this, "You took " + String.valueOf(steps) + " steps in segment " + String.valueOf(current_segment), Toast.LENGTH_LONG).show();
+    }
+
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (activityRunning) {
-            sdh.insertRun(current_segment, ((int) event.values[0]) - Math.max(sdh.queryRun(TOTAL_SO_FAR), 0));
+            // Max of zero and comparison to last SQL db, in case device was restarted
+            if (sdh.queryRun(TOTAL_SO_FAR) == 0){
+                sdh.insertRun(current_segment, 0);
+            } else {
+                sdh.insertRun(current_segment, Math.max(0, ((int) event.values[0]) - sdh.queryRun(TOTAL_SO_FAR)));
+            }
             sdh.insertRun(TOTAL, (int) event.values[0]);
 
             // Update the text view

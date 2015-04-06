@@ -29,7 +29,8 @@
                 android:layout_height="wrap_content"
                 android:layout_column="0"
                 android:text="Segment 1 steps: "
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
 
             <TextView
                 android:id="@+id/seg1_count"
@@ -37,7 +38,8 @@
                 android:layout_height="wrap_content"
                 android:layout_column="1"
                 android:text="0"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
         </TableRow>
 
         <TableRow
@@ -49,14 +51,16 @@
                 android:layout_height="wrap_content"
                 android:layout_column="0"
                 android:text="Segment 2 steps: "
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
 
             <TextView
                 android:id="@+id/seg2_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
         </TableRow>
 
         <TableRow
@@ -68,14 +72,16 @@
                 android:layout_height="wrap_content"
                 android:layout_column="0"
                 android:text="Segment 3 steps: "
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff" />
 
             <TextView
                 android:id="@+id/seg3_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
         </TableRow>
 
         <TableRow
@@ -87,14 +93,16 @@
                 android:layout_height="wrap_content"
                 android:layout_column="0"
                 android:text="Segment 4 steps: "
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
 
             <TextView
                 android:id="@+id/seg4_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
         </TableRow>
 
         <TableRow
@@ -106,14 +114,16 @@
                 android:layout_height="wrap_content"
                 android:layout_column="0"
                 android:text="Segment 5 steps: "
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
 
             <TextView
                 android:id="@+id/seg5_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
         </TableRow>
 
         <TableRow
@@ -125,14 +135,16 @@
                 android:layout_height="wrap_content"
                 android:layout_column="0"
                 android:text="Segment 6 steps: "
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
 
             <TextView
                 android:id="@+id/seg6_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
         </TableRow>
 
         <TableRow
@@ -144,14 +156,16 @@
                 android:layout_height="wrap_content"
                 android:layout_column="0"
                 android:text="Segment 7 steps: "
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
 
             <TextView
                 android:id="@+id/seg7_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
         </TableRow>
 
         <TableRow
@@ -163,14 +177,16 @@
                 android:layout_height="wrap_content"
                 android:layout_column="0"
                 android:text="Segment 8 steps: "
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
 
             <TextView
                 android:id="@+id/seg8_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
         </TableRow>
 
         <TableRow
@@ -182,14 +198,16 @@
                 android:layout_height="wrap_content"
                 android:layout_column="0"
                 android:text="Total steps: "
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
 
             <TextView
                 android:id="@+id/total_counts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffff"/>
         </TableRow>
     </TableLayout>
 
@@ -198,7 +216,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/count_down"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:textColor="#ffffff"/>
 
 </LinearLayout>
 
