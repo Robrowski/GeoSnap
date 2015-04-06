@@ -24,7 +24,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class CounterActivity extends Activity implements SensorEventListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static final int TOTAL = 9, TOTAL_SO_FAR = 10;
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final String TAG = "StepCounterDebugTag";
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     GoogleApiClient mGoogleApiClient;
@@ -50,7 +50,7 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
 
         buildGoogleApiClient();
 
-        if (DEBUG){
+        if (DEBUG) {
             SECONDS_PER_SEGMENT = 10;
         }
     }
@@ -66,18 +66,25 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
             case 1:
                 return (TextView) findViewById(R.id.seg1_count);
             case 2:
+                findViewById(R.id.seg2_txt).setVisibility(TextView.VISIBLE);
                 return (TextView) findViewById(R.id.seg2_count);
             case 3:
+                findViewById(R.id.seg3_txt).setVisibility(TextView.VISIBLE);
                 return (TextView) findViewById(R.id.seg3_count);
             case 4:
+                findViewById(R.id.seg4_txt).setVisibility(TextView.VISIBLE);
                 return (TextView) findViewById(R.id.seg4_count);
             case 5:
+                findViewById(R.id.seg5_txt).setVisibility(TextView.VISIBLE);
                 return (TextView) findViewById(R.id.seg5_count);
             case 6:
+                findViewById(R.id.seg6_txt).setVisibility(TextView.VISIBLE);
                 return (TextView) findViewById(R.id.seg6_count);
             case 7:
+                findViewById(R.id.seg7_txt).setVisibility(TextView.VISIBLE);
                 return (TextView) findViewById(R.id.seg7_count);
             case 8:
+                findViewById(R.id.seg8_txt).setVisibility(TextView.VISIBLE);
                 return (TextView) findViewById(R.id.seg8_count);
             case TOTAL:
                 return (TextView) findViewById(R.id.total_counts);
@@ -113,7 +120,7 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
         super.onStart();
         mGoogleApiClient.connect();
         current_segment = 1;
-        sdh.insertRun(TOTAL_SO_FAR, sdh.queryRun(TOTAL));
+        sdh.insertRun(TOTAL_SO_FAR, 0);
         sdh.init();
 
         // Set up the 8 minute count down timer
@@ -151,14 +158,14 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
                 activityRunning = false;
 
                 // Correct the color of the last segment
-                getCountView(8).setTextColor(Color.GRAY);
+                getCountView(8).setTextColor(Color.WHITE);
 
                 int total = 0;
-                for (int i = 1; i <= 8; i ++){
-                    total +=  sdh.queryRun(i);
+                for (int i = 1; i <= 8; i++) {
+                    total += sdh.queryRun(i);
                     Log.i(TAG, "Summing up:" + String.valueOf(total));
                 }
-                ((TextView) findViewById(R.id.total_counts)).setText(String.valueOf(total));
+                ((TextView) findViewById(R.id.total_counts)).setText("Total Steps: " + String.valueOf(total));
                 if (DEBUG) {
                     ((TextView) findViewById(R.id.count_down)).setText("Done");
                 }
@@ -171,7 +178,7 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
         }.start();
     }
 
-    private void toast_segment(int current_segment, int steps){
+    private void toast_segment(int current_segment, int steps) {
         Toast.makeText(this, "You took " + String.valueOf(steps) + " steps in segment " + String.valueOf(current_segment), Toast.LENGTH_LONG).show();
     }
 
@@ -180,8 +187,9 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
     public void onSensorChanged(SensorEvent event) {
         if (activityRunning) {
             // Max of zero and comparison to last SQL db, in case device was restarted
-            if (sdh.queryRun(TOTAL_SO_FAR) == 0){
+            if (sdh.queryRun(TOTAL_SO_FAR) == 0) {
                 sdh.insertRun(current_segment, 0);
+                sdh.insertRun(TOTAL_SO_FAR, (int) event.values[0]);
             } else {
                 sdh.insertRun(current_segment, Math.max(0, ((int) event.values[0]) - sdh.queryRun(TOTAL_SO_FAR)));
             }

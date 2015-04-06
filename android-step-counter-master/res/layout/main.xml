@@ -9,11 +9,11 @@
     <fragment
         android:id="@+id/map_fragment"
         android:name="com.google.android.gms.maps.MapFragment"
-        android:layout_width="fill_parent"
+        android:layout_width="325dp"
         android:layout_height="270dp" />
 
     <TableLayout
-        android:layout_width="match_parent"
+        android:layout_width="232dp"
         android:layout_height="171dp"
         android:layout_gravity="center_horizontal"
         android:gravity="fill_horizontal|fill_vertical"
@@ -52,7 +52,9 @@
                 android:layout_column="0"
                 android:text="Segment 2 steps: "
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#ffffff"/>
+                android:textColor="#ffffff"
+                android:visibility="invisible"
+                android:id="@+id/seg2_txt" />
 
             <TextView
                 android:id="@+id/seg2_count"
@@ -73,7 +75,9 @@
                 android:layout_column="0"
                 android:text="Segment 3 steps: "
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#ffffff" />
+                android:textColor="#ffffff"
+                android:visibility="invisible"
+                android:id="@+id/seg3_txt"/>
 
             <TextView
                 android:id="@+id/seg3_count"
@@ -94,7 +98,9 @@
                 android:layout_column="0"
                 android:text="Segment 4 steps: "
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#ffffff"/>
+                android:textColor="#ffffff"
+                android:visibility="invisible"
+                android:id="@+id/seg4_txt"/>
 
             <TextView
                 android:id="@+id/seg4_count"
@@ -115,7 +121,9 @@
                 android:layout_column="0"
                 android:text="Segment 5 steps: "
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#ffffff"/>
+                android:textColor="#ffffff"
+                android:visibility="invisible"
+                android:id="@+id/seg5_txt"/>
 
             <TextView
                 android:id="@+id/seg5_count"
@@ -136,7 +144,9 @@
                 android:layout_column="0"
                 android:text="Segment 6 steps: "
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#ffffff"/>
+                android:textColor="#ffffff"
+                android:visibility="invisible"
+                android:id="@+id/seg6_txt"/>
 
             <TextView
                 android:id="@+id/seg6_count"
@@ -157,7 +167,9 @@
                 android:layout_column="0"
                 android:text="Segment 7 steps: "
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#ffffff"/>
+                android:textColor="#ffffff"
+                android:visibility="invisible"
+                android:id="@+id/seg7_txt"/>
 
             <TextView
                 android:id="@+id/seg7_count"
@@ -178,7 +190,9 @@
                 android:layout_column="0"
                 android:text="Segment 8 steps: "
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#ffffff"/>
+                android:textColor="#ffffff"
+                android:visibility="invisible"
+                android:id="@+id/seg8_txt"/>
 
             <TextView
                 android:id="@+id/seg8_count"
@@ -192,14 +206,6 @@
         <TableRow
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="0"
-                android:text="Total steps: "
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#ffffff"/>
 
             <TextView
                 android:id="@+id/total_counts"
