@@ -2,12 +2,15 @@ package com.starboardland.pedometer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,32 +23,63 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 public class CounterActivity extends Activity implements SensorEventListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    private static final int TOTAL = 9, TOTAL_SO_FAR = 10, SECONDS_PER_SEGMENT = 10;
+    private static final String TAG = "StepCounterDebugTag";
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     GoogleApiClient mGoogleApiClient;
     private SensorManager sensorManager;
     private TextView count;
     boolean activityRunning;
     private Location mLastLocation;
+    private CountDownTimer cdt;
+
+    private SegmentDatabaseHelper sdh;
+
+    private int current_segment = 0;
+    private Sensor countSensor;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        count = (TextView) findViewById(R.id.seg1_count);
-        count.setHighlightColor(50);
 
+        sdh = new SegmentDatabaseHelper(this);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         setUpMapIfNeeded();
 
         buildGoogleApiClient();
     }
 
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
+    /**
+     * There is a view for each segment, numbered 1 to 8, with TOTAL = 9
+     *
+     * @param i The index of the view
+     * @return TextView for the given segment or null if it didn't exist
+     */
+    private TextView getCountView(int i) {
+        switch (i) {
+            case 1:
+                return (TextView) findViewById(R.id.seg1_count);
+            case 2:
+                return (TextView) findViewById(R.id.seg2_count);
+            case 3:
+                return (TextView) findViewById(R.id.seg3_count);
+            case 4:
+                return (TextView) findViewById(R.id.seg4_count);
+            case 5:
+                return (TextView) findViewById(R.id.seg5_count);
+            case 6:
+                return (TextView) findViewById(R.id.seg6_count);
+            case 7:
+                return (TextView) findViewById(R.id.seg7_count);
+            case 8:
+                return (TextView) findViewById(R.id.seg8_count);
+            case TOTAL:
+                return (TextView) findViewById(R.id.total_counts);
+            default:
+                Log.e(TAG, "Invalid segment count view requested");
+                return null;
+        }
     }
 
 
@@ -53,7 +87,7 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
     protected void onResume() {
         super.onResume();
         activityRunning = true;
-        Sensor countSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        countSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         if (countSensor != null) {
             sensorManager.registerListener(this, countSensor, SensorManager.SENSOR_DELAY_UI);
         } else {
@@ -67,16 +101,81 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
     protected void onPause() {
         super.onPause();
         activityRunning = false;
-        // if you unregister the last listener, the hardware will stop detecting step events
-//        sensorManager.unregisterListener(this); 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+        current_segment = 1;
+        sdh.insertRun(TOTAL_SO_FAR, sdh.queryRun(TOTAL));
+        sdh.init();
+
+        // Set up the 8 minute count down timer
+        cdt = new CountDownTimer(8 * SECONDS_PER_SEGMENT * 1000, 1000) {
+            private int ticks = 0;
+
+            // Tick once every second
+            public void onTick(long millisUntilFinished) {
+                ((TextView) findViewById(R.id.count_down)).setText("Seconds remaining: " + (millisUntilFinished / 1000) % SECONDS_PER_SEGMENT);
+                ticks = (ticks + 1) % SECONDS_PER_SEGMENT;
+
+                // After 60 ticks, increment the segment
+                if (ticks == 0) {
+                    // Set the previous line to black
+                    TextView current = getCountView(current_segment);
+                    current.setTextColor(Color.WHITE);
+                    sdh.insertRun(TOTAL_SO_FAR, sdh.queryRun(TOTAL));
+
+                    // Set the next segment index
+                    current_segment++;
+
+                    // Set the next line to a different color
+                    current = getCountView(current_segment);
+                    current.setText("0");
+                    current.setTextColor(Color.MAGENTA);
+                }
+            }
+
+            public void onFinish() {
+                activityRunning = false;
+
+                // Correct the color of the last segment
+                getCountView(8).setTextColor(Color.WHITE);
+
+                int total = 0;
+                for (int i = 1; i <= 8; i ++){
+                    total +=  sdh.queryRun(i);
+                    Log.i(TAG, "Summing up:" + String.valueOf(total));
+                }
+                ((TextView) findViewById(R.id.total_counts)).setText(String.valueOf(total));
+                ((TextView) findViewById(R.id.count_down)).setText("Done");
+            }
+
+            public void start(int segment) {
+                this.start();
+            }
+
+        }.start();
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (activityRunning) {
-            count.setText(String.valueOf(event.values[0]));
-        }
+            sdh.insertRun(current_segment, ((int) event.values[0]) - Math.max(sdh.queryRun(TOTAL_SO_FAR), 0));
+            sdh.insertRun(TOTAL, (int) event.values[0]);
 
+            // Update the text view
+            getCountView(current_segment).setText(String.valueOf(sdh.queryRun(current_segment)));
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        sensorManager.unregisterListener(this);
+        mGoogleApiClient.disconnect();
+        cdt.cancel();
+        super.onStop();
     }
 
     @Override
@@ -122,16 +221,12 @@ public class CounterActivity extends Activity implements SensorEventListener, Go
         mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    protected void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 
     @Override

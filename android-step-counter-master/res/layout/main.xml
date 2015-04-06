@@ -14,7 +14,7 @@
 
     <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="190dp"
+        android:layout_height="171dp"
         android:layout_gravity="center_horizontal"
         android:gravity="fill_horizontal|fill_vertical"
         android:showDividers="middle|beginning|end"
@@ -36,6 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
+                android:text="0"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </TableRow>
 
@@ -191,6 +192,13 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </TableRow>
     </TableLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/count_down"
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
 
