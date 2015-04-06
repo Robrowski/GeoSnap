@@ -11,18 +11,20 @@
         android:layout_margin="12dp"
         android:name="com.google.android.gms.maps.MapFragment"/>
 
-    <include layout="@layout/label_value" android:id="@+id/segment1"></include>
-    <include layout="@layout/label_value" android:id="@+id/segment2"></include>
-    <include layout="@layout/label_value" android:id="@+id/segment3"></include>
-    <include layout="@layout/label_value" android:id="@+id/segment4"></include>
-    <include layout="@layout/label_value" android:id="@+id/segment5"></include>
-    <include layout="@layout/label_value" android:id="@+id/segment6"></include>
-    <include layout="@layout/label_value" android:id="@+id/segment7"></include>
-    <include layout="@layout/label_value" android:id="@+id/segment8"></include>
+    <include layout="@layout/label_value" android:id="@+id/segment1" android:visibility="invisible"></include>
+    <include layout="@layout/label_value" android:id="@+id/segment2" android:visibility="invisible"></include>
+    <include layout="@layout/label_value" android:id="@+id/segment3" android:visibility="invisible"></include>
+    <include layout="@layout/label_value" android:id="@+id/segment4" android:visibility="invisible"></include>
+    <include layout="@layout/label_value" android:id="@+id/segment5" android:visibility="invisible"></include>
+    <include layout="@layout/label_value" android:id="@+id/segment6" android:visibility="invisible"></include>
+    <include layout="@layout/label_value" android:id="@+id/segment7" android:visibility="invisible"></include>
+    <include layout="@layout/label_value" android:id="@+id/segment8" android:visibility="invisible"></include>
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:id="@+id/totalview">
         <TextView android:id="@+id/labelTotal"
             android:textSize="22sp"
             android:textStyle="bold"
