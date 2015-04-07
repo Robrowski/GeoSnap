@@ -53,6 +53,8 @@ public class CounterActivity extends Activity implements SensorEventListener{
 
     // Constants
     private final int MAKEVISIBLE = 1;
+    private final int TOAST = 2;
+    private final int UPDATE = 3;
     private final int NUMSEGMENTS = 8;
     private final int SEGMENTDURATION = 60000; // in ms
     private final int TIMERDELAY = 100; // in ms
@@ -87,10 +89,22 @@ public class CounterActivity extends Activity implements SensorEventListener{
         // an update on the steps so far
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
-                if (msg.arg2 == MAKEVISIBLE){
-                    currentSegmentView.setVisibility(View.VISIBLE);
+                int toSet = msg.arg1;
+                if (msg.arg2 == UPDATE){
+                    currentSegmentValueTextView.setText(Integer.toString(toSet));
                 }
-                currentSegmentValueTextView.setText(Integer.toString(msg.arg1));
+                else if (msg.arg2 == MAKEVISIBLE){
+                    currentSegmentView.setVisibility(View.VISIBLE);
+                    currentSegmentValueTextView.setText(Integer.toString(toSet));
+                }
+                else if (msg.arg2 == TOAST){
+                    int duration = Toast.LENGTH_SHORT;
+                    String text = "You took " + msg.arg1 + " steps in segment " + segment;
+
+                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                    toast.show();
+                }
+
             }
         };
 
@@ -144,12 +158,15 @@ public class CounterActivity extends Activity implements SensorEventListener{
         // reflects what will be in the database
         Message m = new Message();
         m.arg1 = segmentTotal;
+        m.arg2 = UPDATE;
         mHandler.sendMessageAtFrontOfQueue(m);
+
 
         addToDatabase(segment,segmentTotal);
 
         // We increment our segment, and stop if we have reached the maximum segment length
         segment++;
+        sendToast(segmentTotal);
         if (segment >= NUMSEGMENTS){
             stopCounting();
         }
@@ -160,7 +177,7 @@ public class CounterActivity extends Activity implements SensorEventListener{
             currentSegmentView = segmentView;
             currentSegmentValueTextView = (TextView) segmentView.findViewById(R.id.value);
 
-            // Send a message to make the new segment visible, and initialized with 0 steps
+            // Send a message to make the new segment visible
             Message visible = new Message();
             visible.arg1 = 0;
             visible.arg2 = MAKEVISIBLE;
@@ -200,6 +217,13 @@ public class CounterActivity extends Activity implements SensorEventListener{
         mHandler.sendMessageAtFrontOfQueue(m);
 
         Log.d("stepper", "total steps: " + totalSteps);
+    }
+
+    private void sendToast(int steps){
+        Message toast = new Message();
+        toast.arg1 = steps;
+        toast.arg2 = TOAST;
+        mHandler.sendMessage(toast);
     }
 
     /**
@@ -297,6 +321,7 @@ public class CounterActivity extends Activity implements SensorEventListener{
                 int segmentSteps = stepsSinceStartUp - initSteps;
                 Message m = new Message();
                 m.arg1 = segmentSteps;
+                m.arg2 = UPDATE;
                 mHandler.sendMessage(m);
             }
         }
