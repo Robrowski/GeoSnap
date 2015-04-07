@@ -5,6 +5,17 @@
       android:versionName="1.0">
 
     <uses-sdk android:targetSdkVersion="19" android:minSdkVersion="19"/>
+    <uses-permission android:name="com.klinetel.countydentistfinder.permission.MAPS_RECEIVE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true"/>
 
     <application android:label="@string/app_name" android:icon="@drawable/ic_launcher">
         <activity android:name="CounterActivity"
@@ -14,5 +25,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDaeP98a4G0vWhe9cicZlJQkq7XoiSc2BM"/>
     </application>
 </manifest>

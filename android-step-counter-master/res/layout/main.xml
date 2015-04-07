@@ -3,11 +3,21 @@
               android:orientation="vertical"
               android:gravity="center"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="207dp"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:layout_alignParentTop="true" />
+
     <TextView android:textColor="@android:color/white"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:text="Step count since reboot:"/>
+
     <TextView android:id="@+id/count"
               android:textSize="36dp"
               android:textColor="@android:color/white"
