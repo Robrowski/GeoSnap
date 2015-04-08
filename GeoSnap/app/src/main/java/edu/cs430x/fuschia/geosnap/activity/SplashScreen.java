@@ -1,9 +1,11 @@
-package edu.cs430x.fuschia.geosnap;
+package edu.cs430x.fuschia.geosnap.activity;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import edu.cs430x.fuschia.geosnap.R;
 
 
 public class SplashScreen extends ActionBarActivity {
