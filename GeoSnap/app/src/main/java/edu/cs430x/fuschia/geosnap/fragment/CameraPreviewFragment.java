@@ -28,13 +28,9 @@ import edu.cs430x.fuschia.geosnap.camera.CameraPreview;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
-<<<<<<< HEAD
  * {@link CameraPreviewFragment} interface
  * to handle interaction events.
  * Use the {@link CameraPreviewFragment} factory method to
-=======
- * to handle interaction events.
->>>>>>> 24663e6bfbb04428cc0c9d879ca248ff70812d7d
  * create an instance of this fragment.
  */
 public class CameraPreviewFragment extends Fragment {
@@ -103,13 +99,6 @@ public class CameraPreviewFragment extends Fragment {
             }
         });
 
-
-//        FrameLayout preview = (FrameLayout) view.findViewById(R.id.camera_preview_frame);
-//
-//        // Create our Preview view and set it as the content of our activity.
-//        mPreview = new CameraPreview(getActivity(), mCamera);
-//        preview.addView(mPreview);
-//>>>>>>> 24663e6bfbb04428cc0c9d879ca248ff70812d7d
         return view;
     }
 
