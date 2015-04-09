@@ -1,6 +1,6 @@
 package edu.cs430x.fuschia.geosnap.activity;
 
-import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,13 +15,10 @@ import android.view.MenuItem;
 import java.util.Locale;
 
 import edu.cs430x.fuschia.geosnap.R;
-import edu.cs430x.fuschia.geosnap.fragment.CameraPreviewFragment;
-import edu.cs430x.fuschia.geosnap.fragment.DiscoveredSnapsFragment;
+import edu.cs430x.fuschia.geosnap.fragment.SnapLocationFragment;
+import edu.cs430x.fuschia.geosnap.fragment.SnapViewFragment;
 
-public class MainActivity extends ActionBarActivity implements ActionBar.TabListener, DiscoveredSnapsFragment.OnFragmentInteractionListener, CameraPreviewFragment.OnCameraFragmentInteractionListener {
-
-    public static final String INTENT_SNAP_ID = "SNAP_ID", INTENT_FILE_PATH = "IMAGE_FILE_PATH";
-
+public class SnapViewActivity extends ActionBarActivity implements ActionBar.TabListener, SnapLocationFragment.OnFragmentInteractionListener, SnapViewFragment.OnFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -41,13 +38,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_snap_view);
 
         // Set up the action bar.
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        // Create the adapter that will return a fragment for each of the
+        // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -82,7 +79,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_snap_view, menu);
         return true;
     }
 
@@ -117,27 +114,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     }
 
     @Override
-    public void onFragmentInteraction(String id) {
-        // Make intent to start new activity
-        Intent view_snap_intent = new Intent(this, SnapViewActivity.class);
+    public void onFragmentInteraction(Uri uri) {
 
-        // Put the ID in it
-        view_snap_intent.putExtra(INTENT_SNAP_ID, id);
-
-        // send it
-        startActivity(view_snap_intent);
-    }
-
-    @Override
-    public void onPictureTaken(String path) {
-        // Make intent to start activity to display the picture
-        Intent review_picture_intent = new Intent(this, PictureReviewActivity.class);
-
-        // Put the path in it
-        review_picture_intent.putExtra( INTENT_FILE_PATH, path);
-
-        // Send it
-        startActivity(review_picture_intent);
     }
 
     /**
@@ -155,9 +133,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             // getItem is called to instantiate the fragment for the given page.
             switch (position) {
                 case 0:
-                    return new DiscoveredSnapsFragment();
+                    return SnapViewFragment.newInstance();
                 case 1:
-                    return new CameraPreviewFragment();
+                    return SnapLocationFragment.newInstance();
             }
             return null;
         }
@@ -172,11 +150,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.title_discovered_snap_list).toUpperCase(l);
+                    return getString(R.string.title_snap_view).toUpperCase(l);
                 case 1:
-                    return getString(R.string.title_take_picture).toUpperCase(l);
+                    return getString(R.string.title_map_view).toUpperCase(l);
             }
             return null;
         }
     }
+
+
 }

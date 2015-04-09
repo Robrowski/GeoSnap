@@ -147,6 +147,8 @@ public class DiscoveredSnapsFragment extends Fragment implements AbsListView.OnI
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(String id);
+        // TODO rename to something that reflects the fact that a new activity for snap viewing
+        // should be opened
     }
 
 }
