@@ -30,7 +30,7 @@
             android:text="Accept"
             android:id="@+id/button_accept"
             android:nestedScrollingEnabled="true"
-            android:onClick="@android:string/status_bar_notification_info_overflow" />
+            android:onClick="onAccept" />
 
         <Button
             android:layout_width="171dp"

@@ -31,11 +31,13 @@
         </activity>
         <activity
             android:name=".activity.SnapViewActivity"
-            android:label="@string/title_activity_snap_view" >
+            android:label="@string/title_activity_snap_view"
+            android:parentActivityName=".activity.MainActivity">
         </activity>
         <activity
             android:name=".activity.PictureReviewActivity"
-            android:label="@string/title_activity_picture_preview" >
+            android:label="@string/title_activity_picture_preview"
+            android:parentActivityName=".activity.MainActivity">
         </activity>
     </application>
 
