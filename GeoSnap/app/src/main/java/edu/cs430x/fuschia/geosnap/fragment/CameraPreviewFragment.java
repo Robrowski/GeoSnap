@@ -50,7 +50,7 @@ public class CameraPreviewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle b) {
 
-        View view = inflater.inflate(R.layout.camera_fragment, container, false);
+        View view = inflater.inflate(R.layout.camera_preview_fragment, container, false);
         FrameLayout preview = (FrameLayout) view.findViewById(R.id.camera_preview_frame);
 
         // Create our Preview view and set it as the content of our activity.
