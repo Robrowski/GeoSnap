@@ -4,22 +4,31 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 
 import edu.cs430x.fuschia.geosnap.R;
+import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
+import edu.cs430x.fuschia.geosnap.network.imgur.model.Upload;
+import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImageUploadedListener;
+import edu.cs430x.fuschia.geosnap.network.imgur.services.UploadService;
 
 
 /**
  * This is written as an activity because the amount of interaction between the fragment and activity was way stupid
+ *
+ * Imgur upload process taken from https://github.com/AKiniyalocts/imgur-android
+ *
  */
-public class PictureReviewActivity extends ActionBarActivity {
-
+public class PictureReviewActivity extends ActionBarActivity implements OnImageUploadedListener {
+    public final static String TAG = "PictureReviewActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +42,6 @@ public class PictureReviewActivity extends ActionBarActivity {
         ImageView imageView = (ImageView) findViewById(R.id.imageReview);
         imageView.setImageBitmap(BitmapFactory.decodeFile(file_path));
         imageView.setRotation(90);
-
-        // Not sure why this has to be commented out...
-//        getActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
 
@@ -73,27 +79,65 @@ public class PictureReviewActivity extends ActionBarActivity {
         onReject(null);
     }
 
+    /** Whe the accept button is pressed, start trying to upload the image to the servers */
     public void onAccept(View v) {
-        // Send picture to server, etc.
-
-
-        // Toast
-
-        // Return to picture view
+        /*     Start upload     */
+        new UploadService(createUpload(), this).execute();
+        Log.i(TAG, "Started upload to imgur");
     }
 
-    /**
-     * This also needs to happen when the back button is pressed
-     */
-    public void onReject(View v) {
-        // return to picture view
+    /** When the reject button is pressed, the activity backs out to previous and
+     * no image is sent to any server  */
+    public void onReject(View v){
         NavUtils.navigateUpFromSameTask(this);
-
-        // Trash the image
-        String file_path = getIntent().getStringExtra(MainActivity.INTENT_FILE_PATH);
-        new File(file_path).deleteOnExit();
-
-        Toast toast = Toast.makeText(this, "Image rejected and file deleted", Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(this, "Image rejected", Toast.LENGTH_SHORT);
         toast.show();
     }
+
+
+    @Override
+    protected void onDestroy() {
+        // Trash the image on exit
+        String file_path = getIntent().getStringExtra(MainActivity.INTENT_FILE_PATH);
+        new File(file_path).deleteOnExit();
+        Log.i(TAG, "Image file deleted on image review exit");
+
+        super.onDestroy();
+    }
+
+
+    /** Package up the current picture to be uploaded to imgur */
+    private Upload createUpload(){
+        Upload imgur_upload = new Upload();
+
+        imgur_upload.image = new File(getIntent().getStringExtra(MainActivity.INTENT_FILE_PATH));
+
+        // TODO set these strings to real values... something useful like GPS? time?
+        imgur_upload.title = "Anonymous title";
+        imgur_upload.description = "poop";
+        return imgur_upload;
+    }
+
+
+
+    @Override
+    public void onImageUploaded(ImageResponse response) {
+        // This is called when we get a successful response from imgur.
+        if(!response.success) {
+            // If uploaded to imgur failed, try again! forever!
+            Toast toast = Toast.makeText(this, "Imgur upload failed. Trying again...", Toast.LENGTH_SHORT);
+            toast.show();
+            this.onAccept(null);
+        }
+
+        // Show stuff on screen
+        String imgur_image_id = response.data.id;
+        TextView txt = (TextView) findViewById(R.id.imgur_response);
+        txt.setText("imgur.com/"+ imgur_image_id);
+
+        // Send crap to the GeoCloud server
+        // TODO send crap to the GeoCloud Server...
+
+    }
+
 }
