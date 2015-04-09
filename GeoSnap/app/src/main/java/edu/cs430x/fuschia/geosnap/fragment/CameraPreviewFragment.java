@@ -90,8 +90,11 @@ public class CameraPreviewFragment extends Fragment {
         mHolder.addCallback(mSurfaceCallback);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
+        // get the floating action camera button
+        View fab = view.findViewById(R.id.camera_button);
+
         // TODO have an actual button for this
-        view.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // get an image from the camera
