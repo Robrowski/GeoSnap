@@ -26,9 +26,7 @@ import edu.cs430x.fuschia.geosnap.camera.CameraPreview;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link CameraPreviewFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link CameraPreviewFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class CameraPreviewFragment extends Fragment {
@@ -47,14 +45,34 @@ public class CameraPreviewFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mCamera != null) {
+            mCamera.release();
+            mCamera = null;
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle b) {
 
         View view = inflater.inflate(R.layout.camera_preview_fragment, container, false);
+
+        // TODO have an actual button for this
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // get an image from the camera
+                mCamera.takePicture(null, null, mPicture);
+            }
+        });
+
+
         FrameLayout preview = (FrameLayout) view.findViewById(R.id.camera_preview_frame);
 
         // Create our Preview view and set it as the content of our activity.
-        mPreview = new CameraPreview( getActivity(), mCamera);
+        mPreview = new CameraPreview(getActivity(), mCamera);
         preview.addView(mPreview);
         return view;
     }
@@ -79,7 +97,7 @@ public class CameraPreviewFragment extends Fragment {
         public void onPictureTaken(byte[] data, Camera camera) {
 
             File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
-            if (pictureFile == null){
+            if (pictureFile == null) {
                 Log.d(cTAG, "Error creating media file, check storage permissions.");
                 return;
             }
@@ -100,13 +118,17 @@ public class CameraPreviewFragment extends Fragment {
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    /** Create a file Uri for saving an image or video */
-    private static Uri getOutputMediaFileUri(int type){
+    /**
+     * Create a file Uri for saving an image or video
+     */
+    private static Uri getOutputMediaFileUri(int type) {
         return Uri.fromFile(getOutputMediaFile(type));
     }
 
-    /** Create a File for saving an image or video */
-    private static File getOutputMediaFile(int type){
+    /**
+     * Create a File for saving an image or video
+     */
+    private static File getOutputMediaFile(int type) {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
 
@@ -116,8 +138,8 @@ public class CameraPreviewFragment extends Fragment {
         // between applications and persist after your app has been uninstalled.
 
         // Create the storage directory if it does not exist
-        if (! mediaStorageDir.exists()){
-            if (! mediaStorageDir.mkdirs()){
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
                 Log.d("MyCameraApp", "failed to create directory");
                 return null;
             }
@@ -126,12 +148,12 @@ public class CameraPreviewFragment extends Fragment {
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File mediaFile;
-        if (type == MEDIA_TYPE_IMAGE){
+        if (type == MEDIA_TYPE_IMAGE) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "IMG_"+ timeStamp + ".jpg");
-        } else if(type == MEDIA_TYPE_VIDEO) {
+                    "IMG_" + timeStamp + ".jpg");
+        } else if (type == MEDIA_TYPE_VIDEO) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "VID_"+ timeStamp + ".mp4");
+                    "VID_" + timeStamp + ".mp4");
         } else {
             return null;
         }
