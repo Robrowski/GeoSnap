@@ -18,7 +18,10 @@ import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.fragment.CameraPreviewFragment;
 import edu.cs430x.fuschia.geosnap.fragment.DiscoveredSnapsFragment;
 
-public class MainActivity extends ActionBarActivity implements ActionBar.TabListener, DiscoveredSnapsFragment.OnFragmentInteractionListener {
+public class MainActivity extends ActionBarActivity implements ActionBar.TabListener, DiscoveredSnapsFragment.OnFragmentInteractionListener, CameraPreviewFragment.OnCameraFragmentInteractionListener {
+
+    public static final String INTENT_SNAP_ID = "SNAP_ID", INTENT_FILE_PATH = "IMAGE_FILE_PATH";
+
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -115,16 +118,26 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public void onFragmentInteraction(String id) {
-        // TODO I think this is where I need to put intent generation/loading snap view activities
-
         // Make intent to start new activity
         Intent view_snap_intent = new Intent(this, SnapViewActivity.class);
 
         // Put the ID in it
-        view_snap_intent.putExtra("SNAP_ID", id);
+        view_snap_intent.putExtra(INTENT_SNAP_ID, id);
 
         // send it
         startActivity(view_snap_intent);
+    }
+
+    @Override
+    public void onPictureTaken(String path) {
+        // Make intent to start activity to display the picture
+        Intent review_picture_intent = new Intent(this, PictureReviewActivity.class);
+
+        // Put the path in it
+        review_picture_intent.putExtra( INTENT_FILE_PATH, path);
+
+        // Send it
+        startActivity(review_picture_intent);
     }
 
     /**

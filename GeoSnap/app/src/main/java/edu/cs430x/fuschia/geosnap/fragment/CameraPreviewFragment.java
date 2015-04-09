@@ -1,5 +1,6 @@
 package edu.cs430x.fuschia.geosnap.fragment;
 
+import android.app.Activity;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
@@ -35,6 +36,7 @@ public class CameraPreviewFragment extends Fragment {
     private Camera mCamera;
     private CameraPreview mPreview;
 
+    private OnCameraFragmentInteractionListener mListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,23 @@ public class CameraPreviewFragment extends Fragment {
         if (mCamera != null) {
             mCamera.release();
             mCamera = null;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnCameraFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnCameraFragmentInteractionListener");
         }
     }
 
@@ -111,6 +130,10 @@ public class CameraPreviewFragment extends Fragment {
             } catch (IOException e) {
                 Log.d(cTAG, "Error accessing file: " + e.getMessage());
             }
+
+            // Get new activity started
+            mListener.onPictureTaken(pictureFile.getPath());
+
         }
     };
 
@@ -159,6 +182,21 @@ public class CameraPreviewFragment extends Fragment {
         }
 
         return mediaFile;
+    }
+
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p/>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnCameraFragmentInteractionListener {
+        public void onPictureTaken(String path);
     }
 
 }
