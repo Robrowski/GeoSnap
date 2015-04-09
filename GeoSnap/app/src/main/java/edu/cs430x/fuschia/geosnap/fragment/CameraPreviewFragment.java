@@ -8,9 +8,10 @@ import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,16 +27,18 @@ import edu.cs430x.fuschia.geosnap.camera.CameraPreview;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link CameraPreviewFragment.OnFragmentInteractionListener} interface
+ * {@link CameraPreviewFragment} interface
  * to handle interaction events.
- * Use the {@link CameraPreviewFragment#newInstance} factory method to
+ * Use the {@link CameraPreviewFragment} factory method to
  * create an instance of this fragment.
  */
 public class CameraPreviewFragment extends Fragment {
     private static final String cTAG = "CameraDebug";
 
     private Camera mCamera;
-    private CameraPreview mPreview;
+    private SurfaceHolder mHolder;
+    private CameraPreview mSurfaceCallback;
+
 
 
     @Override
@@ -50,12 +53,14 @@ public class CameraPreviewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle b) {
 
-        View view = inflater.inflate(R.layout.camera_fragment, container, false);
-        FrameLayout preview = (FrameLayout) view.findViewById(R.id.camera_preview_frame);
+        View view = inflater.inflate(R.layout.camera_preview_fragment, container, false);
+        SurfaceView preview = (SurfaceView) view.findViewById(R.id.cpPreview);
 
-        // Create our Preview view and set it as the content of our activity.
-        mPreview = new CameraPreview( getActivity(), mCamera);
-        preview.addView(mPreview);
+        // Get the holder from our SurfaceView, and set its callback to our own CameraPreview
+        mHolder = preview.getHolder();
+        mSurfaceCallback = new CameraPreview(mCamera);
+        mHolder.addCallback(mSurfaceCallback);
+        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         return view;
     }
 

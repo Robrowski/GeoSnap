@@ -1,30 +1,19 @@
 package edu.cs430x.fuschia.geosnap.camera;
 
-import android.content.Context;
+import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.hardware.Camera;
 
 import java.io.IOException;
 
 /** A basic Camera preview class */
-public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+public class CameraPreview implements SurfaceHolder.Callback {
     private static final String cTAG = "CameraDebug";
-    private SurfaceHolder mHolder;
     private Camera mCamera;
 
 
-    public CameraPreview(Context context, Camera camera) {
-        super(context);
+    public CameraPreview( Camera camera) {
         mCamera = camera;
-
-        // Install a SurfaceHolder.Callback so we get notified when the
-        // underlying surface is created and destroyed.
-        mHolder = getHolder();
-        mHolder.addCallback(this);
-        // deprecated setting, but required on Android versions prior to 3.0
-        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
@@ -45,7 +34,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // If your preview can change or rotate, take care of those events here.
         // Make sure to stop the preview before resizing or reformatting it.
 
-        if (mHolder.getSurface() == null){
+        if (holder.getSurface() == null){
             // preview surface does not exist
             return;
         }
@@ -59,10 +48,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
         // set preview size and make any resize, rotate or
         // reformatting changes here
+        mCamera.setDisplayOrientation(90); // TODO why is it dumb like this?
 
         // start preview with new settings
         try {
-            mCamera.setPreviewDisplay(mHolder);
+            mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
 
         } catch (Exception e){
