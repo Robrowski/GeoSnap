@@ -33,6 +33,10 @@
             android:name=".activity.SnapViewActivity"
             android:label="@string/title_activity_snap_view" >
         </activity>
+        <activity
+            android:name=".activity.PictureReviewActivity"
+            android:label="@string/title_activity_picture_preview" >
+        </activity>
     </application>
 
 </manifest>
