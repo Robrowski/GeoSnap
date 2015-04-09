@@ -22,6 +22,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     public static final String INTENT_SNAP_ID = "SNAP_ID", INTENT_FILE_PATH = "IMAGE_FILE_PATH";
 
+    private static final int DISCOVERED_PAGE = 0;
+    private static final int CAMERA_PAGE = 1;
+
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -76,6 +79,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+        mViewPager.setCurrentItem(CAMERA_PAGE);
     }
 
 
@@ -154,9 +158,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             switch (position) {
-                case 0:
+                case DISCOVERED_PAGE:
                     return new DiscoveredSnapsFragment();
-                case 1:
+                case CAMERA_PAGE:
                     return new CameraPreviewFragment();
             }
             return null;
@@ -171,9 +175,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         public CharSequence getPageTitle(int position) {
             Locale l = Locale.getDefault();
             switch (position) {
-                case 0:
+                case DISCOVERED_PAGE:
                     return getString(R.string.title_discovered_snap_list).toUpperCase(l);
-                case 1:
+                case CAMERA_PAGE:
                     return getString(R.string.title_take_picture).toUpperCase(l);
             }
             return null;
