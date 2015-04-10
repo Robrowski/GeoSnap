@@ -17,7 +17,6 @@ import javax.inject.Named;
  */
 @Api(name = "myApi", version = "v1", namespace = @ApiNamespace(ownerDomain = "geocloud.fuschia.cs430x.edu", ownerName = "geocloud.fuschia.cs430x.edu", packagePath = ""))
 public class MyEndpoint {
-
     /**
      * A simple endpoint method that takes a name and says Hi back
      */
