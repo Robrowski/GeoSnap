@@ -14,6 +14,8 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.software.shell.fab.ActionButton;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -91,9 +93,9 @@ public class CameraPreviewFragment extends Fragment {
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
         // get the floating action camera button
-        View fab = view.findViewById(R.id.camera_button);
+        ActionButton fab = (ActionButton) view.findViewById(R.id.camera_button);
+        fab.playShowAnimation();
 
-        // TODO have an actual button for this
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -7,8 +7,9 @@
 
     <!-- This layout is for the discovered snaps list on a regular/small screen -->
 
-    <ListView
-        android:id="@android:id/list"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/discovered_list"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
