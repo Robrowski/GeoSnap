@@ -17,7 +17,7 @@ import java.io.File;
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.Upload;
-import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImageUploadedListener;
+import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImageResponseListener;
 import edu.cs430x.fuschia.geosnap.network.imgur.services.UploadService;
 
 
@@ -27,7 +27,7 @@ import edu.cs430x.fuschia.geosnap.network.imgur.services.UploadService;
  * Imgur upload process taken from https://github.com/AKiniyalocts/imgur-android
  *
  */
-public class PictureReviewActivity extends ActionBarActivity implements OnImageUploadedListener {
+public class PictureReviewActivity extends ActionBarActivity implements OnImageResponseListener {
     public final static String TAG = "PictureReviewActivity";
 
     @Override
@@ -121,7 +121,7 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImageU
 
 
     @Override
-    public void onImageUploaded(ImageResponse response) {
+    public void onImageResponse(ImageResponse response) {
         // This is called when we get a successful response from imgur.
         if(!response.success) {
             // If uploaded to imgur failed, try again! forever!

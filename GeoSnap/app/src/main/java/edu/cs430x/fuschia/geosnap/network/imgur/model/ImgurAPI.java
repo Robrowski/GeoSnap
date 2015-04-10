@@ -1,8 +1,10 @@
 package edu.cs430x.fuschia.geosnap.network.imgur.model;
 
 import retrofit.http.Body;
+import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.POST;
+import retrofit.http.Path;
 import retrofit.http.Query;
 import retrofit.mime.TypedFile;
 
@@ -30,7 +32,7 @@ public interface ImgurAPI {
    * @param albumId #ID for album (if the user is adding this image to an album)
    * @return
    */
-  @POST("/3/image")ImageResponse postImage (
+  @POST("/3/image") ImageResponse postImage (
           @Header("Authorization") String auth,
           @Query("title") String title,
           @Query("description") String description,
@@ -38,4 +40,11 @@ public interface ImgurAPI {
           @Query("account_url") String username,
           @Body TypedFile file
   );
+
+  @GET("/3/image") ImageResponse getImage (
+          @Header("Authorization") String auth,
+          @Path("id") String id
+  );
+
+
 }

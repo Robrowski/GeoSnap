@@ -1,14 +1,20 @@
 package edu.cs430x.fuschia.geosnap.fragment;
 
 import android.app.Activity;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import edu.cs430x.fuschia.geosnap.R;
+import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
+import edu.cs430x.fuschia.geosnap.network.imgur.services.GetService;
+import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImageResponseListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -18,11 +24,8 @@ import edu.cs430x.fuschia.geosnap.R;
  * Use the {@link SnapViewFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SnapViewFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class SnapViewFragment extends Fragment implements OnImageResponseListener{
+    private static final String TAG = "SnapViewFragment";
 
     private OnFragmentInteractionListener mListener;
 
@@ -49,6 +52,14 @@ public class SnapViewFragment extends Fragment {
 
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.w(TAG, "Requesting image from imgur");
+        new GetService("mrl7Jl4", this, getActivity()).execute();
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -70,6 +81,15 @@ public class SnapViewFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onImageResponse(ImageResponse response) {
+        // Put the image in the image view
+        Log.w(TAG, "Loading the image from imgur");
+        ImageView imageView = (ImageView) getView().findViewById(R.id.snapView);
+
+        imageView.setImageBitmap(BitmapFactory.decodeFile(getActivity().getFileStreamPath("mrl7Jl4.png").getAbsolutePath()));
     }
 
     /**
