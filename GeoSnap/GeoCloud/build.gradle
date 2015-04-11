@@ -13,9 +13,6 @@ buildscript {
 
 repositories {
     mavenCentral();
-    maven {
-        url 'https://repo1.maven.org/maven2/com/googlecode/objectify/objectify/5.1.5/objectify-5.1.5.pom'
-    }
     jcenter();
 }
 
@@ -31,6 +28,7 @@ dependencies {
     compile 'com.google.appengine:appengine-endpoints:1.9.14'
     compile 'com.google.appengine:appengine-endpoints-deps:1.9.14'
     compile 'com.googlecode.objectify:objectify:5.1.5'
+    compile 'com.google.guava:guava'
     compile 'javax.servlet:servlet-api:2.5'
 }
 

@@ -11,9 +11,18 @@ public class ImageEntity {
     @Id
     Long id;
 
-    String imagerUrl;
+    String imageUrl;
+    float latitude;
+    float longitude;
     String discoverability;
     String lifetime;
-    
+
+
+    public ImageEntity(String imageUrl,float lat, float lon, String discoverability){
+        this.imageUrl = imageUrl;
+        this.latitude = lat;
+        this.longitude = lon;
+        this.discoverability = discoverability;
+    }
 
 }
