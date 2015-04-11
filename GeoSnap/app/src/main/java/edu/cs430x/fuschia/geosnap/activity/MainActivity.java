@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -20,7 +21,7 @@ import edu.cs430x.fuschia.geosnap.fragment.DiscoveredSnapsFragment;
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener, DiscoveredSnapsFragment.OnFragmentInteractionListener, CameraPreviewFragment.OnCameraFragmentInteractionListener {
 
-    public static final String INTENT_SNAP_ID = "SNAP_ID", INTENT_FILE_PATH = "IMAGE_FILE_PATH";
+    public static final String INTENT_SNAP_ID = "SNAP_ID", INTENT_FILE_PATH = "IMAGE_FILE_PATH", TAG = "MainActivity";
 
     private static final int DISCOVERED_PAGE = 0;
     private static final int CAMERA_PAGE = 1;
@@ -97,9 +98,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id){
+            case R.id.action_settings:
+                return true;
+            case R.id.test_load_snap:
+                // Launch the snap view as a test
+                onFragmentInteraction("mrl7Jl4");
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -122,6 +127,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public void onFragmentInteraction(String id) {
+        Log.i(TAG, "Launching the snap viewing activity");
+
         // Make intent to start new activity
         Intent view_snap_intent = new Intent(this, SnapViewActivity.class);
 

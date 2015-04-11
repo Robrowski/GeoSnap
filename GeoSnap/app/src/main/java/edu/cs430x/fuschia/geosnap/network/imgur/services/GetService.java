@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
@@ -30,7 +29,6 @@ public class GetService extends AsyncTask<Void, Void, Void> {
     private ImageResponse response;
     private Activity activity;
     private OnImageResponseListener mListener;
-    private File image;
     private boolean success = false;
 
 
@@ -48,39 +46,37 @@ public class GetService extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
-        if(NetworkUtils.isConnected(activity)) {
-            if (NetworkUtils.connectionReachable()) {
-                String string_url = "http://i.imgur.com/" + id + ".png";
-                Bitmap bitmap;
-                try {
-                    bitmap = BitmapFactory.decodeStream((InputStream) new URL(string_url).getContent());
-                } catch (Exception e) {
-                    Log.e(TAG, "Couldn't get the image from imgur...");
-                    Log.e(TAG, Log.getStackTraceString(e));
-                    return null;
-                }
-                //create a file to write bitmap data
-                File f;
-                try {
-                    //Convert bitmap to byte array
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
-                    byte[] bitmap_data = bos.toByteArray();
+        if(NetworkUtils.isConnected(activity) && NetworkUtils.connectionReachable()) {
+            String string_url = "http://i.imgur.com/" + id + ".png";
+            Bitmap bitmap;
+            try {
+                Log.i(TAG, "Requesting image " + id + " from imgur.");
+                bitmap = BitmapFactory.decodeStream((InputStream) new URL(string_url).getContent());
+            } catch (Exception e) {
+                Log.e(TAG, "Couldn't get the image from imgur...");
+                Log.e(TAG, Log.getStackTraceString(e));
+                return null;
+            }
+            try {
+                //Convert bitmap to byte array
+                Log.i(TAG, "Converting image " + id + " from a bitmap to a file");
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
+                byte[] bitmap_data = bos.toByteArray();
 
-                    //write the bytes in file
-                    FileOutputStream fos = activity.openFileOutput(id + ".png", Context.MODE_PRIVATE);
-                    fos.write(bitmap_data);
-                    fos.flush();
-                    fos.close();
-                    success = true;
-                } catch (Exception e){
-                    Log.e(TAG, "Couldn't save the image to file...");
-                    Log.e(TAG, Log.getStackTraceString(e));
-                    return null;
-                }
-
+                //write the bytes in file
+                FileOutputStream fos = activity.openFileOutput(id + ".png", Context.MODE_PRIVATE);
+                fos.write(bitmap_data);
+                fos.flush();
+                fos.close();
+                success = true;
+            } catch (Exception e){
+                Log.e(TAG, "Couldn't save the image to file...");
+                Log.e(TAG, Log.getStackTraceString(e));
+                return null;
             }
         }
+        Log.w(TAG, "Network unavailable to request images from imgur");
         return null;
     }
 
@@ -90,7 +86,8 @@ public class GetService extends AsyncTask<Void, Void, Void> {
 
         if(success) {
             mListener.onImageResponse(response);
+        } else {
+            Log.e(TAG, "Failed to get the image");
         }
-        Log.e(TAG, "Failed to get the image");
     }
 }

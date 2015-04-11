@@ -133,7 +133,7 @@ public class SnapViewActivity extends ActionBarActivity implements ActionBar.Tab
             // getItem is called to instantiate the fragment for the given page.
             switch (position) {
                 case 0:
-                    return SnapViewFragment.newInstance();
+                    return SnapViewFragment.newInstance("mrl7Jl4");
                 case 1:
                     return SnapLocationFragment.newInstance();
             }
