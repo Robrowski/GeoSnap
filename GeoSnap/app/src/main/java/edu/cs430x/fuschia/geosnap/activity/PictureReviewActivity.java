@@ -1,10 +1,12 @@
 package edu.cs430x.fuschia.geosnap.activity;
 
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 import java.io.File;
 
 import edu.cs430x.fuschia.geosnap.R;
+import edu.cs430x.fuschia.geosnap.network.geocloud.InsertPhoto;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.Upload;
 import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImageResponseListener;
@@ -30,6 +33,8 @@ import edu.cs430x.fuschia.geosnap.network.imgur.services.UploadService;
 public class PictureReviewActivity extends ActionBarActivity implements OnImageResponseListener {
     public final static String TAG = "PictureReviewActivity";
 
+    private InsertPhoto insertPhotoTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +47,9 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImageR
         ImageView imageView = (ImageView) findViewById(R.id.imageReview);
         imageView.setImageBitmap(BitmapFactory.decodeFile(file_path));
         imageView.setRotation(90);
+
+        // Set up our geocloud server upload task
+        insertPhotoTask = new InsertPhoto();
 
     }
 
@@ -137,6 +145,8 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImageR
 
         // Send crap to the GeoCloud server
         // TODO send crap to the GeoCloud Server...
+        Pair<Context,String> args = new Pair<Context,String>(getApplicationContext(),imgur_image_id);
+        insertPhotoTask.execute(args);
 
     }
 
