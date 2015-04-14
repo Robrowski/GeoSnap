@@ -12,9 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import edu.cs430x.fuschia.geosnap.R;
-import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
-import edu.cs430x.fuschia.geosnap.network.imgur.services.GetService;
-import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImageResponseListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,7 +21,7 @@ import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImageResponseListener
  * Use the {@link SnapViewFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SnapViewFragment extends Fragment implements OnImageResponseListener{
+public class SnapViewFragment extends Fragment {
     private static final String TAG = "SnapViewFragment", SNAP_ID = "SnapID";
 
     private OnFragmentInteractionListener mListener;
@@ -39,8 +36,7 @@ public class SnapViewFragment extends Fragment implements OnImageResponseListene
         SnapViewFragment fragment = new SnapViewFragment();
         Bundle args = new Bundle();
 
-        // TODO The main thing to store here the imgur id, so that the file path can be guessed... or
-        // a reference into the local DB and do stuff that way
+        // a reference into the local DB and do stuff that way?
         args.putString(SNAP_ID, id);
         fragment.setArguments(args);
         return fragment;
@@ -54,23 +50,19 @@ public class SnapViewFragment extends Fragment implements OnImageResponseListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // TODO images should already be loaded somewhere else
-        Log.w(TAG, "Requesting image from imgur: " + String.valueOf(getArguments().getString(SNAP_ID)));
-        new GetService(String.valueOf(getArguments().getString(SNAP_ID)), this, getActivity()).execute();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View inflated = inflater.inflate(R.layout.fragment_snap_view, container, false);
 
-        // TODO If image is already loaded, this is what SHOULD happen
-//        ImageView imageView = (ImageView) getView().findViewById(R.id.snapView);
-//        imageView.setImageBitmap(BitmapFactory.decodeFile(getActivity()
-//                .getFileStreamPath(String.valueOf(getArguments().getString(SNAP_ID)) + ".png")
-//                .getAbsolutePath()));
+        Log.i(TAG, "Loading snap file into SnapImageView");
+        ImageView imageView = (ImageView) inflated.findViewById(R.id.snapView);
+        imageView.setImageBitmap(BitmapFactory.decodeFile(getActivity()
+                .getFileStreamPath(String.valueOf(getArguments().getString(SNAP_ID)) + ".png")
+                .getAbsolutePath()));
+        Log.i(TAG, "Done Loading snap file into SnapImageView");
 
         return inflated;
     }
@@ -90,19 +82,6 @@ public class SnapViewFragment extends Fragment implements OnImageResponseListene
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    @Override
-    public void onImageResponse(ImageResponse response) {
-        // TODO Images shouldn't actually be handled here...
-
-        // Put the image in the image view
-        Log.w(TAG, "Loading the image from imgur");
-        ImageView imageView = (ImageView) getView().findViewById(R.id.snapView);
-
-        imageView.setImageBitmap(BitmapFactory.decodeFile(getActivity()
-                .getFileStreamPath(String.valueOf(getArguments().getString(SNAP_ID)) + ".png")
-                .getAbsolutePath()));
     }
 
     /**

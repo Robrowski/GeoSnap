@@ -11,4 +11,10 @@
         android:id="@+id/test_load_snap"
         android:title="Test Load Snap"
         />
+    <item
+        android:id="@+id/test_view_snap"
+        android:title="Test View Snap"
+        />
+
+
 </menu>

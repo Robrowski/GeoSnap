@@ -8,6 +8,6 @@ import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
  *
  * Listener for when an image is uploaded
  */
-public interface OnImageResponseListener {
-    public void onImageResponse(ImageResponse response);
+public interface OnImgurResponseListener {
+    public void onImgurResponse(ImageResponse response);
 }

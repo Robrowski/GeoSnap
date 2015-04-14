@@ -28,7 +28,7 @@ public class UploadService extends AsyncTask<Void, Void, Void> {
     public String title, description, albumId;
     private ImageResponse response;
     private Activity activity;
-    private OnImageResponseListener mUploaded;
+    private OnImgurResponseListener mUploaded;
     private File image;
 
 
@@ -38,7 +38,7 @@ public class UploadService extends AsyncTask<Void, Void, Void> {
         this.description = upload.description;
         this.albumId = upload.albumId;
         this.activity = activity;
-        mUploaded = (OnImageResponseListener) activity;
+        mUploaded = (OnImgurResponseListener) activity;
 
 
     }
@@ -87,7 +87,7 @@ public class UploadService extends AsyncTask<Void, Void, Void> {
         super.onPostExecute(aVoid);
 
         if(response != null) {
-            mUploaded.onImageResponse(response);
+            mUploaded.onImgurResponse(response);
         }
         Log.e(TAG, "Null response from imgur server");
     }

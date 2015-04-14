@@ -12,14 +12,18 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.Locale;
 
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.fragment.CameraPreviewFragment;
 import edu.cs430x.fuschia.geosnap.fragment.DiscoveredSnapsFragment;
+import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
+import edu.cs430x.fuschia.geosnap.network.imgur.services.GetService;
+import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImgurResponseListener;
 
-public class MainActivity extends ActionBarActivity implements ActionBar.TabListener, DiscoveredSnapsFragment.OnFragmentInteractionListener, CameraPreviewFragment.OnCameraFragmentInteractionListener {
+public class MainActivity extends ActionBarActivity implements ActionBar.TabListener, DiscoveredSnapsFragment.OnFragmentInteractionListener, CameraPreviewFragment.OnCameraFragmentInteractionListener, OnImgurResponseListener {
 
     public static final String INTENT_SNAP_ID = "SNAP_ID", INTENT_FILE_PATH = "IMAGE_FILE_PATH", TAG = "MainActivity";
 
@@ -97,13 +101,22 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        String mock_id = "mrl7Jl4";
         switch (id){
             case R.id.action_settings:
                 return true;
             case R.id.test_load_snap:
-                // Launch the snap view as a test
-                onFragmentInteraction("mrl7Jl4");
+                // Download a snap from imgur. Toast to signify completion
+                Log.w(TAG, "Requesting image from imgur: " + mock_id);
+
+                // TODO This is all it takes to download an image from imgur
+                new GetService(mock_id, this, this).execute();
+
+                return true;
+            case R.id.test_view_snap:
+                // Load a snap as a test
+                // This ID should be pulled from the on click listener...
+                onFragmentInteraction(mock_id);
                 return true;
         }
 
@@ -149,6 +162,15 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         // Send it
         startActivity(review_picture_intent);
+    }
+
+    @Override
+    public void onImgurResponse(ImageResponse response) {
+        // Called every time an image is downloaded from imgur
+        // TODO update discovered snaps UI to reflect the discovery
+        // TODO notification to indicate image ready to be viewed
+        Toast toast = Toast.makeText(this, "Image received from imgur", Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     /**

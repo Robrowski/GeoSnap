@@ -28,11 +28,11 @@ public class GetService extends AsyncTask<Void, Void, Void> {
     public String id;
     private ImageResponse response;
     private Activity activity;
-    private OnImageResponseListener mListener;
+    private OnImgurResponseListener mListener;
     private boolean success = false;
 
 
-    public GetService(String id, OnImageResponseListener listener, Activity activity){
+    public GetService(String id, OnImgurResponseListener listener, Activity activity){
         this.activity = activity;
         this.id = id;
         mListener = listener;
@@ -70,6 +70,7 @@ public class GetService extends AsyncTask<Void, Void, Void> {
                 fos.flush();
                 fos.close();
                 success = true;
+
             } catch (Exception e){
                 Log.e(TAG, "Couldn't save the image to file...");
                 Log.e(TAG, Log.getStackTraceString(e));
@@ -84,8 +85,12 @@ public class GetService extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
 
+        // TODO update UI that we have loaded the snaps as per
+        // http://developer.android.com/reference/android/os/AsyncTask.html
+
         if(success) {
-            mListener.onImageResponse(response);
+            // TODO put together a real response
+            mListener.onImgurResponse(response);
         } else {
             Log.e(TAG, "Failed to get the image");
         }
