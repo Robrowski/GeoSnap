@@ -115,6 +115,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         String mock_id = "mrl7Jl4";
         switch (id){
             case R.id.action_settings:
+                startActivity(new Intent(this, MainSettingsActivity.class));
                 return true;
             case R.id.test_load_snap:
                 // Download a snap from imgur. Toast to signify completion

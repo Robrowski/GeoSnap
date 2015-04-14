@@ -18,4 +18,5 @@
     <string name="title_snap_view">The Snap</string>
     <string name="title_activity_picture_preview">PicturePreviewActivity</string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_main_settings">MainSettingsActivity</string>
 </resources>

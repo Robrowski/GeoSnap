@@ -55,20 +55,32 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <service
+            android:name=".service.GoogleApiLocationService"
+            android:enabled="true"
+            android:exported="true" >
 
-        <service android:name="edu.cs430x.fuschia.geosnap.service.GoogleApiLocationService"
-            android:exported="true"
-            android:enabled="true" >
-            <!--TODO start on device boot-->
+            <!-- TODO start on device boot -->
         </service>
+
         <receiver
             android:name=".data.LocationReceiver"
             android:enabled="true" >
-            <!--<intent-filter>-->
-                   <!--<action android:name="edu.cs430x.fuschia.geosnap.LOCATION_UPDATE" />-->
-            <!--</intent-filter>-->
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="edu.cs430x.fuschia.geosnap.LOCATION_UPDATE" /> -->
+            <!-- </intent-filter> -->
         </receiver>
 
+        <activity
+            android:name=".activity.MainSettingsActivity"
+            android:label="@string/title_activity_main_settings"
+            android:parentActivityName=".activity.MainActivity"
+            android:theme="@style/SettingsTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.cs430x.fuschia.geosnap.activity.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

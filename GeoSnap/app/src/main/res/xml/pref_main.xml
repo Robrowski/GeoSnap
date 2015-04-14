@@ -1,0 +1,32 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="Location Request Settings"
+        android:key="pref_key_location_request_settings">
+
+        <EditTextPreference
+            android:title="Interval"
+            android:defaultValue="30"
+            android:summary="minutes between official location request"
+            android:inputType="numberDecimal"/>
+        <EditTextPreference
+            android:title="Fastest Interval"
+            android:defaultValue="60"
+            android:summary="minimum seconds between accepting updates"
+            android:inputType="numberDecimal"/>
+        <EditTextPreference
+            android:title="Smallest Displacement"
+            android:defaultValue="10.0"
+            android:inputType="number"
+            android:summary="Minimum distance traveled between updates"/>
+        <ListPreference
+            android:title="Request Priority"
+            android:summary="These priorities impact quality and battery usage"
+            android:entries="@array/location_priorities"
+            android:entryValues="@array/location_priority_values"
+            android:defaultValue="0"/>
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>
