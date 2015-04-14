@@ -1,7 +1,7 @@
 package edu.cs430x.fuschia.geosnap.activity;
 
+import android.content.ComponentName;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,21 +15,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
-
 import java.util.Locale;
 
 import edu.cs430x.fuschia.geosnap.R;
+import edu.cs430x.fuschia.geosnap.data.LocationReceiver;
 import edu.cs430x.fuschia.geosnap.fragment.CameraPreviewFragment;
 import edu.cs430x.fuschia.geosnap.fragment.DiscoveredSnapsFragment;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
 import edu.cs430x.fuschia.geosnap.network.imgur.services.GetService;
 import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImgurResponseListener;
-import edu.cs430x.fuschia.geosnap.service.LocationService;
+import edu.cs430x.fuschia.geosnap.service.GoogleApiLocationService;
 
-public class MainActivity extends ActionBarActivity implements ActionBar.TabListener, DiscoveredSnapsFragment.OnFragmentInteractionListener, CameraPreviewFragment.OnCameraFragmentInteractionListener, OnImgurResponseListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends ActionBarActivity implements ActionBar.TabListener,
+        DiscoveredSnapsFragment.OnFragmentInteractionListener,
+        CameraPreviewFragment.OnCameraFragmentInteractionListener,
+        OnImgurResponseListener {
 
     public static final String INTENT_SNAP_ID = "SNAP_ID", INTENT_FILE_PATH = "IMAGE_FILE_PATH", TAG = "MainActivity";
     public static final String INTENT_LATITUDE = "INTENT_LATITUDE", INTENT_LONGITUDE = "INTENT_LONGITUDE";
@@ -37,6 +37,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     private static final int DISCOVERED_PAGE = 0;
     private static final int CAMERA_PAGE = 1;
 
+
+    private  Intent start_location_service_intent;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -52,8 +54,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
-    private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,9 +82,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             }
         });
 
-        // start the location service
-        startService(new Intent(getBaseContext(),LocationService.class));
-
         // For each of the sections in the app, add a tab to the action bar.
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
             // Create a tab with text corresponding to the page title defined by
@@ -97,32 +94,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                             .setTabListener(this));
         }
         mViewPager.setCurrentItem(CAMERA_PAGE);
-        buildGoogleApiClient();
-    }
+        start_location_service_intent = new Intent(getBaseContext(), GoogleApiLocationService.class);
 
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.connect();
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.disconnect();
-        }
-        super.onStop();
+        startService(start_location_service_intent);
     }
 
     @Override
@@ -156,11 +130,29 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 onFragmentInteraction(mock_id);
                 return true;
             case R.id.test_location:
-                this.onConnected(null);
+                String txt = "lat: " + LocationReceiver.location_latitude + " lon: " + LocationReceiver.location_longitude;
+                Log.w(TAG, txt);
+                Toast t = Toast.makeText(this,txt,Toast.LENGTH_SHORT);
+                t.show();
+                return true;
+            case R.id.test_start_location_service:
+                // start the location service
+                startService(start_location_service_intent);
+                return true;
+            case R.id.test_stop_location_service:
+                // Kill GoogleApiLocationService
+                stopService(start_location_service_intent);
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public ComponentName startService(Intent service) {
+        ComponentName cn = super.startService(service);
+        if (cn == null){  Log.e(TAG, "Service could not be started"); }
+        return cn;
     }
 
     @Override
@@ -199,12 +191,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         // Put the path in it
         review_picture_intent.putExtra( INTENT_FILE_PATH, path);
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (mLastLocation != null) {
-            review_picture_intent.putExtra(INTENT_LATITUDE, mLastLocation.getLatitude());
-            review_picture_intent.putExtra(INTENT_LONGITUDE, mLastLocation.getLongitude());
-        }
 
         // Send it
         startActivity(review_picture_intent);
@@ -217,33 +203,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         // TODO notification to indicate image ready to be viewed
         Toast toast = Toast.makeText(this, "Image received from imgur", Toast.LENGTH_SHORT);
         toast.show();
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (mLastLocation != null) {
-            Log.i(TAG, "Google API Client connected");
-            Toast toast = Toast.makeText(this, "Last known (lat, lon): ("
-                    + String.valueOf(mLastLocation.getLatitude())
-                    + ", "
-                    + String.valueOf(mLastLocation.getLongitude()), Toast.LENGTH_LONG);
-            toast.show();
-        } else {
-            Log.e(TAG, "Location services unavailable");
-        }
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.w(TAG, "Google API Services connection suspended");
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.e(TAG, "Google API Services connection FAILED");
     }
 
     /**

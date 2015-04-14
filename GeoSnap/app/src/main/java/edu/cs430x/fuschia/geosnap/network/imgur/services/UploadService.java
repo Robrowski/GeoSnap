@@ -88,7 +88,8 @@ public class UploadService extends AsyncTask<Void, Void, Void> {
 
         if(response != null) {
             mUploaded.onImgurResponse(response);
+        } else {
+            Log.e(TAG, "Null response from imgur server");
         }
-        Log.e(TAG, "Null response from imgur server");
     }
 }

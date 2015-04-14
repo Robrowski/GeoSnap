@@ -21,4 +21,14 @@
         android:title="Test Last Location"
         />
 
+    <item
+        android:id="@+id/test_start_location_service"
+        android:title="Start location service"
+        />
+
+    <item
+        android:id="@+id/test_stop_location_service"
+        android:title="Stop location service"
+        />
+
 </menu>
