@@ -1,6 +1,7 @@
 package edu.cs430x.fuschia.geosnap.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -149,6 +150,10 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
         Toast.makeText(this,"lat: " + LocationService.location_latitude + " lon: " + LocationService.location_longitude,Toast.LENGTH_SHORT).show();
         Pair<Context,String> args = new Pair<Context,String>(getApplicationContext(),imgur_image_id);
         insertPhotoTask.execute(args);
+        // TODO parcel up Lat + Long for GeoCloud too
+        Intent i = getIntent();
+        float latitude = i.getFloatExtra(MainActivity.INTENT_LATITUDE, 0);
+        float longitude = i.getFloatExtra(MainActivity.INTENT_LONGITUDE, 0);
 
     }
 

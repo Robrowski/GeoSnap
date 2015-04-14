@@ -16,5 +16,9 @@
         android:title="Test View Snap"
         />
 
+    <item
+        android:id="@+id/test_location"
+        android:title="Test Last Location"
+        />
 
 </menu>
