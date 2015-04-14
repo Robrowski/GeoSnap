@@ -16,13 +16,13 @@ import edu.cs430x.fuschia.geocloud.geoCloud.GeoCloud;
 /**
  * Created by Matt on 4/12/2015.
  */
-public class InsertPhoto extends AsyncTask<Pair<Context, String>, Void, Integer>{
+public class InsertPhoto extends AsyncTask<Pair<Context, String>, Void, Long>{
     private static String TAG = "InsertPhotoTask";
     private static GeoCloud myApiService = null;
     private Context context;
 
     @Override
-    protected Integer doInBackground(Pair<Context, String>... params) {
+    protected Long doInBackground(Pair<Context, String>... params) {
         if(myApiService == null) {  // Only do this once
             GeoCloud.Builder builder = new GeoCloud.Builder(
                     AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
@@ -36,17 +36,18 @@ public class InsertPhoto extends AsyncTask<Pair<Context, String>, Void, Integer>
         String name = params[0].second;
 
         try {
-            return myApiService.insertPhoto("url",(float)1.0,(float)1.0,"discoverability").execute().getStatus();
+            return myApiService.insertPhoto("url",(float)1.0,(float)1.0,"discoverability").execute().getInsertedID();
         } catch (IOException e) {
             Log.e(TAG,e.getMessage());
-            return 0;
+            Long l = new Long(0);
+            return l;
         }
     }
 
     @Override
-    protected void onPostExecute(Integer result) {
+    protected void onPostExecute(Long result) {
         //TODO: this is where we will get a response, and can now put the data
         // in the database, using the returned key as our local primary key.
-        Toast.makeText(context, Integer.toString(result), Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "geocloud ID: " + Long.toString(result), Toast.LENGTH_LONG).show();
     }
 }

@@ -22,6 +22,7 @@ import edu.cs430x.fuschia.geosnap.fragment.DiscoveredSnapsFragment;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
 import edu.cs430x.fuschia.geosnap.network.imgur.services.GetService;
 import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImgurResponseListener;
+import edu.cs430x.fuschia.geosnap.service.LocationService;
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener, DiscoveredSnapsFragment.OnFragmentInteractionListener, CameraPreviewFragment.OnCameraFragmentInteractionListener, OnImgurResponseListener {
 
@@ -72,6 +73,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 actionBar.setSelectedNavigationItem(position);
             }
         });
+
+        // start the location service
+        startService(new Intent(getBaseContext(),LocationService.class));
 
         // For each of the sections in the app, add a tab to the action bar.
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {

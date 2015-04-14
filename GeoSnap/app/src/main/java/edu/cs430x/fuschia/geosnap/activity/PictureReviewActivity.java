@@ -22,6 +22,7 @@ import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.Upload;
 import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImgurResponseListener;
 import edu.cs430x.fuschia.geosnap.network.imgur.services.UploadService;
+import edu.cs430x.fuschia.geosnap.service.LocationService;
 
 
 /**
@@ -145,6 +146,7 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
 
         // Send crap to the GeoCloud server
         // TODO send crap to the GeoCloud Server...
+        Toast.makeText(this,"lat: " + LocationService.location_latitude + " lon: " + LocationService.location_longitude,Toast.LENGTH_SHORT).show();
         Pair<Context,String> args = new Pair<Context,String>(getApplicationContext(),imgur_image_id);
         insertPhotoTask.execute(args);
 

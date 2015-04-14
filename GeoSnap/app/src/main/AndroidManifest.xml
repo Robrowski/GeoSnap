@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
@@ -25,7 +24,7 @@
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/title_activity_main"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,13 +34,20 @@
         <activity
             android:name=".activity.SnapViewActivity"
             android:label="@string/title_activity_snap_view"
-            android:parentActivityName=".activity.MainActivity">
+            android:parentActivityName=".activity.MainActivity" >
         </activity>
         <activity
             android:name=".activity.PictureReviewActivity"
             android:label="@string/title_activity_picture_preview"
-            android:parentActivityName=".activity.MainActivity">
+            android:parentActivityName=".activity.MainActivity" >
         </activity>
+        <service android:name=".service.LocationService"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="edu.cs430x.fuschia.geosnap.service.LocationService"></action>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
