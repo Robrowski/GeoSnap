@@ -1,6 +1,9 @@
 package edu.cs430x.fuschia.geosnap.fragment;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
@@ -24,7 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import edu.cs430x.fuschia.geosnap.R;
-import edu.cs430x.fuschia.geosnap.camera.CameraPreview;
+import edu.cs430x.fuschia.geosnap.camera.DynamicSizeCameraPreview;
 
 
 /**
@@ -40,7 +43,7 @@ public class CameraPreviewFragment extends Fragment {
 
     private Camera mCamera;
     private SurfaceHolder mHolder;
-    private CameraPreview mSurfaceCallback;
+    private DynamicSizeCameraPreview mSurfaceCallback;
 
 
     private OnCameraFragmentInteractionListener mListener;
@@ -88,7 +91,7 @@ public class CameraPreviewFragment extends Fragment {
 
         // Get the holder from our SurfaceView, and set its callback to our own CameraPreview
         mHolder = preview.getHolder();
-        mSurfaceCallback = new CameraPreview(mCamera);
+        mSurfaceCallback = new DynamicSizeCameraPreview(getActivity(),mCamera, DynamicSizeCameraPreview.LayoutMode.NoBlank);
         mHolder.addCallback(mSurfaceCallback);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
@@ -125,21 +128,45 @@ public class CameraPreviewFragment extends Fragment {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            Bitmap oldBitmap = bitmap;
+
+            // In order to properly fix the rotation of our image, we create
+            // a new bitmap with a 90 degree rotation transformation.
+            Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+
+            bitmap = Bitmap.createBitmap(
+                    bitmap,
+                    0,
+                    0,
+                    bitmap.getWidth(),
+                    bitmap.getHeight(),
+                    matrix,
+                    false
+            );
+
+            oldBitmap.recycle();
 
             File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
             if (pictureFile == null) {
                 Log.d(cTAG, "Error creating media file, check storage permissions.");
                 return;
             }
-
+            FileOutputStream fos = null;
             try {
-                FileOutputStream fos = new FileOutputStream(pictureFile);
-                fos.write(data);
-                fos.close();
+                fos = new FileOutputStream(pictureFile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             } catch (FileNotFoundException e) {
                 Log.d(cTAG, "File not found: " + e.getMessage());
-            } catch (IOException e) {
-                Log.d(cTAG, "Error accessing file: " + e.getMessage());
+            } finally {
+                try {
+                    if (fos != null) {
+                        fos.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             // Get new activity started

@@ -47,7 +47,7 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
         // Put it in the image view
         ImageView imageView = (ImageView) findViewById(R.id.imageReview);
         imageView.setImageBitmap(BitmapFactory.decodeFile(file_path));
-        imageView.setRotation(90);
+//        imageView.setRotation(90);
 
         // Set up our geocloud server upload task
         insertPhotoTask = new InsertPhoto();
