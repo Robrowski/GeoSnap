@@ -1,6 +1,8 @@
 package edu.cs430x.fuschia.geosnap.activity;
 
+import android.app.ActivityManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -18,7 +20,8 @@ import android.widget.Toast;
 import java.util.Locale;
 
 import edu.cs430x.fuschia.geosnap.R;
-import edu.cs430x.fuschia.geosnap.data.LocationReceiver;
+import edu.cs430x.fuschia.geosnap.activity.settings.MainSettingsActivity;
+import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
 import edu.cs430x.fuschia.geosnap.fragment.CameraPreviewFragment;
 import edu.cs430x.fuschia.geosnap.fragment.DiscoveredSnapsFragment;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
@@ -58,6 +61,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        PreferenceManager.setDefaultValues(this, R.xml.pref_main, false);
         setContentView(R.layout.activity_main);
 
         // Set up the action bar.
@@ -96,8 +100,24 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         mViewPager.setCurrentItem(CAMERA_PAGE);
         start_location_service_intent = new Intent(getBaseContext(), GoogleApiLocationService.class);
 
-        startService(start_location_service_intent);
+        // TODO should this really be here?
+        if (!isMyServiceRunning(GoogleApiLocationService.class)) {
+            startService(start_location_service_intent);
+        }
     }
+
+    /** Check to see if a given service is running already */
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.d(TAG, "Service is already running");
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -163,6 +183,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         mViewPager.setCurrentItem(tab.getPosition());
     }
 
+
     @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
@@ -205,6 +226,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         Toast toast = Toast.makeText(this, "Image received from imgur", Toast.LENGTH_SHORT);
         toast.show();
     }
+
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

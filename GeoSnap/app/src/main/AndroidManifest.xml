@@ -14,6 +14,8 @@
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!--<uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />-->
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION"/>
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -64,12 +66,18 @@
         </service>
 
         <receiver
-            android:name=".data.LocationReceiver"
+            android:name=".service.receivers.LocationReceiver"
             android:enabled="true" >
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="edu.cs430x.fuschia.geosnap.LOCATION_UPDATE" /> -->
-            <!-- </intent-filter> -->
+            <intent-filter>
+                <action android:name="edu.cs430x.fuschia.geosnap.LOCATION_UPDATE" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".service.receivers.ActivityReceiver"
+            android:enabled="true" >
+            <intent-filter>
+                <action android:name="edu.cs430x.fuschia.geosnap.ACTIVITY_UPDATE" />
+            </intent-filter>
         </receiver>
 
         <activity

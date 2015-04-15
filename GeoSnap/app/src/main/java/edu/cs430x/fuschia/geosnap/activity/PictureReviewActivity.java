@@ -17,7 +17,7 @@ import android.widget.Toast;
 import java.io.File;
 
 import edu.cs430x.fuschia.geosnap.R;
-import edu.cs430x.fuschia.geosnap.data.LocationReceiver;
+import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
 import edu.cs430x.fuschia.geosnap.network.geocloud.InsertPhoto;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.Upload;

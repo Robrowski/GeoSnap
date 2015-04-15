@@ -9,18 +9,18 @@
             android:key="pref_interval"
             android:defaultValue="30"
             android:summary="minutes between official location request"
-            android:inputType="numberDecimal"/>
+            android:inputType="number"/>
         <EditTextPreference
             android:title="Fastest Interval"
             android:key="pref_fastest_interval"
             android:defaultValue="60"
             android:summary="minimum seconds between accepting updates"
-            android:inputType="numberDecimal"/>
+            android:inputType="number"/>
         <EditTextPreference
             android:title="Smallest Displacement"
             android:key="pref_smallest_displacement"
             android:defaultValue="0.0"
-            android:inputType="number"
+            android:inputType="numberDecimal"
             android:summary="Minimum distance traveled between updates"/>
         <ListPreference
             android:title="Request Priority"
@@ -29,7 +29,18 @@
             android:entries="@array/location_priorities"
             android:entryValues="@array/location_priority_values"
             android:defaultValue="0"/>
-
+        <CheckBoxPreference
+            android:title="Allow Activity Recognition"
+            android:key="pref_allow_activity_recognition"
+            android:summary="Use extra sensors to determine if location services should be on"
+            android:defaultValue="true"/>
+        <CheckBoxPreference
+            android:title="Activity == Moving"
+            android:visibility="invisible"
+            android:enabled="false"
+            android:shouldDisableView="true"
+            android:key="pref_activity_moving"
+            android:defaultValue="true" />
     </PreferenceCategory>
 
 

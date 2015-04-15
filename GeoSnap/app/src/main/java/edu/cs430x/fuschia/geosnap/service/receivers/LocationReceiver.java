@@ -1,4 +1,4 @@
-package edu.cs430x.fuschia.geosnap.data;
+package edu.cs430x.fuschia.geosnap.service.receivers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -31,4 +31,12 @@ public class LocationReceiver extends BroadcastReceiver {
 
         // TODO ping geocloud for discovery?
     }
+
+    public static void setLastLocation(Location l){
+        if (l != null){
+            location_latitude = l.getLatitude();
+            location_longitude = l.getLongitude();
+        }
+    }
+
 }
