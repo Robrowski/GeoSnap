@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,6 +23,7 @@ import java.util.Locale;
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.activity.settings.MainSettingsActivity;
 import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
+import edu.cs430x.fuschia.geosnap.camera.ImageBitmap;
 import edu.cs430x.fuschia.geosnap.fragment.CameraPreviewFragment;
 import edu.cs430x.fuschia.geosnap.fragment.DiscoveredSnapsFragment;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
@@ -35,6 +37,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         OnImgurResponseListener {
 
     public static final String INTENT_SNAP_ID = "SNAP_ID", INTENT_FILE_PATH = "IMAGE_FILE_PATH", TAG = "MainActivity";
+    public static final String INTENT_IMAGE_BYTE_ARRAY="IMAGE_BYTE_ARRAY";
     public static final String INTENT_LATITUDE = "INTENT_LATITUDE", INTENT_LONGITUDE = "INTENT_LONGITUDE";
 
     private static final int DISCOVERED_PAGE = 0;
@@ -207,14 +210,17 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     }
 
     @Override
-    public void onPictureTaken(String path) {
+    public void onPictureTaken(Bitmap data) {
         // Make intent to start activity to display the picture
         Intent review_picture_intent = new Intent(this, PictureReviewActivity.class);
 
-        // Put the path in it
-        review_picture_intent.putExtra( INTENT_FILE_PATH, path);
+        // save the bitmap to a global static variable; raw bitmap is too big for intent.
+        // Can change to pass byte[] around, at cost of more time on conversions.
+        // We have to convert to bitmap on picture callback anyway in the first place to rotate,
+        // so might as well keep it as a bitmap instead of re convert it.
+        ImageBitmap.bm = data;
 
-        // Send it
+        // start review picture activity
         startActivity(review_picture_intent);
     }
 
@@ -226,8 +232,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         Toast toast = Toast.makeText(this, "Image received from imgur", Toast.LENGTH_SHORT);
         toast.show();
     }
-
-
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -268,4 +272,5 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             return null;
         }
     }
+
 }

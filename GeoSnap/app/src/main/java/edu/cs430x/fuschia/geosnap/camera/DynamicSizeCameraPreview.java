@@ -70,23 +70,29 @@ public class DynamicSizeCameraPreview implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        if (holder == null){
+            return;
+        }
         try {
             mHolder = holder;
             mCamera.setPreviewDisplay(holder);
         } catch (IOException e) {
-            mCamera.release();
-            mCamera = null;
+            Log.d(LOG_TAG, "Error setting camera preview: " + e.getMessage());
         }
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        if (holder.getSurface() == null){
+            // preview surface does not exist
+            return;
+        }
         mSurfaceChangedCallDepth++;
-        doSurfaceChanged(width, height);
+        doSurfaceChanged(holder, width, height);
         mSurfaceChangedCallDepth--;
     }
 
-    private void doSurfaceChanged(int width, int height) {
+    private void doSurfaceChanged(SurfaceHolder holder,int width, int height) {
         mCamera.stopPreview();
 
         Camera.Parameters cameraParams = mCamera.getParameters();
@@ -116,6 +122,7 @@ public class DynamicSizeCameraPreview implements SurfaceHolder.Callback {
         mSurfaceConfiguring = false;
 
         try {
+            mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
         } catch (Exception e) {
             Log.w(LOG_TAG, "Failed to start preview: " + e.getMessage());

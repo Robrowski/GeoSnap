@@ -1,5 +1,7 @@
 package edu.cs430x.fuschia.geosnap.network.imgur.model;
 
+import android.graphics.Bitmap;
+
 import java.io.File;
 
 /**
@@ -12,4 +14,5 @@ public class Upload {
   public String title;
   public String description;
   public String albumId;
+  public Bitmap bm;
 }

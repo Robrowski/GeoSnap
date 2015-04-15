@@ -6,7 +6,7 @@ import retrofit.http.Header;
 import retrofit.http.POST;
 import retrofit.http.Path;
 import retrofit.http.Query;
-import retrofit.mime.TypedFile;
+import retrofit.mime.TypedByteArray;
 
 /**
  * Created by AKiniyalocts on 2/23/15. https://github.com/AKiniyalocts/imgur-android
@@ -38,7 +38,7 @@ public interface ImgurAPI {
           @Query("description") String description,
           @Query("album") String albumId,
           @Query("account_url") String username,
-          @Body TypedFile file
+          @Body TypedByteArray file
   );
 
   @GET("/3/image") ImageResponse getImage (

@@ -2,7 +2,7 @@ package edu.cs430x.fuschia.geosnap.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
@@ -14,10 +14,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.File;
-
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
+import edu.cs430x.fuschia.geosnap.camera.ImageBitmap;
 import edu.cs430x.fuschia.geosnap.network.geocloud.InsertPhoto;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.Upload;
@@ -41,13 +40,12 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picture_review);
 
-        // Get file path to picture
-        String file_path = getIntent().getStringExtra(MainActivity.INTENT_FILE_PATH);
+        // Get the bitmap we saved in our static class variable
+        Bitmap bm = ImageBitmap.bm;
 
         // Put it in the image view
         ImageView imageView = (ImageView) findViewById(R.id.imageReview);
-        imageView.setImageBitmap(BitmapFactory.decodeFile(file_path));
-//        imageView.setRotation(90);
+        imageView.setImageBitmap(bm);
 
         // Set up our geocloud server upload task
         insertPhotoTask = new InsertPhoto();
@@ -92,6 +90,7 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
     public void onAccept(View v) {
         /*     Start upload     */
         new UploadService(createUpload(), this).execute();
+        NavUtils.navigateUpFromSameTask(this);
         Log.i(TAG, "Started upload to imgur");
     }
 
@@ -106,11 +105,8 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
 
     @Override
     protected void onDestroy() {
-        // Trash the image on exit
-        String file_path = getIntent().getStringExtra(MainActivity.INTENT_FILE_PATH);
-        new File(file_path).deleteOnExit();
-        Log.i(TAG, "Image file deleted on image review exit");
-
+        // Free the image on exit
+        ImageBitmap.bm.recycle();
         super.onDestroy();
     }
 
@@ -118,8 +114,7 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
     /** Package up the current picture to be uploaded to imgur */
     private Upload createUpload(){
         Upload imgur_upload = new Upload();
-
-        imgur_upload.image = new File(getIntent().getStringExtra(MainActivity.INTENT_FILE_PATH));
+        imgur_upload.bm = ImageBitmap.bm;
 
         // TODO set these strings to real values... something useful like GPS? time?
         imgur_upload.title = "Anonymous title";
@@ -139,10 +134,8 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
             this.onAccept(null);
         }
 
-        // Show stuff on screen
         String imgur_image_id = response.data.id;
-//        TextView txt = (TextView) findViewById(R.id.imgur_response);
-//        txt.setText("imgur.com/"+ imgur_image_id);
+        Log.i(TAG,imgur_image_id);
 
         // Send crap to the GeoCloud server
         // TODO send crap to the GeoCloud Server...

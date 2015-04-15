@@ -1,9 +1,13 @@
 package edu.cs430x.fuschia.geosnap.network.imgur.services;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.common.net.MediaType;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import edu.cs430x.fuschia.geosnap.network.imgur.Constants;
@@ -12,14 +16,12 @@ import edu.cs430x.fuschia.geosnap.network.imgur.model.ImgurAPI;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.Upload;
 import edu.cs430x.fuschia.geosnap.network.imgur.utils.NetworkUtils;
 import retrofit.RestAdapter;
-import retrofit.mime.TypedFile;
+import retrofit.mime.TypedByteArray;
 
 /**
  * Created by AKiniyalocts on 1/12/15. https://github.com/AKiniyalocts/imgur-android
- *
+ * <p/>
  * Our upload service. This creates our restadapter, uploads our image, and notifies us of the response.
- *
- *
  */
 public class UploadService extends AsyncTask<Void, Void, Void> {
     public final static String TAG = UploadService.class.getSimpleName();
@@ -30,14 +32,16 @@ public class UploadService extends AsyncTask<Void, Void, Void> {
     private Activity activity;
     private OnImgurResponseListener mUploaded;
     private File image;
+    private Bitmap bm;
 
 
-    public UploadService(Upload upload, Activity activity){
+    public UploadService(Upload upload, Activity activity) {
         this.image = upload.image;
         this.title = upload.title;
         this.description = upload.description;
         this.albumId = upload.albumId;
         this.activity = activity;
+        this.bm = upload.bm;
         mUploaded = (OnImgurResponseListener) activity;
 
 
@@ -51,7 +55,7 @@ public class UploadService extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
-        if(NetworkUtils.isConnected(activity)) {
+        if (NetworkUtils.isConnected(activity)) {
             if (NetworkUtils.connectionReachable()) {
 
         /*
@@ -65,16 +69,19 @@ public class UploadService extends AsyncTask<Void, Void, Void> {
           Set rest adapter logging if we're already logging
          */
 
-                if(Constants.LOGGING)
+                if (Constants.LOGGING)
                     imgurAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
 
         /*
           Upload image, get response for image
          */
-
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                byte[] byteArray = stream.toByteArray();
+                TypedByteArray typedByteArray = new TypedByteArray(MediaType.OCTET_STREAM.toString(), byteArray);
                 response = imgurAdapter.create(ImgurAPI.class)
                         .postImage(
-                                Constants.getClientAuth(), title, description, albumId, null, new TypedFile("image/*", image)
+                                Constants.getClientAuth(), title, description, albumId, null, typedByteArray
                         );
 
             }
@@ -86,7 +93,7 @@ public class UploadService extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
 
-        if(response != null) {
+        if (response != null) {
             mUploaded.onImgurResponse(response);
         } else {
             Log.e(TAG, "Null response from imgur server");
