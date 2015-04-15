@@ -73,7 +73,7 @@
         </receiver>
 
         <activity
-            android:name=".activity.MainSettingsActivity"
+            android:name=".activity.settings.MainSettingsActivity"
             android:label="@string/title_activity_main_settings"
             android:parentActivityName=".activity.MainActivity"
             android:theme="@style/SettingsTheme">

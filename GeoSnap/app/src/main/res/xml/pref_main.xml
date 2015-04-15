@@ -6,21 +6,25 @@
 
         <EditTextPreference
             android:title="Interval"
+            android:key="pref_interval"
             android:defaultValue="30"
             android:summary="minutes between official location request"
             android:inputType="numberDecimal"/>
         <EditTextPreference
             android:title="Fastest Interval"
+            android:key="pref_fastest_interval"
             android:defaultValue="60"
             android:summary="minimum seconds between accepting updates"
             android:inputType="numberDecimal"/>
         <EditTextPreference
             android:title="Smallest Displacement"
-            android:defaultValue="10.0"
+            android:key="pref_smallest_displacement"
+            android:defaultValue="0.0"
             android:inputType="number"
             android:summary="Minimum distance traveled between updates"/>
         <ListPreference
             android:title="Request Priority"
+            android:key="pref_request_priority"
             android:summary="These priorities impact quality and battery usage"
             android:entries="@array/location_priorities"
             android:entryValues="@array/location_priority_values"
