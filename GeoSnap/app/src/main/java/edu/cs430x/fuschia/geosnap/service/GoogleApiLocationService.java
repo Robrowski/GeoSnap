@@ -42,7 +42,7 @@ public class GoogleApiLocationService extends Service implements GoogleApiClient
     public int onStartCommand(Intent intent, int flags, int startId){
         // Called EVERY time the service is "started"
         super.onStartCommand(intent, flags, startId);
-        buildGoogleApiClient();
+            buildGoogleApiClient();
         if(!mGoogleLocationClient.isConnected() || !mGoogleLocationClient.isConnecting())
             mGoogleLocationClient.connect();
 
@@ -68,6 +68,7 @@ public class GoogleApiLocationService extends Service implements GoogleApiClient
         Intent newLocation = new Intent(this, LocationReceiver.class).setAction(BROADCAST_NEW_LOCATION);
         locationPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), REQUEST_CODE, newLocation, PendingIntent.FLAG_CANCEL_CURRENT);
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleLocationClient, REQUEST, locationPendingIntent);
+
     }
 
     @Override

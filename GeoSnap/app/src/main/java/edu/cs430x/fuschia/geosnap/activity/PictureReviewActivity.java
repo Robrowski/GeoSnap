@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -142,8 +141,8 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
 
         // Show stuff on screen
         String imgur_image_id = response.data.id;
-        TextView txt = (TextView) findViewById(R.id.imgur_response);
-        txt.setText("imgur.com/"+ imgur_image_id);
+//        TextView txt = (TextView) findViewById(R.id.imgur_response);
+//        txt.setText("imgur.com/"+ imgur_image_id);
 
         // Send crap to the GeoCloud server
         // TODO send crap to the GeoCloud Server...
