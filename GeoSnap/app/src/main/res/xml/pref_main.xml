@@ -34,6 +34,12 @@
             android:key="pref_allow_activity_recognition"
             android:summary="Use extra sensors to determine if location services should be on"
             android:defaultValue="true"/>
+        <EditTextPreference
+            android:title="Activity Interval"
+            android:key="pref_activity_interval"
+            android:defaultValue="60"
+            android:summary="minimum seconds between updates"
+            android:inputType="number"/>
         <CheckBoxPreference
             android:title="Activity == Moving"
             android:visibility="invisible"
