@@ -31,15 +31,13 @@ public class GoogleApiLocationService extends Service implements
             PREF_FASTEST_INTERVAL = "pref_fastest_interval",
             PREF_SMALLEST_DISPLACEMENT = "pref_smallest_displacement",
             PREF_REQUEST_PRIORITY = "pref_request_priority",
-            PREF_ALLOW_ACTIVITY_RECOGNITION = "pref_allow_activity_recognition";
+            PREF_ALLOW_ACTIVITY_RECOGNITION = "pref_allow_activity_recognition",
+            PREF_ACTIVITY_INTERVAL = "pref_activity_interval";
 
-
-    private PendingIntent locationPendingIntent;
-    private PendingIntent activityPendingIntent;
+    private PendingIntent locationPendingIntent, activityPendingIntent;
     private GoogleApiClient mGoogleLocationClient;
 
     private static final int SECONDS = 60, MILLISECONDS = 1000;
-    private static final long ACTIVITY_DETECTION_MILLIS = MILLISECONDS*SECONDS*1; // 1 minute
 
     public GoogleApiLocationService() {
     }
@@ -122,6 +120,9 @@ public class GoogleApiLocationService extends Service implements
 
     private void requestActivityUpdates() {
         cancelActivityUpdates();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+
+        long ACTIVITY_DETECTION_MILLIS = Integer.parseInt(sharedPref.getString(PREF_ACTIVITY_INTERVAL, "10")) * MILLISECONDS;
         ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mGoogleLocationClient, ACTIVITY_DETECTION_MILLIS, activityPendingIntent);
     }
 
@@ -186,6 +187,7 @@ public class GoogleApiLocationService extends Service implements
             case PREF_FASTEST_INTERVAL:
             case PREF_SMALLEST_DISPLACEMENT:
             case PREF_REQUEST_PRIORITY:
+            case PREF_ACTIVITY_INTERVAL:
                 Log.i(TAG, "Location polling preferences changed");
                 mGoogleLocationClient.reconnect();
                 return;
