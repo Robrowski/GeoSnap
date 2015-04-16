@@ -22,7 +22,9 @@ import java.util.List;
 
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.camera.ImageBitmap;
+import edu.cs430x.fuschia.geosnap.network.geocloud.Discoverability;
 import edu.cs430x.fuschia.geosnap.network.geocloud.InsertPhoto;
+import edu.cs430x.fuschia.geosnap.network.geocloud.Photo;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.Upload;
 import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImgurResponseListener;
@@ -129,14 +131,15 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
                 case R.id.fab1:
                     mDiscoverability = "SECRET";
                     fam.setImageDrawable(getResources().getDrawable(R.drawable.secret_icon_white));
+                    mDiscoverability = Discoverability.DISC_SECRET;
                     break;
                 case R.id.fab2:
                     fam.setImageDrawable(getResources().getDrawable(R.drawable.medium_icon_white));
-                    mDiscoverability = "NEAR";
+                    mDiscoverability = Discoverability.DISC_MEDIUM;
                     break;
                 case R.id.fab3:
                     fam.setImageDrawable(getResources().getDrawable(R.drawable.far_icon_white));
-                    mDiscoverability = "FAR";
+                    mDiscoverability = Discoverability.DISC_FAR;
                     break;
             }
         }
@@ -229,8 +232,11 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
 
         // Send crap to the GeoCloud server
         // TODO send crap to the GeoCloud Server...
-        Toast.makeText(this,"lat: " + LocationReceiver.location_latitude + " lon: " + LocationReceiver.location_longitude,Toast.LENGTH_SHORT).show();
-        Pair<Context,String> args = new Pair<Context,String>(getApplicationContext(),imgur_image_id);
+        Photo photo = new Photo(imgur_image_id,
+                (float)LocationReceiver.location_latitude,
+                (float)LocationReceiver.location_longitude,
+                this.mDiscoverability);
+        Pair<Context,Photo> args = new Pair<Context,Photo>(getApplicationContext(),photo);
         insertPhotoTask.execute(args);
         // TODO parcel up Lat + Long for GeoCloud too
         Intent i = getIntent();
