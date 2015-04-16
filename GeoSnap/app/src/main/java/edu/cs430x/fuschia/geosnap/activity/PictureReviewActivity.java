@@ -128,14 +128,14 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
             switch (view.getId()){
                 case R.id.fab1:
                     mDiscoverability = "SECRET";
-                    fam.setButtonColor(getResources().getColor(R.color.fab_material_blue_500));
+                    fam.setImageDrawable(getResources().getDrawable(R.drawable.secret_icon_white));
                     break;
                 case R.id.fab2:
-                    fam.setButtonColor(getResources().getColor(R.color.fab_material_pink_500));
+                    fam.setImageDrawable(getResources().getDrawable(R.drawable.medium_icon_white));
                     mDiscoverability = "NEAR";
                     break;
                 case R.id.fab3:
-                    fam.setButtonColor(getResources().getColor(R.color.fab_material_deep_orange_500));
+                    fam.setImageDrawable(getResources().getDrawable(R.drawable.far_icon_white));
                     mDiscoverability = "FAR";
                     break;
             }
