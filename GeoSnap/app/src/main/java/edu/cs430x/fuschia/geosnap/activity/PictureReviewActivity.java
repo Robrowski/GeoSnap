@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -14,14 +15,19 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.software.shell.fab.ActionButton;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.cs430x.fuschia.geosnap.R;
-import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
 import edu.cs430x.fuschia.geosnap.camera.ImageBitmap;
 import edu.cs430x.fuschia.geosnap.network.geocloud.InsertPhoto;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.Upload;
 import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImgurResponseListener;
 import edu.cs430x.fuschia.geosnap.network.imgur.services.UploadService;
+import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
 
 
 /**
@@ -34,6 +40,14 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
     public final static String TAG = "PictureReviewActivity";
 
     private InsertPhoto insertPhotoTask;
+
+    private Handler mUiHandler = new Handler();
+    private List<ActionButton> discoverOptionsButtons = new ArrayList<ActionButton>();
+    private final int mAnimationDelayPerItem = 50;
+    private boolean mMenuOpened = false;
+
+    private String mDiscoverability;
+    ActionButton fam;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +64,83 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
         // Set up our geocloud server upload task
         insertPhotoTask = new InsertPhoto();
 
+        fam = (ActionButton) findViewById(R.id.menu);
+        ActionButton fab1 = (ActionButton) findViewById(R.id.fab1);
+        ActionButton fab2 = (ActionButton) findViewById(R.id.fab2);
+        ActionButton fab3 = (ActionButton) findViewById(R.id.fab3);
+
+        discoverOptionsButtons.add(fab1);
+        discoverOptionsButtons.add(fab2);
+        discoverOptionsButtons.add(fab3);
+
+        fam.setOnClickListener(menuToggle);
+        fab1.setOnClickListener(optionClick);
+        fab2.setOnClickListener(optionClick);
+        fab3.setOnClickListener(optionClick);
+
+
     }
+
+    public View.OnClickListener menuToggle = new View.OnClickListener(){
+
+        @Override
+        public void onClick(View view) {
+            toggleMenu();
+        }
+    };
+
+    public void toggleMenu(){
+        int delay = 0;
+        if (!mMenuOpened){
+            for(int i = 0; i < discoverOptionsButtons.size(); i++){
+                final ActionButton option = discoverOptionsButtons.get(i);
+                mUiHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        option.show();
+                    }
+                }, delay);
+                delay += mAnimationDelayPerItem;
+            }
+        }
+        else{
+            for(int i = discoverOptionsButtons.size()-1; i >= 0; i--){
+                final ActionButton option = discoverOptionsButtons.get(i);
+                mUiHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        option.hide();
+                    }
+                }, delay);
+                delay += mAnimationDelayPerItem;
+            }
+        }
+        mMenuOpened = !mMenuOpened;
+    }
+
+    public View.OnClickListener optionClick = new View.OnClickListener(){
+
+        //TODO: get icons for secret near and far and change the menu button on click
+        // for now, we change the color
+        @Override
+        public void onClick(View view) {
+            toggleMenu();
+            switch (view.getId()){
+                case R.id.fab1:
+                    mDiscoverability = "SECRET";
+                    fam.setButtonColor(getResources().getColor(R.color.fab_material_blue_500));
+                    break;
+                case R.id.fab2:
+                    fam.setButtonColor(getResources().getColor(R.color.fab_material_pink_500));
+                    mDiscoverability = "NEAR";
+                    break;
+                case R.id.fab3:
+                    fam.setButtonColor(getResources().getColor(R.color.fab_material_deep_orange_500));
+                    mDiscoverability = "FAR";
+                    break;
+            }
+        }
+    };
 
 
     @Override

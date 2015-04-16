@@ -3,4 +3,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_bottom_toolbar">28dp</dimen>
+    <dimen name="fab_menu_mini_left">24dp</dimen>
+    <dimen name="fab_menu_button1">92dp</dimen>
+    <dimen name="fab_menu_button2">140dp</dimen>
+    <dimen name="fab_menu_button3">188dp</dimen>
 </resources>
