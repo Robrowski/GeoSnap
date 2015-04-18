@@ -1,5 +1,6 @@
 package edu.cs430x.fuschia.geosnap.fragment;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -8,6 +9,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -28,7 +31,6 @@ public class SnapLocationFragment extends SupportMapFragment implements OnMapRea
     private static final String TAG = "SnapLocationFragment",
             ARG_LATITUDE = "arg_latitude",
             ARG_LONGITUDE = "arg_longitude";
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     private double latitude = 0, longitude = 0;
 
@@ -64,30 +66,32 @@ public class SnapLocationFragment extends SupportMapFragment implements OnMapRea
 
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap mMap) {
         Log.i(TAG, "Map is ready! Adding markers now.");
-        mMap = googleMap;
         LatLng snap_ll = new LatLng(latitude, longitude);
-//                mMap.moveCamera(CameraUpdateFactory.zoomTo(15)); // Zooms in
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(snap_ll, 15));
         mMap.setMyLocationEnabled(false);
 
         /* place markers
-        * https://developers.google.com/maps/documentation/android/marker
-        */
+        * https://developers.google.com/maps/documentation/android/marker        */
         mMap.addMarker(new MarkerOptions()
                 .position(snap_ll)
-                .draggable(false));
+                .draggable(false)
+                .title("THE SNAP")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
 
         // Place marker of self
         mMap.addMarker(new MarkerOptions()
                 .position(LocationReceiver.getLatLng())
                 .draggable(false)
-                .title("You"));
+                .title("You")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
-        // TODO add a shape that shows discoverability radius
-
+        // TODO add a better shape that shows discoverability radius
+        mMap.addCircle(new CircleOptions()
+                .center(snap_ll)
+                .fillColor(Color.argb(120,200, 0, 100))
+                .radius(50)); // Measured in meters
     }
-
 }
 
