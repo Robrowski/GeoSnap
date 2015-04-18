@@ -159,14 +159,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 Toast t = Toast.makeText(this,txt,Toast.LENGTH_SHORT);
                 t.show();
                 return true;
-            case R.id.test_start_location_service:
-                // start the location service
-                startService(start_location_service_intent);
-                return true;
-            case R.id.test_stop_location_service:
-                // Kill GoogleApiLocationService
-                stopService(start_location_service_intent);
-                return true;
+
         }
 
         return super.onOptionsItemSelected(item);

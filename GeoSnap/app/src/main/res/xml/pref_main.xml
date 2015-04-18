@@ -4,6 +4,11 @@
         android:title="Location Request Settings"
         android:key="pref_key_location_request_settings">
 
+        <CheckBoxPreference
+            android:title="Allow Location Service"
+            android:key="pref_allow_location_service"
+            android:summary="Enable or disable the entire location service"
+            android:defaultValue="true"/>
         <EditTextPreference
             android:title="Interval"
             android:key="pref_interval"

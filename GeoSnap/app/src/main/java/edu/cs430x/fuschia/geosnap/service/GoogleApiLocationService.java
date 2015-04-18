@@ -32,7 +32,8 @@ public class GoogleApiLocationService extends Service implements
             PREF_SMALLEST_DISPLACEMENT = "pref_smallest_displacement",
             PREF_REQUEST_PRIORITY = "pref_request_priority",
             PREF_ALLOW_ACTIVITY_RECOGNITION = "pref_allow_activity_recognition",
-            PREF_ACTIVITY_INTERVAL = "pref_activity_interval";
+            PREF_ACTIVITY_INTERVAL = "pref_activity_interval",
+            PREF_ALLOW_LOCATION_SERVICE = "pref_allow_location_service";
 
     private PendingIntent locationPendingIntent, activityPendingIntent;
     private GoogleApiClient mGoogleLocationClient;
@@ -51,15 +52,29 @@ public class GoogleApiLocationService extends Service implements
     public int onStartCommand(Intent intent, int flags, int startId){
         // Called EVERY time the service is "started"
         super.onStartCommand(intent, flags, startId);
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         buildGoogleApiClient();
         buildPendingIntents();
+
+        /**************************************************************/
+        // If this service is not enabled, kill it!
+        // TODO this is for debugging only. Remove for final versions
+        if (!sharedPref.getBoolean(PREF_ALLOW_LOCATION_SERVICE, true)){
+            Log.i(TAG, "Location + Activity service is disabled. Ruh roh.");
+            stopSelf(startId);
+            return START_NOT_STICKY;
+        }
+        /**************************************************************/
+
+        // Proceed as normal
         if(!mGoogleLocationClient.isConnected() || !mGoogleLocationClient.isConnecting())
             mGoogleLocationClient.connect();
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+        sharedPref.unregisterOnSharedPreferenceChangeListener(this);
+        sharedPref.registerOnSharedPreferenceChangeListener(this);
         Log.i(TAG, "Google API location service started");
         return START_STICKY;
     }
+
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -92,8 +107,10 @@ public class GoogleApiLocationService extends Service implements
 
     @Override
     public void onDestroy() {
-        cancelActivityUpdates();
-        cancelLocationUpdates();
+        if(mGoogleLocationClient.isConnected()) { // Can't cancel if not connected
+            cancelActivityUpdates();
+            cancelLocationUpdates();
+        }
         mGoogleLocationClient.disconnect();
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
         Log.w(TAG, "Google location service destroyed");
@@ -180,6 +197,7 @@ public class GoogleApiLocationService extends Service implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         switch (key){
             // TODO is it optimal to simply restart any/all API services when settings change?
             // If any of these settings change, RESTART the location and activity service with new settings
@@ -195,6 +213,18 @@ public class GoogleApiLocationService extends Service implements
             case PREF_ALLOW_ACTIVITY_RECOGNITION:
                 Log.i(TAG, "Updating location services based on movement");
                 mGoogleLocationClient.reconnect();
+                return;
+
+            /**************************************************************/
+            // TODO this is for debugging only. Remove for final versions
+            case PREF_ALLOW_LOCATION_SERVICE:
+                if (!sharedPref.getBoolean(PREF_ALLOW_LOCATION_SERVICE, true)){
+                    Log.i(TAG, "Location + Activity service is disabled. Ruh roh.");
+                    stopSelf();
+                } else {
+                    // Main activity will attempt to start it
+                }
+                /**************************************************************/
                 return;
             default:
                 Log.i(TAG, "This preference changed: " + key);
