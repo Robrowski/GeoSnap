@@ -1,34 +1,36 @@
 package edu.cs430x.fuschia.geosnap.fragment;
 
-import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.util.Log;
 
-import edu.cs430x.fuschia.geosnap.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
 
 /**
+ * // TODO fragments can't have fragments in their layouts?!?! Very strange API thing...
+ *
+ *
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link SnapLocationFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link SnapLocationFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SnapLocationFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class SnapLocationFragment extends SupportMapFragment implements OnMapReadyCallback {
 
-//    // TODO: Rename and change types of parameters
-//    private String mParam1;
-//    private String mParam2;
+    private static final String TAG = "SnapLocationFragment",
+            ARG_LATITUDE = "arg_latitude",
+            ARG_LONGITUDE = "arg_longitude";
+    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
-    private OnFragmentInteractionListener mListener;
+    private double latitude = 0, longitude = 0;
 
     /**
      * Use this factory method to create a new instance of
@@ -36,73 +38,56 @@ public class SnapLocationFragment extends Fragment {
      *
      * @return A new instance of fragment SnapLocationFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static SnapLocationFragment newInstance() {
+    public static SnapLocationFragment newInstance(double lat, double lon) {
+        // TODO how about making this take a reference to the DB on the phone...
+        // can get discoverability, lat lon, building...
+
         SnapLocationFragment fragment = new SnapLocationFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
+        Bundle args = new Bundle();
+        args.putDouble(ARG_LATITUDE, lat);
+        args.putDouble(ARG_LONGITUDE, lon);
+        fragment.setArguments(args);
         return fragment;
     }
 
-    public SnapLocationFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_snap_location, container, false);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+        if (getArguments() != null) {
+            latitude = getArguments().getDouble(ARG_LATITUDE);
+            longitude = getArguments().getDouble(ARG_LONGITUDE);
         }
+        getMapAsync(this); // ons onMapReady when the map is ready :D
+        Log.i(TAG, "Waiting for map to be ready");
     }
+
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
+    public void onMapReady(GoogleMap googleMap) {
+        Log.i(TAG, "Map is ready! Adding markers now.");
+        mMap = googleMap;
+        LatLng snap_ll = new LatLng(latitude, longitude);
+//                mMap.moveCamera(CameraUpdateFactory.zoomTo(15)); // Zooms in
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(snap_ll, 15));
+        mMap.setMyLocationEnabled(false);
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
+        /* place markers
+        * https://developers.google.com/maps/documentation/android/marker
+        */
+        mMap.addMarker(new MarkerOptions()
+                .position(snap_ll)
+                .draggable(false));
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        // Place marker of self
+        mMap.addMarker(new MarkerOptions()
+                .position(LocationReceiver.getLatLng())
+                .draggable(false)
+                .title("You"));
+
+        // TODO add a shape that shows discoverability radius
+
     }
 
 }
+

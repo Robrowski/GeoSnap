@@ -7,6 +7,8 @@ import android.location.Location;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class LocationReceiver extends BroadcastReceiver {
     public static final String TAG = "LocationReceiver";
 
@@ -39,4 +41,9 @@ public class LocationReceiver extends BroadcastReceiver {
         }
     }
 
+    public static LatLng getLatLng() {
+        return new LatLng(
+                LocationReceiver.location_latitude,
+                LocationReceiver.location_longitude);
+    }
 }

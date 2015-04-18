@@ -18,7 +18,9 @@ import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.fragment.SnapLocationFragment;
 import edu.cs430x.fuschia.geosnap.fragment.SnapViewFragment;
 
-public class SnapViewActivity extends ActionBarActivity implements ActionBar.TabListener, SnapLocationFragment.OnFragmentInteractionListener, SnapViewFragment.OnFragmentInteractionListener {
+public class SnapViewActivity extends ActionBarActivity implements
+        ActionBar.TabListener,
+        SnapViewFragment.OnFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -135,7 +137,7 @@ public class SnapViewActivity extends ActionBarActivity implements ActionBar.Tab
                 case 0:
                     return SnapViewFragment.newInstance("mrl7Jl4");
                 case 1:
-                    return SnapLocationFragment.newInstance();
+                    return SnapLocationFragment.newInstance(42.32, -71.1 );
             }
             return null;
         }
