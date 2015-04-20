@@ -1,7 +1,7 @@
 # Android studio user specific files
 */.idea/workspace.xml
 */.idea/libraries
-*.iml
+## *.iml  ## IDK ANYMORE
 
 ## API keys
 *google_maps_api.xml

@@ -12,16 +12,13 @@ import com.google.android.gms.maps.model.LatLng;
 public class LocationReceiver extends BroadcastReceiver {
     public static final String TAG = "LocationReceiver";
 
-    public static double location_latitude = -1;
-    public static double location_longitude = -1;
-
-    public LocationReceiver() {
-    }
+    public static double location_latitude = -1, location_longitude = -1;
+    public static Location location;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i(TAG, "Got a location update");
-        Location location = (Location) intent.getExtras().get("com.google.android.location.LOCATION");
+        location = (Location) intent.getExtras().get("com.google.android.location.LOCATION");
 
         location_latitude = location.getLatitude();
         location_longitude = location.getLongitude();
@@ -34,8 +31,10 @@ public class LocationReceiver extends BroadcastReceiver {
         // TODO ping geocloud for discovery?
     }
 
+    /** only to be used when manually getting the last known location */
     public static void setLastLocation(Location l){
         if (l != null){
+            location = l;
             location_latitude = l.getLatitude();
             location_longitude = l.getLongitude();
         }
