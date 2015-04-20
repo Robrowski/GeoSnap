@@ -2,7 +2,6 @@ package edu.cs430x.fuschia.geocommons.location;
 
 import android.location.Location;
 
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -10,7 +9,7 @@ import java.util.LinkedList;
 
 
 /**
- * Methods to take a LatLng or latitude and longitude and place it in a bucket
+ * Methods to take a Location or latitude and longitude and place it in a bucket
  * or generate a list of buckets that the given location is close to.
  *
  */
@@ -21,7 +20,7 @@ public class LatLngHelper {
     // ALSO - in calcBucketName, make sure there are enough decimal places
     // to reflect the precision of the increment
     protected static final double LAT_INC = 0.0075, LON_INC = 0.01;
-    private static final String BUCKET_FORMAT = "%.3f;%.2f";
+    private static final String BUCKET_FORMAT = "%.3f;%.2f", DUMMY = "DummyProvider";
 
     /**
      * Gives the string name of the bucket that the given coordinates reside in
@@ -29,20 +28,10 @@ public class LatLngHelper {
      * @return
      */
     public static String calcBucketName(double lat, double lon) {
-        LatLng ll = calcBucket(lat, lon);
-        return String.format( BUCKET_FORMAT, ll.latitude, ll.longitude);
+        Location ll = calcBucket(lat, lon);
+        return String.format( BUCKET_FORMAT, ll.getLatitude(), ll.getLongitude());
         // TODO could return a hashed version, or compressed string for space
         // This string is used for nothing more than a bucket name
-    }
-
-    /**
-     * Gives the string name of the bucket that the given coordinates reside in
-     *
-     * @param l
-     * @return
-     */
-    public static String calcBucketName(LatLng l) {
-        return calcBucketName(l.latitude, l.longitude);
     }
 
     /**
@@ -66,19 +55,15 @@ public class LatLngHelper {
      *            the longitude
      * @return The bucket that the given coordinates reside in
      */
-    protected static LatLng calcBucket(double lat, double lon) {
-        return new LatLng(round(lat, LAT_INC), round(lon, LON_INC));
+    protected static Location calcBucket(double lat, double lon) {
+        return newLocation(round(lat, LAT_INC), round(lon, LON_INC));
     }
 
-    /**
-     * Calls calcBucket(double, double).
-     *
-     * @param ll
-     *            LatLng object
-     * @return the bucket as a LatLng
-     */
-    protected static LatLng calcBucket(LatLng ll) {
-        return calcBucket(ll.latitude, ll.longitude);
+    private static Location newLocation(double lat, double lon){
+        Location new_l = new Location(DUMMY);
+        new_l.setLatitude(lat);
+        new_l.setLongitude(lon);
+        return new_l;
     }
 
     /**
@@ -86,9 +71,9 @@ public class LatLngHelper {
      *
      * @param l
      *            Location object
-     * @return the bucket as a LatLng
+     * @return the bucket as a Location
      */
-    protected static LatLng calcBucket(Location l) {
+    protected static Location calcBucket(Location l) {
         return calcBucket(l.getLatitude(), l.getLongitude());
     }
 
@@ -106,15 +91,18 @@ public class LatLngHelper {
         // AND the fact that the buckets are plenty large.
     }
 
-    protected static Collection<String> getBuckets(LatLng ll) {
-        return getBuckets(ll.latitude, ll.longitude);
+
+
+    public static Collection<String> getBuckets(Location ll) {
+        return getBuckets(ll.getLatitude(), ll.getLongitude());
     }
+
 
     private static double QUARTER = 0.25;
 
     public static double FAR_PERCENT = QUARTER;
 
-    protected static Collection<String> getBuckets(double lat, double lon) {
+    public static Collection<String> getBuckets(double lat, double lon) {
         Collection<String> c = new LinkedList<String>();
         c.add(calcBucketName(lat, lon)); // Actually in this bucket
 
@@ -153,12 +141,6 @@ public class LatLngHelper {
         }
 
         return c;
-    }
-
-    public static double distance(LatLng l1, LatLng l2) {
-        float[] results = new float[1];
-        Location.distanceBetween(l1.latitude, l1.longitude, l2.latitude, l2.longitude, results);
-        return results[0];
     }
 
     public static double distance(Location l1, Location l2) {

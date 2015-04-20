@@ -20,6 +20,7 @@ import com.software.shell.fab.ActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.cs430x.fuschia.geocommons.location.LatLngHelper;
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.camera.ImageBitmap;
 import edu.cs430x.fuschia.geosnap.network.geocloud.Discoverability;
@@ -242,6 +243,10 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
         Intent i = getIntent();
         float latitude = i.getFloatExtra(MainActivity.INTENT_LATITUDE, 0);
         float longitude = i.getFloatExtra(MainActivity.INTENT_LONGITUDE, 0);
+        //TODO use this bucket with the Long/Lat... or calculate it server side with the same-ish call
+        String bucket_name = LatLngHelper.calcBucketName(
+                LocationReceiver.location_latitude,
+                LocationReceiver.location_longitude);
 
     }
 

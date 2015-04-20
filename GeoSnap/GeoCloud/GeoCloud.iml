@@ -39,6 +39,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="geocommons" exported="" />
     <orderEntry type="library" exported="" name="appengine-endpoints-1.9.14" level="project" />
     <orderEntry type="library" exported="" name="appengine-endpoints-deps-1.9.14" level="project" />
     <orderEntry type="library" exported="" name="objectify-5.1.5" level="project" />

@@ -30,7 +30,7 @@ dependencies {
     compile 'com.googlecode.objectify:objectify:5.1.5'
     compile 'com.google.guava:guava'
     compile 'javax.servlet:servlet-api:2.5'
-//    compile project(":geocommons")
+    compile project(":geocommons")
 }
 
 appengine {

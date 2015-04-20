@@ -9,6 +9,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.Collection;
+
+import edu.cs430x.fuschia.geocommons.location.LatLngHelper;
+
 public class LocationReceiver extends BroadcastReceiver {
     public static final String TAG = "LocationReceiver";
 
@@ -29,6 +33,13 @@ public class LocationReceiver extends BroadcastReceiver {
 
 
         // TODO ping geocloud for discovery?
+        Collection<String> c = LatLngHelper.getBuckets(location);
+        for (String s: c){
+            // Send a query to the geo cloud
+            // Primary query is in the S = bucket name
+            //      All snaps within get checked against distance from the actual location
+        }
+
     }
 
     /** only to be used when manually getting the last known location */
