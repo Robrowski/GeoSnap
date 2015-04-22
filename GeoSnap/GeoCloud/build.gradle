@@ -4,6 +4,9 @@
 buildscript {
     repositories {
         mavenCentral();
+        maven {
+            url 'http://javageomodel.googlecode.com/svn/repository'
+        }
         jcenter()
     }
     dependencies {
@@ -13,6 +16,9 @@ buildscript {
 
 repositories {
     mavenCentral();
+    maven {
+        url 'http://javageomodel.googlecode.com/svn/repository'
+    }
     jcenter();
 }
 
@@ -25,12 +31,13 @@ targetCompatibility = JavaVersion.VERSION_1_7
 
 dependencies {
     appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.14'
+    compile project(":geocommons")
     compile 'com.google.appengine:appengine-endpoints:1.9.14'
     compile 'com.google.appengine:appengine-endpoints-deps:1.9.14'
     compile 'com.googlecode.objectify:objectify:5.1.5'
+    compile group: 'com.beoui', name: 'geocell', version: '0.0.8'
     compile 'com.google.guava:guava'
     compile 'javax.servlet:servlet-api:2.5'
-    compile project(":geocommons")
 }
 
 appengine {

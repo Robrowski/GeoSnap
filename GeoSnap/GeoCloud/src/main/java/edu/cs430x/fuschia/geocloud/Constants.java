@@ -6,17 +6,22 @@ package edu.cs430x.fuschia.geocloud;
 public class Constants {
 
     public class Discoverability {
-        public final String DISC_SECRET = "secret";
-        public final String DISC_MEDIUM = "medium";
-        public final String DISC_FAR    = "far";
+        public static final String DISC_SECRET = "secret";
+        public static final String DISC_MEDIUM = "medium";
+        public static final String DISC_FAR    = "far";
+    }
+
+    public class DiscoverRadius {
+        public static final int RAD_SECRET = 50;
+        public static final int RAD_MEDIUM = 100;
+        public static final int RAD_FAR    = 200;
     }
 
     public class StatusCodes {
-        public final int OK = 200;
-        public final int BAD_REQUEST = 400;
-        public final int NOT_FOUND = 404;
-        public final int INTERNAL_ERROR = 500;
-
+        public static final int OK = 200;
+        public static final int BAD_REQUEST = 400;
+        public static final int NOT_FOUND = 404;
+        public static final int INTERNAL_ERROR = 500;
     }
 }
 
