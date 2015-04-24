@@ -9,9 +9,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.Collection;
-
-import edu.cs430x.fuschia.geocommons.location.LatLngHelper;
+import edu.cs430x.fuschia.geosnap.network.geocloud.QueryPhotos;
 
 public class LocationReceiver extends BroadcastReceiver {
     public static final String TAG = "LocationReceiver";
@@ -31,14 +29,17 @@ public class LocationReceiver extends BroadcastReceiver {
         t.show();
         Log.w(TAG,"lat: " + location_latitude + " lon: " + location_longitude);
 
+        Intent newIntent = new Intent(context, QueryPhotos.class);
+        newIntent.putExtra("com.google.android.location.LOCATION",location);
+        context.startService(newIntent);
 
-        // TODO ping geocloud for discovery?
-        Collection<String> c = LatLngHelper.getBuckets(location);
-        for (String s: c){
-            // Send a query to the geo cloud
-            // Primary query is in the S = bucket name
-            //      All snaps within get checked against distance from the actual location
-        }
+//        // TODO ping geocloud for discovery?
+//        Collection<String> c = LatLngHelper.getBuckets(location);
+//        for (String s: c){
+//            // Send a query to the geo cloud
+//            // Primary query is in the S = bucket name
+//            //      All snaps within get checked against distance from the actual location
+//        }
 
     }
 
