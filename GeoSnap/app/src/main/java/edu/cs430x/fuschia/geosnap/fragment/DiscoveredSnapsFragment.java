@@ -2,6 +2,8 @@ package edu.cs430x.fuschia.geosnap.fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,11 +14,12 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.TextView;
 
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.adapters.DiscoveredAdapter;
+import edu.cs430x.fuschia.geosnap.data.DiscoveredContract;
+import edu.cs430x.fuschia.geosnap.data.DiscoveredProjection;
+import edu.cs430x.fuschia.geosnap.data.DiscoveredSnapsDBHelper;
 import edu.cs430x.fuschia.geosnap.dummy.DummyContent;
 
 /**
@@ -43,10 +46,11 @@ public class DiscoveredSnapsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     /**
-     * The fragment's ListView/GridView.
+     * The fragment's recycler view.
      */
-    private AbsListView mListView;
     private RecyclerView mRecyclerView;
+
+    private DiscoveredSnapsDBHelper mDbHelper;
 
     /**
      * The Adapter which will be used to populate the ListView/GridView with
@@ -80,9 +84,21 @@ public class DiscoveredSnapsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        mDbHelper = new DiscoveredSnapsDBHelper(getActivity());
 
-        // TODO: Change Adapter to display your content
-        mAdapter = new DiscoveredAdapter(DummyContent.ITEMS);
+        // get the database for reading, and query it for our projection to
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+        // TODO: create selection string for selecting only photos not posted by user?
+        Cursor discoveredCursor = db.query(DiscoveredContract.DiscoveredEntry.TABLE_NAME,
+                DiscoveredProjection.DISCOVERED_COLUMNS, // projection: what cols we want to retrieve
+                null, // selection: query string, (select photos not posted by user?)
+                null, // selection args: values for selection string
+                null, // group by
+                null, // having
+                null); // order by
+
+        mAdapter = new DiscoveredAdapter(getActivity(),discoveredCursor);
     }
 
     @Override
@@ -96,12 +112,12 @@ public class DiscoveredSnapsFragment extends Fragment {
         mRecyclerView.setLayoutManager(llm);
         mRecyclerView.setAdapter(mAdapter);
 
-        //TODO: Add back in button item clicking
         mRecyclerView.addOnItemTouchListener(new RecyclerOnTouchListener(getActivity(), mRecyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
                 if (mListener != null) {
                     Log.d(TAG,"onClick " + position);
+                    //TODO: change this to pass real data back for snap viewing
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
                     mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
@@ -135,18 +151,6 @@ public class DiscoveredSnapsFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * The default content for this Fragment has a TextView that is shown when
-     * the list is empty. If you would like to change the text, call this method
-     * to supply the text it should use.
-     */
-    public void setEmptyText(CharSequence emptyText) {
-        View emptyView = mListView.getEmptyView();
-
-        if (emptyView instanceof TextView) {
-            ((TextView) emptyView).setText(emptyText);
-        }
-    }
 
     /**
      * This interface must be implemented by activities that contain this

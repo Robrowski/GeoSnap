@@ -26,7 +26,7 @@ public class DiscoveredSnapsDBHelper extends SQLiteOpenHelper {
                 DiscoveredEntry._ID + " INTEGER PRIMARY KEY," +
 
                 // the ID of the location entry associated with this weather data
-                DiscoveredEntry.COLUMN_PHOTO_LOC_ + " TEXT NOT NULL, " +
+                DiscoveredEntry.COLUMN_PHOTO_LOC + " TEXT NOT NULL, " +
                 DiscoveredEntry.COLUMN_COORD_LAT + " REAL NOT NULL, " +
                 DiscoveredEntry.COLUMN_COORD_LON + " REAL NOT NULL, " +
                 DiscoveredEntry.COLUMN_DISCOVER + " INTEGER NOT NULL," +
