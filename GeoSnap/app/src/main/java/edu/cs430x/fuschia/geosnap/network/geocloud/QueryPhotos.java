@@ -13,6 +13,7 @@ import java.io.IOException;
 import edu.cs430x.fuschia.geocloud.geoCloud.GeoCloud;
 import edu.cs430x.fuschia.geocloud.geoCloud.model.GeoQueryResponseBean;
 import edu.cs430x.fuschia.geocloud.geoCloud.model.ImageEntity;
+import edu.cs430x.fuschia.geosnap.network.imgur.utils.ImgurUtils;
 
 /**
  * Created by Matt on 4/21/2015.
@@ -51,6 +52,13 @@ public class QueryPhotos extends IntentService {
                     Log.i(TAG,i.getImageUrl());
                     // TODO: 1: check if already found in our local db.
                     //       2: if not, add it and then download the image
+                    if (!ImgurUtils.downloadPhoto(i.getImageUrl(), this)){
+                        Log.e(TAG, "IMGUR DOWNLOAD FAILED");
+                        break;
+                    }
+
+
+
                     // TODO: potentially alert receiver here, who might update UI to say we are downloading?
                 }
                 // TODO: call receiver here, who could make sure listview is updated + send
@@ -64,4 +72,8 @@ public class QueryPhotos extends IntentService {
         }
 
     }
+
+
+
+
 }
