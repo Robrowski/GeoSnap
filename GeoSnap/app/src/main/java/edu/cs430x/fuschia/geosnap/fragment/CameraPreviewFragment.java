@@ -1,6 +1,7 @@
 package edu.cs430x.fuschia.geosnap.fragment;
 
-import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -17,10 +18,10 @@ import android.view.ViewGroup;
 
 import com.software.shell.fab.ActionButton;
 
-import java.io.IOException;
-
 import edu.cs430x.fuschia.geosnap.R;
+import edu.cs430x.fuschia.geosnap.activity.PictureReviewActivity;
 import edu.cs430x.fuschia.geosnap.camera.DynamicSizeCameraPreview;
+import edu.cs430x.fuschia.geosnap.camera.ImageBitmap;
 
 
 /**
@@ -32,91 +33,94 @@ import edu.cs430x.fuschia.geosnap.camera.DynamicSizeCameraPreview;
  * create an instance of this fragment.
  */
 public class CameraPreviewFragment extends Fragment {
-    private static final String cTAG = "CameraDebug";
     private static final String TAG = "CameraPreviewFragment";
 
-    private Camera mCamera;
+    public static Camera mCamera;
+    private boolean camera_open = false;
     private SurfaceHolder mHolder;
     private DynamicSizeCameraPreview mSurfaceCallback;
-
-
-    private OnCameraFragmentInteractionListener mListener;
+    private ActionButton fab;
+    private View view;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "Created");
         mCamera = getCameraInstance();
     }
 
     @Override
-    public void onResume() {
-        try {
-            mCamera.reconnect();
-        } catch (IOException e) {
-            Log.w(TAG, "FAILED to connect the camera");
-        }
+    public void onStart() {
+        Log.d(TAG, "Started");
         super.onStart();
     }
 
     @Override
     public void onPause() {
+        Log.d(TAG, "paused");
         super.onStop();
-        if (mCamera != null) {
-            mCamera.release();
-        }
+        // Technically supposed to release the camera here... problem is I can't
+        // figure out how to reconnect the camera to the SurfaceHolder view (the image freezes)
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnCameraFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnCameraFragmentInteractionListener");
-        }
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "destroyed");
+        releaseCamera();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle b) {
 
-        View view = inflater.inflate(R.layout.camera_preview_fragment, container, false);
+        view = inflater.inflate(R.layout.camera_preview_fragment, container, false);
         SurfaceView preview = (SurfaceView) view.findViewById(R.id.cpPreview);
-
-        // Get the holder from our SurfaceView, and set its callback to our own CameraPreview
         mHolder = preview.getHolder();
+
         mSurfaceCallback = new DynamicSizeCameraPreview(getActivity(),mCamera, DynamicSizeCameraPreview.LayoutMode.NoBlank);
         mHolder.addCallback(mSurfaceCallback);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-        // get the floating action camera button
-        ActionButton fab = (ActionButton) view.findViewById(R.id.camera_button);
-        fab.playShowAnimation();
 
+        // get the floating action camera button
+        fab = (ActionButton) view.findViewById(R.id.camera_button);
+        fab.playShowAnimation();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // get an image from the camera
+                Log.d(TAG, "Taking a picture!");
+                fab.setClickable(false); // Safety precaution
                 mCamera.takePicture(null, null, mPicture);
             }
         });
 
+        Log.d(TAG, "View created");
         return view;
     }
 
     /**
      * Get an instance of the phone's camera
      */
-    public static Camera getCameraInstance() {
+    private Camera getCameraInstance() {
         Camera c = null;
         try {
             c = Camera.open(); // attempt to get a Camera instance
+            camera_open = true;
         } catch (Exception e) {
             // Camera is not available (in use or does not exist)
-            Log.e(cTAG, "Camera is not available");
+            Log.e(TAG, "Camera is not available");
         }
         return c; // returns null if camera is unavailable
+    }
+
+    private void releaseCamera(){
+        if (mCamera != null){
+            mCamera.stopPreview();
+            mCamera.release();
+            mCamera = null;
+        }
     }
 
     private PictureCallback mPicture = new PictureCallback() {
@@ -141,25 +145,21 @@ public class CameraPreviewFragment extends Fragment {
                     false
             );
 
+            // Make intent to start activity to display the picture
+            Context c = getActivity();
+            Intent review_picture_intent = new Intent(c, PictureReviewActivity.class);
+
+            // save the bitmap to a global static variable; raw bitmap is too big for intent.
+            // Can change to pass byte[] around, at cost of more time on conversions.
+            // We have to convert to bitmap on picture callback anyway in the first place to rotate,
+            // so might as well keep it as a bitmap instead of re convert it.
+            ImageBitmap.bm = bitmap;
+
+            // start review picture activity
+            c.startActivity(review_picture_intent);
+
+            // Clean up
             oldBitmap.recycle();
-
-            // Get new activity started
-            mListener.onPictureTaken(bitmap);
-
         }
     };
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnCameraFragmentInteractionListener {
-        public void onPictureTaken(Bitmap data);
-    }
-
 }

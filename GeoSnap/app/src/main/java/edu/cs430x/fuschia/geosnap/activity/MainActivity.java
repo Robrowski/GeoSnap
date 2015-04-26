@@ -4,7 +4,6 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,19 +21,17 @@ import java.util.Locale;
 
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.activity.settings.MainSettingsActivity;
-import edu.cs430x.fuschia.geosnap.network.geocloud.QueryPhotos;
-import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
-import edu.cs430x.fuschia.geosnap.camera.ImageBitmap;
 import edu.cs430x.fuschia.geosnap.fragment.CameraPreviewFragment;
 import edu.cs430x.fuschia.geosnap.fragment.DiscoveredSnapsFragment;
+import edu.cs430x.fuschia.geosnap.network.geocloud.QueryPhotos;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
 import edu.cs430x.fuschia.geosnap.network.imgur.services.GetService;
 import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImgurResponseListener;
 import edu.cs430x.fuschia.geosnap.service.GoogleApiLocationService;
+import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener,
         DiscoveredSnapsFragment.OnFragmentInteractionListener,
-        CameraPreviewFragment.OnCameraFragmentInteractionListener,
         OnImgurResponseListener {
 
     public static final String INTENT_SNAP_ID = "SNAP_ID", INTENT_FILE_PATH = "IMAGE_FILE_PATH", TAG = "MainActivity";
@@ -219,20 +216,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         startActivity(view_snap_intent);
     }
 
-    @Override
-    public void onPictureTaken(Bitmap data) {
-        // Make intent to start activity to display the picture
-        Intent review_picture_intent = new Intent(this, PictureReviewActivity.class);
-
-        // save the bitmap to a global static variable; raw bitmap is too big for intent.
-        // Can change to pass byte[] around, at cost of more time on conversions.
-        // We have to convert to bitmap on picture callback anyway in the first place to rotate,
-        // so might as well keep it as a bitmap instead of re convert it.
-        ImageBitmap.bm = data;
-
-        // start review picture activity
-        startActivity(review_picture_intent);
-    }
 
     @Override
     public void onImgurResponse(ImageResponse response) {
@@ -282,5 +265,4 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             return null;
         }
     }
-
 }

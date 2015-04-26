@@ -29,7 +29,7 @@ public class DynamicSizeCameraPreview implements SurfaceHolder.Callback {
     private static final String CAMERA_PARAM_PORTRAIT = "portrait";
     protected Activity mActivity;
     private SurfaceHolder mHolder;
-    protected Camera mCamera;
+    public Camera mCamera;
     protected List<Camera.Size> mPreviewSizeList;
     protected List<Camera.Size> mPictureSizeList;
     protected Camera.Size mPreviewSize;
@@ -270,7 +270,9 @@ public class DynamicSizeCameraPreview implements SurfaceHolder.Callback {
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder) { /* Nothing to do */   }
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        Log.d("CameraPreviewFragment", "Surface destroyed");
+    }
 
     public boolean isPortrait() {
         return (mActivity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT);
