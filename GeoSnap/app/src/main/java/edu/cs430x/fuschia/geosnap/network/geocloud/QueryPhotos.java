@@ -46,10 +46,10 @@ public class QueryPhotos extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         // TODO Remove (Matt wants this until he finishes the material design of the notifications)
-        if (intent.getBooleanExtra("DEBUG", false)){
-            notifyNewSnaps(11);
-            return;
-        }
+//        if (intent.getBooleanExtra("DEBUG", false)){
+//            notifyNewSnaps(11);
+//            return;
+//        }
 
         Log.v(TAG,"query photos service started");
         if(myApiService == null) {  // Only do this once
@@ -70,19 +70,20 @@ public class QueryPhotos extends IntentService {
                 int images_ready = 0;
                 Log.i(TAG,"discovered photos!");
                 for (ImageEntity i: response.getImages()){
-
+                    Log.i(TAG,i.getImageUrl());
                     // TODO: 1: check if already found in our local db.
                     // IF in DB already, then it is downloaded already, => break;
                     if(DiscoveredSnapsDBHelper.SnapExists(getApplicationContext(),
                                                         i.getImageUrl()))
                     {
-                        break;
+                        Log.i(TAG,"already found photo" + i.getImageUrl());
+                        continue;
                     }
 
                     //       2: if not, add it and then download the image
                     if (!ImgurUtils.downloadPhoto(i.getImageUrl(), this)){
                         Log.e(TAG, "IMGUR DOWNLOAD FAILED");
-                        break;
+                        continue;
                     }
 
                     // TODO NOW that the image is viewable, commit to phone's DB as a final step
@@ -90,7 +91,7 @@ public class QueryPhotos extends IntentService {
                     // Commit to phone's DB AFTER downloading image from imgur JUST IN CASE imgur
                     // fails...
                     String newPhotoLoc = "idkwhatthisvariableis";//The location of the photo?
-                    int newDiscoverability = Integer.parseInt(i.getDiscoverability());
+                    String newDiscoverability = i.getDiscoverability();
                     String newTimestamp = DateHelper.GetCurrentTimestamp();
                     DiscoveredSnapsDBHelper.InsertSnapIntoDatabase( getApplicationContext(),
                                                                     newPhotoLoc,

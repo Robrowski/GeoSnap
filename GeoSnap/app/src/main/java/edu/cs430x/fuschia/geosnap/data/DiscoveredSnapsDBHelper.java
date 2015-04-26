@@ -32,7 +32,7 @@ public class DiscoveredSnapsDBHelper extends SQLiteOpenHelper {
                 DiscoveredEntry.COLUMN_PHOTO_URL + " TEXT NOT NULL, " +
                 DiscoveredEntry.COLUMN_COORD_LAT + " REAL NOT NULL, " +
                 DiscoveredEntry.COLUMN_COORD_LON + " REAL NOT NULL, " +
-                DiscoveredEntry.COLUMN_DISCOVER + " INTEGER NOT NULL," +
+                DiscoveredEntry.COLUMN_DISCOVER + " TEXT NOT NULL," +
 
                 // Have to agree on timestamp format. Assuming UTC formatted String
                 DiscoveredEntry.COLUMN_TIMESTAMP + " TEXT NOT NULL); ";
@@ -55,7 +55,7 @@ public class DiscoveredSnapsDBHelper extends SQLiteOpenHelper {
                                               String photoURL,
                                               double lat,
                                               double lon,
-                                              int discovery,
+                                              String discovery,
                                               String timestamp)
     {
 
@@ -67,7 +67,7 @@ public class DiscoveredSnapsDBHelper extends SQLiteOpenHelper {
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(DiscoveredContract.DiscoveredEntry.COLUMN_PHOTO_LOC, photoLoc);
-        values.put(DiscoveredContract.DiscoveredEntry.COLUMN_PHOTO_URL, photoLoc);
+        values.put(DiscoveredContract.DiscoveredEntry.COLUMN_PHOTO_URL, photoURL);
         values.put(DiscoveredContract.DiscoveredEntry.COLUMN_COORD_LAT, lat);
         values.put(DiscoveredContract.DiscoveredEntry.COLUMN_COORD_LON, lon);
         values.put(DiscoveredContract.DiscoveredEntry.COLUMN_DISCOVER, discovery);
@@ -97,10 +97,10 @@ public class DiscoveredSnapsDBHelper extends SQLiteOpenHelper {
 
         //We don't really care about the columns, we just want to see if ANY come back.
         String[] projection = {
-                DiscoveredContract.DiscoveredEntry._ID
+                DiscoveredEntry.COLUMN_PHOTO_URL
         };
         //Select where the url equals the imageURL
-        String selection = DiscoveredContract.DiscoveredEntry.COLUMN_PHOTO_URL;
+        String selection = DiscoveredContract.DiscoveredEntry.COLUMN_PHOTO_URL +"=?";
         String[] selectionArgs = { imageURL };
 
         // How you want the results sorted in the resulting Cursor
@@ -108,12 +108,12 @@ public class DiscoveredSnapsDBHelper extends SQLiteOpenHelper {
 
         Cursor c = db.query(
                 DiscoveredContract.DiscoveredEntry.TABLE_NAME,  // The table to query
-                projection,                               // The columns to return
+                null,                               // The columns to return
                 selection,                                // The columns for the WHERE clause
                 selectionArgs,                            // The values for the WHERE clause
                 null,                                     // don't group the rows
                 null,                                     // don't filter by row groups
-                sortOrder                                 // The sort order
+                sortOrder                                      // The sort order
         );
 
         //At the end, we just want to know if anything was found. If it was, the snap exists.

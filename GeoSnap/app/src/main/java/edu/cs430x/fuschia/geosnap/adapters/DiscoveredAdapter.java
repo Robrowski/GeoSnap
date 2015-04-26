@@ -48,7 +48,7 @@ public class DiscoveredAdapter extends RecyclerView.Adapter<DiscoveredAdapter.Di
         if (!mCursor.moveToPosition(i)) {
             throw new IllegalStateException("couldn't move cursor to position " + i);
         }
-        int id = mCursor.getInt(mRowIdColumn);
+        String id = Integer.toString(mCursor.getInt(mRowIdColumn));
         discoveredViewHolder.textView.setText(id);
     }
 

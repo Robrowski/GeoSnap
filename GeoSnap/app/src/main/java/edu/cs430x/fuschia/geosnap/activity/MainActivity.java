@@ -169,6 +169,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             case R.id.test_discovered_snaps_notification:
                 Log.i(TAG, "Testing discovered snaps notification");
                 Intent query_intent = new Intent(this, QueryPhotos.class);
+                query_intent.putExtra("com.google.android.location.LOCATION",LocationReceiver.location);
                 query_intent.putExtra("DEBUG", true);
                 startService(query_intent);
 
