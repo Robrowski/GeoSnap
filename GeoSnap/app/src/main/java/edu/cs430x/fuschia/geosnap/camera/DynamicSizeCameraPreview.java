@@ -270,23 +270,14 @@ public class DynamicSizeCameraPreview implements SurfaceHolder.Callback {
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        stop();
-    }
-
-    public void stop() {
-        if (null == mCamera) {
-            return;
-        }
-        mCamera.stopPreview();
-        mCamera.release();
-        mCamera = null;
-    }
+    public void surfaceDestroyed(SurfaceHolder holder) { /* Nothing to do */   }
 
     public boolean isPortrait() {
         return (mActivity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT);
     }
 
+
+    // TODO cleanup
     public void setOneShotPreviewCallback(Camera.PreviewCallback callback) {
         if (null == mCamera) {
             return;

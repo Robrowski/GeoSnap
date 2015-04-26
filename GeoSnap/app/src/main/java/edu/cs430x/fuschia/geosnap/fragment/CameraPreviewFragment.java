@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 
 import com.software.shell.fab.ActionButton;
 
+import java.io.IOException;
+
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.camera.DynamicSizeCameraPreview;
 
@@ -31,6 +33,7 @@ import edu.cs430x.fuschia.geosnap.camera.DynamicSizeCameraPreview;
  */
 public class CameraPreviewFragment extends Fragment {
     private static final String cTAG = "CameraDebug";
+    private static final String TAG = "CameraPreviewFragment";
 
     private Camera mCamera;
     private SurfaceHolder mHolder;
@@ -42,24 +45,25 @@ public class CameraPreviewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Create an instance of Camera
         mCamera = getCameraInstance();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mCamera != null) {
-            mCamera.release();
-            mCamera = null;
+    public void onResume() {
+        try {
+            mCamera.reconnect();
+        } catch (IOException e) {
+            Log.w(TAG, "FAILED to connect the camera");
         }
+        super.onStart();
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public void onPause() {
+        super.onStop();
+        if (mCamera != null) {
+            mCamera.release();
+        }
     }
 
     @Override

@@ -101,11 +101,6 @@ public class DiscoveredSnapsFragment extends Fragment {
                 null); // order by
 
         mAdapter = new DiscoveredAdapter(getActivity(),discoveredCursor);
-
-        // Cancel notifications about new snaps, because the user is already here!
-        ((NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE))
-                .cancel(QueryPhotos.NOTIFICATION_ID);
-
     }
 
     @Override
@@ -139,6 +134,14 @@ public class DiscoveredSnapsFragment extends Fragment {
         }));
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Cancel notifications about new snaps, because the user is already here!
+        ((NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE))
+                .cancel(QueryPhotos.NOTIFICATION_ID);
     }
 
     @Override
