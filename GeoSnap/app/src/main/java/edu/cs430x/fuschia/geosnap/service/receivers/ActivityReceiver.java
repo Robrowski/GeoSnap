@@ -17,25 +17,22 @@ public class ActivityReceiver extends BroadcastReceiver {
     public static ActivityRecognitionResult arr = null;
     public static boolean moving = true;
 
-    public ActivityReceiver() {
-    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i(TAG, "Got an activity update");
         arr = ActivityRecognitionResult.extractResult(intent);
+        moving = isMoving(arr);
+        String m = "";
 
-        String m = "Activity: ";
-
-        DetectedActivity da = arr.getMostProbableActivity();
-        moving = da.getType() != DetectedActivity.STILL;
-        if (moving){
-            m += "probably moving";
-        } else {
-            m += "STILL";
+        for (DetectedActivity da: arr.getProbableActivities()){
+            if (!m.equals("")) {
+                m += "\n"; // New line character if adding a new line
+            }
+            m += activityToString(da.getType()) + ": " + String.valueOf(da.getConfidence());
         }
 
-        Log.w(TAG,m);
+        Log.i(TAG,m);
         Toast t = Toast.makeText(context,m,Toast.LENGTH_SHORT);
         t.show();
 
@@ -44,10 +41,77 @@ public class ActivityReceiver extends BroadcastReceiver {
         // listening to... flag says to turn off or on based on activity
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         if (sharedPref.getBoolean(PREF_ACTIVITY_MOVING, true) != moving){
-            Log.e(TAG, "Updated shared preferences probably...");
+            Log.w(TAG, "Updating status of location services");
             SharedPreferences.Editor e = sharedPref.edit();
             e.putBoolean(PREF_ACTIVITY_MOVING, moving);
             e.commit();
         }
     }
+
+    private static int THRESHOLD_STILL = 70, THRESHOLD_MOVING = 50;
+
+
+    /** Decide whether the device is moving enough to warrant turning the location
+     * services back on or not.
+     *
+     * @param arr the latest activity recognition readings
+     * @return true for moving enough, false otherwise
+     */
+    private static boolean isMoving(ActivityRecognitionResult arr) {
+        // This list is automatically sorted by confidence level
+        for (DetectedActivity da : arr.getProbableActivities()) {
+            switch (da.getType()){
+                case DetectedActivity.IN_VEHICLE:
+                case DetectedActivity.ON_BICYCLE:
+                case DetectedActivity.ON_FOOT:
+                case DetectedActivity.RUNNING:
+                case DetectedActivity.WALKING:
+                      // TODO check for minimum threshold? Nah
+//                    if (da.getConfidence() >= THRESHOLD_MOVING)
+//                        return true; // Only return if really sure
+                    return true;
+
+                case DetectedActivity.STILL:
+                    // TODO consider the case where STILL is technically first, but running and
+                    // walking and on foot are also very high probability...
+                    if (da.getConfidence() >= THRESHOLD_STILL)
+                        return false; // Only return if really sure about being still
+                    break;
+
+                case DetectedActivity.TILTING:
+                case DetectedActivity.UNKNOWN:
+                default:
+                    break;// Check next state if there is one
+            }
+        }
+        
+        // Default case is true because probably not STILL...
+        return true;
+    }
+
+
+    /** Convert types to printable strings */
+    private static String activityToString(int act){
+        switch (act){
+            case DetectedActivity.STILL:
+                return "STILL";
+            case DetectedActivity.IN_VEHICLE:
+                return "IN_VEHICLE";
+            case DetectedActivity.ON_BICYCLE:
+                return "ON_BICYCLE";
+            case DetectedActivity.ON_FOOT:
+                return "ON_FOOT";
+            case DetectedActivity.RUNNING:
+                return "RUNNING";
+            case DetectedActivity.TILTING:
+                return "TILTING";
+            case DetectedActivity.UNKNOWN:
+                return "UNKNOWN";
+            case DetectedActivity.WALKING:
+                return "WALKING";
+            default:
+                return "Pooping";
+        }
+    }
+
 }
