@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.activity.settings.MainSettingsActivity;
+import edu.cs430x.fuschia.geosnap.network.geocloud.QueryPhotos;
 import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
 import edu.cs430x.fuschia.geosnap.camera.ImageBitmap;
 import edu.cs430x.fuschia.geosnap.fragment.CameraPreviewFragment;
@@ -100,7 +101,14 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
-        mViewPager.setCurrentItem(CAMERA_PAGE);
+
+        // If this activity is launched from a notification, load the discovered page first
+        if (getIntent().getBooleanExtra(QueryPhotos.SNAPS_DISCOVERED, false)){
+            mViewPager.setCurrentItem(DISCOVERED_PAGE);
+        } else {
+            mViewPager.setCurrentItem(CAMERA_PAGE);
+        }
+
         start_location_service_intent = new Intent(getBaseContext(), GoogleApiLocationService.class);
 
         // TODO should this really be here?
@@ -158,6 +166,15 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 Log.w(TAG, txt);
                 Toast t = Toast.makeText(this,txt,Toast.LENGTH_SHORT);
                 t.show();
+                return true;
+
+            // TODO Remove (Matt wants this until he finishes the material design of the notifications)
+            case R.id.test_discovered_snaps_notification:
+                Log.i(TAG, "Testing discovered snaps notification");
+                Intent query_intent = new Intent(this, QueryPhotos.class);
+                query_intent.putExtra("DEBUG", true);
+                startService(query_intent);
+
                 return true;
 
         }

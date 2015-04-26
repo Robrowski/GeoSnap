@@ -1,6 +1,7 @@
 package edu.cs430x.fuschia.geosnap.fragment;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,6 +22,7 @@ import edu.cs430x.fuschia.geosnap.data.DiscoveredContract;
 import edu.cs430x.fuschia.geosnap.data.DiscoveredProjection;
 import edu.cs430x.fuschia.geosnap.data.DiscoveredSnapsDBHelper;
 import edu.cs430x.fuschia.geosnap.dummy.DummyContent;
+import edu.cs430x.fuschia.geosnap.network.geocloud.QueryPhotos;
 
 /**
  * A fragment representing a list of Items.
@@ -99,6 +101,11 @@ public class DiscoveredSnapsFragment extends Fragment {
                 null); // order by
 
         mAdapter = new DiscoveredAdapter(getActivity(),discoveredCursor);
+
+        // Cancel notifications about new snaps, because the user is already here!
+        ((NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE))
+                .cancel(QueryPhotos.NOTIFICATION_ID);
+
     }
 
     @Override

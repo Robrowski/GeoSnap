@@ -171,7 +171,7 @@ public class GoogleApiLocationService extends Service implements
 
     /** Translate a given preference value to a LocationRequest flag.
      * See arrays.xml for the two arrays*/
-    private int getPreferredPriority(int val){
+    private static int getPreferredPriority(int val){
         switch (val){
             default:
             case 0:

@@ -84,7 +84,7 @@ public class ActivityReceiver extends BroadcastReceiver {
                     break;// Check next state if there is one
             }
         }
-        
+
         // Default case is true because probably not STILL...
         return true;
     }

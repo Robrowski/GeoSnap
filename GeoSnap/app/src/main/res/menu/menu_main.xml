@@ -20,5 +20,8 @@
         android:id="@+id/test_location"
         android:title="Test Last Location"
         />
-
+    <item
+        android:id="@+id/test_discovered_snaps_notification"
+        android:title="Test Discovered Snaps Notification"
+        />
 </menu>
