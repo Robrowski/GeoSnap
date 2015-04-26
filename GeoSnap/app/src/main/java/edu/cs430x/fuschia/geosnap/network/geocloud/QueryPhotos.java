@@ -21,6 +21,8 @@ import edu.cs430x.fuschia.geocloud.geoCloud.model.GeoQueryResponseBean;
 import edu.cs430x.fuschia.geocloud.geoCloud.model.ImageEntity;
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.activity.MainActivity;
+import edu.cs430x.fuschia.geosnap.data.DateHelper;
+import edu.cs430x.fuschia.geosnap.data.DiscoveredSnapsDBHelper;
 import edu.cs430x.fuschia.geosnap.network.imgur.utils.ImgurUtils;
 
 /**
@@ -68,9 +70,14 @@ public class QueryPhotos extends IntentService {
                 int images_ready = 0;
                 Log.i(TAG,"discovered photos!");
                 for (ImageEntity i: response.getImages()){
+
                     // TODO: 1: check if already found in our local db.
                     // IF in DB already, then it is downloaded already, => break;
-
+                    if(DiscoveredSnapsDBHelper.SnapExists(getApplicationContext(),
+                                                        i.getImageUrl()))
+                    {
+                        break;
+                    }
 
                     //       2: if not, add it and then download the image
                     if (!ImgurUtils.downloadPhoto(i.getImageUrl(), this)){
@@ -82,6 +89,16 @@ public class QueryPhotos extends IntentService {
                     // that triggers UI updates, etc.
                     // Commit to phone's DB AFTER downloading image from imgur JUST IN CASE imgur
                     // fails...
+                    String newPhotoLoc = "idkwhatthisvariableis";//The location of the photo?
+                    int newDiscoverability = Integer.parseInt(i.getDiscoverability());
+                    String newTimestamp = DateHelper.GetCurrentTimestamp();
+                    DiscoveredSnapsDBHelper.InsertSnapIntoDatabase( getApplicationContext(),
+                                                                    newPhotoLoc,
+                                                                    i.getImageUrl(),
+                                                                    location.getLatitude(),
+                                                                    location.getLongitude(),
+                                                                    newDiscoverability,
+                                                                    newTimestamp);
 
 
                     // Made it here, therefore the snap is fully downloaded and ready to view
