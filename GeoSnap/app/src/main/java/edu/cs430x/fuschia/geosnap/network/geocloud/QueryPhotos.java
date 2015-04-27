@@ -111,7 +111,10 @@ public class QueryPhotos extends IntentService {
                     // Made it here, therefore the snap is fully downloaded and ready to view
                     images_ready++; // TODO Keep track of number between queries?!?!
                 }
-                notifyNewSnaps(images_ready);
+                if (images_ready >0){
+                    notifyNewSnaps(images_ready);
+                }
+
                 // TODO: call receiver here, who could make sure listview is updated + send
             }
             else{
