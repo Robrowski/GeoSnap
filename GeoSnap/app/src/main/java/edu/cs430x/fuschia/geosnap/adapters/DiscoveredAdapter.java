@@ -10,7 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.joooonho.SelectableRoundedImageView;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import edu.cs430x.fuschia.geosnap.R;
+import edu.cs430x.fuschia.geosnap.data.DiscoveredProjection;
 
 /**
  * Created by Matt on 4/9/2015.
@@ -22,6 +27,8 @@ public class DiscoveredAdapter extends RecyclerView.Adapter<DiscoveredAdapter.Di
     private boolean mDataValid;
     private int mRowIdColumn;
     private DataSetObserver mDataSetObserver;
+    private ImageLoader mImageLoader;
+    private DisplayImageOptions options;
 
     public DiscoveredAdapter(Context context, Cursor cursor){
         mContext = context;
@@ -32,6 +39,11 @@ public class DiscoveredAdapter extends RecyclerView.Adapter<DiscoveredAdapter.Di
         if (mCursor != null) {
             mCursor.registerDataSetObserver(mDataSetObserver);
         }
+        mImageLoader = ImageLoader.getInstance();
+        options = new DisplayImageOptions.Builder()
+                .cacheOnDisk(true)
+                .cacheInMemory(true)
+                .build();
     }
     @Override
     public DiscoveredViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
@@ -49,7 +61,12 @@ public class DiscoveredAdapter extends RecyclerView.Adapter<DiscoveredAdapter.Di
             throw new IllegalStateException("couldn't move cursor to position " + i);
         }
         String id = Integer.toString(mCursor.getInt(mRowIdColumn));
-        discoveredViewHolder.textView.setText(id);
+        String imageLoc = mCursor.getString(DiscoveredProjection.COL_PHOTO_LOC);
+        String imageUrl = mCursor.getString(DiscoveredProjection.COL_PHOTO_URL);
+        mImageLoader.displayImage(imageUrl,discoveredViewHolder.imageView,options);
+
+//        discoveredViewHolder.imageView.
+//        discoveredViewHolder.textView.setText(id);
     }
 
 
@@ -78,11 +95,13 @@ public class DiscoveredAdapter extends RecyclerView.Adapter<DiscoveredAdapter.Di
     public static class DiscoveredViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
         TextView textView;
+        SelectableRoundedImageView imageView;
 
         DiscoveredViewHolder(View itemView) {
             super(itemView);
             cv = (CardView)itemView.findViewById(R.id.card_view);
-            textView = (TextView)itemView.findViewById(R.id.info_text);
+            imageView = (SelectableRoundedImageView) itemView.findViewById(R.id.image);
+//            textView = (TextView)itemView.findViewById(R.id.info_text);
         }
     }
 

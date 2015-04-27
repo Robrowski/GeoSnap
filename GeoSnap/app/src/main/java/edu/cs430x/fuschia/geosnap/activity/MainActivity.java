@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,10 +18,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.utils.StorageUtils;
+
+import java.io.File;
 import java.util.Locale;
 
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.activity.settings.MainSettingsActivity;
+import edu.cs430x.fuschia.geosnap.data.DiscoveredContract;
+import edu.cs430x.fuschia.geosnap.data.DiscoveredSnapsDBHelper;
 import edu.cs430x.fuschia.geosnap.fragment.CameraPreviewFragment;
 import edu.cs430x.fuschia.geosnap.fragment.DiscoveredSnapsFragment;
 import edu.cs430x.fuschia.geosnap.network.geocloud.QueryPhotos;
@@ -112,6 +122,16 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         if (!isMyServiceRunning(GoogleApiLocationService.class)) {
             startService(start_location_service_intent);
         }
+
+        File cacheDir = StorageUtils.getCacheDirectory(this);
+
+        // Create global configuration and initialize ImageLoader with this config
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+                .diskCache(new UnlimitedDiscCache(cacheDir))
+                .diskCacheFileNameGenerator(new HashCodeFileNameGenerator())
+                .writeDebugLogs()
+                .build();
+        ImageLoader.getInstance().init(config);
     }
 
     /** Check to see if a given service is running already */
@@ -175,6 +195,10 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
                 return true;
 
+            case R.id.test_delete_db:
+                DiscoveredSnapsDBHelper dbHelper = new DiscoveredSnapsDBHelper(this);
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                db.delete(DiscoveredContract.DiscoveredEntry.TABLE_NAME,null,null);
         }
 
         return super.onOptionsItemSelected(item);

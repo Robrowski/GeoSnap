@@ -68,9 +68,9 @@ public class DiscoveredSnapsDBHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(DiscoveredContract.DiscoveredEntry.COLUMN_PHOTO_LOC, photoLoc);
         values.put(DiscoveredContract.DiscoveredEntry.COLUMN_PHOTO_URL, photoURL);
+        values.put(DiscoveredContract.DiscoveredEntry.COLUMN_DISCOVER, discovery);
         values.put(DiscoveredContract.DiscoveredEntry.COLUMN_COORD_LAT, lat);
         values.put(DiscoveredContract.DiscoveredEntry.COLUMN_COORD_LON, lon);
-        values.put(DiscoveredContract.DiscoveredEntry.COLUMN_DISCOVER, discovery);
         values.put(DiscoveredContract.DiscoveredEntry.COLUMN_TIMESTAMP, timestamp);
 
         // Insert the new row, returning the primary key value of the new row

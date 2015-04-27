@@ -24,4 +24,8 @@
         android:id="@+id/test_discovered_snaps_notification"
         android:title="Test Discovered Snaps Notification"
         />
+    <item
+        android:id="@+id/test_delete_db"
+        android:title="Test delete database"
+        />
 </menu>

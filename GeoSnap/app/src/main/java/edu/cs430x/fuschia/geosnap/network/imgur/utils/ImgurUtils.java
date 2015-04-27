@@ -16,10 +16,10 @@ import java.net.URL;
 public class ImgurUtils {
     private static final String TAG = "ImgurUtils";
 
-    public static boolean downloadPhoto(String imgur_id, Context c) {
+    public static String downloadPhoto(String imgur_id, Context c) {
         if (!NetworkUtils.isConnected(c) || !NetworkUtils.connectionReachable()) {
             Log.w(TAG, "Network unavailable to request images from imgur");
-            return false;
+            return null;
         }
 
         String string_url = "http://i.imgur.com/" + imgur_id + ".png";
@@ -30,7 +30,7 @@ public class ImgurUtils {
         } catch (Exception e) {
             Log.e(TAG, "Couldn't get the image from imgur...");
             Log.e(TAG, Log.getStackTraceString(e));
-            return false;
+            return null;
         }
         try {
             //Convert bitmap to byte array
@@ -40,16 +40,17 @@ public class ImgurUtils {
             byte[] bitmap_data = bos.toByteArray();
 
             //write the bytes in file
-            FileOutputStream fos = c.openFileOutput(imgur_id + ".png", Context.MODE_PRIVATE);
+            String fileName = imgur_id + ".png";
+            FileOutputStream fos = c.openFileOutput(fileName, Context.MODE_PRIVATE);
             fos.write(bitmap_data);
             fos.flush();
             fos.close();
-            return true;
+            return fileName;
 
         } catch (Exception e) {
             Log.e(TAG, "Couldn't save the image to file...");
             Log.e(TAG, Log.getStackTraceString(e));
-            return false;
+            return null;
         }
     }
 }

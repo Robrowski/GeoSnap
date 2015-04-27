@@ -7,12 +7,17 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.View;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.io.IOException;
 
@@ -23,7 +28,6 @@ import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.activity.MainActivity;
 import edu.cs430x.fuschia.geosnap.data.DateHelper;
 import edu.cs430x.fuschia.geosnap.data.DiscoveredSnapsDBHelper;
-import edu.cs430x.fuschia.geosnap.network.imgur.utils.ImgurUtils;
 
 /**
  * Created by Matt on 4/21/2015.
@@ -45,11 +49,6 @@ public class QueryPhotos extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        // TODO Remove (Matt wants this until he finishes the material design of the notifications)
-//        if (intent.getBooleanExtra("DEBUG", false)){
-//            notifyNewSnaps(11);
-//            return;
-//        }
 
         Log.v(TAG,"query photos service started");
         if(myApiService == null) {  // Only do this once
@@ -61,6 +60,10 @@ public class QueryPhotos extends IntentService {
         }
 
         Location location = (Location) intent.getExtras().get("com.google.android.location.LOCATION");
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                .cacheOnDisk(true)
+                .cacheInMemory(true)
+                .build();
         try {
             GeoQueryResponseBean response = myApiService.queryPhotoByLocation(
                     (float)location.getLatitude(),(float)location.getLongitude()).execute();
@@ -70,32 +73,35 @@ public class QueryPhotos extends IntentService {
                 int images_ready = 0;
                 Log.i(TAG,"discovered photos!");
                 for (ImageEntity i: response.getImages()){
-                    Log.i(TAG,i.getImageUrl());
+                    String string_url = "http://i.imgur.com/" + i.getImageUrl() + ".png";
+                    Log.i(TAG,string_url);
                     // TODO: 1: check if already found in our local db.
                     // IF in DB already, then it is downloaded already, => break;
                     if(DiscoveredSnapsDBHelper.SnapExists(getApplicationContext(),
-                                                        i.getImageUrl()))
+                                                        string_url))
                     {
                         Log.i(TAG,"already found photo" + i.getImageUrl());
                         continue;
                     }
 
                     //       2: if not, add it and then download the image
-                    if (!ImgurUtils.downloadPhoto(i.getImageUrl(), this)){
-                        Log.e(TAG, "IMGUR DOWNLOAD FAILED");
-                        continue;
-                    }
+                    ImageLoader.getInstance().loadImage(string_url, options, new SimpleImageLoadingListener() {
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                            // nothing, we are just caching it for later
+                        }
+                    });
 
                     // TODO NOW that the image is viewable, commit to phone's DB as a final step
                     // that triggers UI updates, etc.
                     // Commit to phone's DB AFTER downloading image from imgur JUST IN CASE imgur
                     // fails...
-                    String newPhotoLoc = "idkwhatthisvariableis";//The location of the photo?
+
                     String newDiscoverability = i.getDiscoverability();
                     String newTimestamp = DateHelper.GetCurrentTimestamp();
                     DiscoveredSnapsDBHelper.InsertSnapIntoDatabase( getApplicationContext(),
-                                                                    newPhotoLoc,
-                                                                    i.getImageUrl(),
+                                                                    "dur",
+                                                                    string_url,
                                                                     location.getLatitude(),
                                                                     location.getLongitude(),
                                                                     newDiscoverability,
@@ -104,9 +110,8 @@ public class QueryPhotos extends IntentService {
 
                     // Made it here, therefore the snap is fully downloaded and ready to view
                     images_ready++; // TODO Keep track of number between queries?!?!
-                    notifyNewSnaps(images_ready);
-
                 }
+                notifyNewSnaps(images_ready);
                 // TODO: call receiver here, who could make sure listview is updated + send
             }
             else{

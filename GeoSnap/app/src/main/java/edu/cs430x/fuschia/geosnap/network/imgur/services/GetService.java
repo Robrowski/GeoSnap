@@ -21,7 +21,7 @@ public class GetService extends AsyncTask<Void, Void, Void> {
     private ImageResponse response;
     private Activity activity;
     private OnImgurResponseListener mListener;
-    private boolean success = false;
+    private String returnedFile = null;
 
 
     public GetService(String id, OnImgurResponseListener listener, Activity activity){
@@ -38,7 +38,7 @@ public class GetService extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
-        success = ImgurUtils.downloadPhoto(id, activity);
+        returnedFile = ImgurUtils.downloadPhoto(id, activity);
         return null;
     }
 
@@ -49,7 +49,7 @@ public class GetService extends AsyncTask<Void, Void, Void> {
         // TODO update UI that we have loaded the snaps as per
         // http://developer.android.com/reference/android/os/AsyncTask.html
 
-        if(success) {
+        if(returnedFile != null) {
             // TODO put together a real response
             mListener.onImgurResponse(response);
         } else {

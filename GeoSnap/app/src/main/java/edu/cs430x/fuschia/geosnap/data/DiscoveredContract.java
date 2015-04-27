@@ -14,9 +14,9 @@ public class DiscoveredContract {
         public static final String TABLE_NAME = "discovered";
         public static final String COLUMN_PHOTO_LOC = "photo_loc";
         public static final String COLUMN_PHOTO_URL = "photo_url";
+        public static final String COLUMN_DISCOVER = "discoverability";
         public static final String COLUMN_COORD_LAT = "latitude";
         public static final String COLUMN_COORD_LON = "longitude";
-        public static final String COLUMN_DISCOVER = "discoverability";
         public static final String COLUMN_TIMESTAMP = "time_stamp";
     }
 }

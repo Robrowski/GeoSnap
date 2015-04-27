@@ -18,16 +18,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/image"
-            android:scaleType="fitXY"
+            android:scaleType="centerCrop"
             app:sriv_left_top_corner_radius="2dip"
             app:sriv_right_top_corner_radius="2dip"
             app:sriv_left_bottom_corner_radius="0dip"
             app:sriv_right_bottom_corner_radius="0dp"/>
 
-        <TextView
-            android:id="@+id/info_text"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <!--<TextView-->
+            <!--android:id="@+id/info_text"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent" />-->
     </android.support.v7.widget.CardView>
 
 </LinearLayout>
