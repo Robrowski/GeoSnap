@@ -114,7 +114,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             if (DEBUGGING) { Log.v(LOG_TAG, "Desired Preview Size - w: " + width + ", h: " + height); }
             mPreviewSize = previewSize;
             mPictureSize = pictureSize;
-            mSurfaceConfiguring = adjustSurfaceLayoutSize(previewSize, portrait, width, height);
+
+            /** TODO This line is probably the dynamic part. If you uncomment it, it will shrink the
+             * width of the surface view. For me it took off 58 pixels to maintain aspect ratio
+             */
+//            mSurfaceConfiguring = adjustSurfaceLayoutSize(previewSize, portrait, width, height);
+
+
             // Continue executing this method if this method is called recursively.
             // Recursive call of surfaceChanged is very special case, which is a path from
             // the catch clause at the end of this method.
