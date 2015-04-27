@@ -3,25 +3,23 @@ package edu.cs430x.fuschia.geosnap.camera;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.hardware.Camera;
+import android.hardware.Camera.PreviewCallback;
 import android.os.Build;
 import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * This code is derived from pikanji's Camera Preview Sample, which will
- * determine the best preview and picture save size and set the camera
- * parameters accordingly.  This prevents the image from appearing stretched
- * or skewed on some phones in some views.
- *
- * https://github.com/pikanji/CameraPreviewSample
+ * This class assumes the parent layout is FrameLayout.LayoutParams.
  */
-public class DynamicSizeCameraPreview implements SurfaceHolder.Callback {
+public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     private static boolean DEBUGGING = true;
     private static final String LOG_TAG = "CameraPreviewSample";
     private static final String CAMERA_PARAM_ORIENTATION = "orientation";
@@ -29,7 +27,7 @@ public class DynamicSizeCameraPreview implements SurfaceHolder.Callback {
     private static final String CAMERA_PARAM_PORTRAIT = "portrait";
     protected Activity mActivity;
     private SurfaceHolder mHolder;
-    public Camera mCamera;
+    protected Camera mCamera;
     protected List<Camera.Size> mPreviewSizeList;
     protected List<Camera.Size> mPictureSizeList;
     protected Camera.Size mPreviewSize;
@@ -57,12 +55,29 @@ public class DynamicSizeCameraPreview implements SurfaceHolder.Callback {
      */
     protected boolean mSurfaceConfiguring = false;
 
-    public DynamicSizeCameraPreview(Activity activity, Camera camera, LayoutMode mode) {
-//        super(activity); // Always necessary
+    public CameraPreview(Activity activity, int cameraId, LayoutMode mode) {
+        super(activity); // Always necessary
         mActivity = activity;
         mLayoutMode = mode;
-        mCamera = camera;
+        mHolder = getHolder();
+        mHolder.addCallback(this);
+        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            if (Camera.getNumberOfCameras() > cameraId) {
+                mCameraId = cameraId;
+            } else {
+                mCameraId = 0;
+            }
+        } else {
+            mCameraId = 0;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            mCamera = Camera.open(mCameraId);
+        } else {
+            mCamera = Camera.open();
+        }
         Camera.Parameters cameraParams = mCamera.getParameters();
         mPreviewSizeList = cameraParams.getSupportedPreviewSizes();
         mPictureSizeList = cameraParams.getSupportedPictureSizes();
@@ -70,29 +85,22 @@ public class DynamicSizeCameraPreview implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        if (holder == null){
-            return;
-        }
         try {
-            mHolder = holder;
-            mCamera.setPreviewDisplay(holder);
+            mCamera.setPreviewDisplay(mHolder);
         } catch (IOException e) {
-            Log.d(LOG_TAG, "Error setting camera preview: " + e.getMessage());
+            mCamera.release();
+            mCamera = null;
         }
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        if (holder.getSurface() == null){
-            // preview surface does not exist
-            return;
-        }
         mSurfaceChangedCallDepth++;
-        doSurfaceChanged(holder, width, height);
+        doSurfaceChanged(width, height);
         mSurfaceChangedCallDepth--;
     }
 
-    private void doSurfaceChanged(SurfaceHolder holder,int width, int height) {
+    private void doSurfaceChanged(int width, int height) {
         mCamera.stopPreview();
 
         Camera.Parameters cameraParams = mCamera.getParameters();
@@ -106,7 +114,7 @@ public class DynamicSizeCameraPreview implements SurfaceHolder.Callback {
             if (DEBUGGING) { Log.v(LOG_TAG, "Desired Preview Size - w: " + width + ", h: " + height); }
             mPreviewSize = previewSize;
             mPictureSize = pictureSize;
-//            mSurfaceConfiguring = adjustSurfaceLayoutSize(previewSize, portrait, width, height);
+            mSurfaceConfiguring = adjustSurfaceLayoutSize(previewSize, portrait, width, height);
             // Continue executing this method if this method is called recursively.
             // Recursive call of surfaceChanged is very special case, which is a path from
             // the catch clause at the end of this method.
@@ -122,7 +130,6 @@ public class DynamicSizeCameraPreview implements SurfaceHolder.Callback {
         mSurfaceConfiguring = false;
 
         try {
-            mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
         } catch (Exception e) {
             Log.w(LOG_TAG, "Failed to start preview: " + e.getMessage());
@@ -219,6 +226,61 @@ public class DynamicSizeCameraPreview implements SurfaceHolder.Callback {
         return retSize;
     }
 
+    protected boolean adjustSurfaceLayoutSize(Camera.Size previewSize, boolean portrait,
+                                              int availableWidth, int availableHeight) {
+        float tmpLayoutHeight, tmpLayoutWidth;
+        if (portrait) {
+            tmpLayoutHeight = previewSize.width;
+            tmpLayoutWidth = previewSize.height;
+        } else {
+            tmpLayoutHeight = previewSize.height;
+            tmpLayoutWidth = previewSize.width;
+        }
+
+        float factH, factW, fact;
+        factH = availableHeight / tmpLayoutHeight;
+        factW = availableWidth / tmpLayoutWidth;
+        if (mLayoutMode == LayoutMode.FitToParent) {
+            // Select smaller factor, because the surface cannot be set to the size larger than display metrics.
+            if (factH < factW) {
+                fact = factH;
+            } else {
+                fact = factW;
+            }
+        } else {
+            if (factH < factW) {
+                fact = factW;
+            } else {
+                fact = factH;
+            }
+        }
+
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)this.getLayoutParams();
+
+        int layoutHeight = (int) (tmpLayoutHeight * fact);
+        int layoutWidth = (int) (tmpLayoutWidth * fact);
+        if (DEBUGGING) {
+            Log.v(LOG_TAG, "Preview Layout Size - w: " + layoutWidth + ", h: " + layoutHeight);
+            Log.v(LOG_TAG, "Scale factor: " + fact);
+        }
+
+        boolean layoutChanged;
+        if ((layoutWidth != this.getWidth()) || (layoutHeight != this.getHeight())) {
+            layoutParams.height = layoutHeight;
+            layoutParams.width = layoutWidth;
+            if (mCenterPosX >= 0) {
+                layoutParams.topMargin = mCenterPosY - (layoutHeight / 2);
+                layoutParams.leftMargin = mCenterPosX - (layoutWidth / 2);
+            }
+            this.setLayoutParams(layoutParams); // this will trigger another surfaceChanged invocation.
+            layoutChanged = true;
+        } else {
+            layoutChanged = false;
+        }
+
+        return layoutChanged;
+    }
+
     /**
      * @param x X coordinate of center position on the screen. Set to negative value to unset.
      * @param y Y coordinate of center position on the screen.
@@ -271,23 +333,30 @@ public class DynamicSizeCameraPreview implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        Log.d("CameraPreviewFragment", "Surface destroyed");
+        stop();
+    }
+
+    public void stop() {
+        if (null == mCamera) {
+            return;
+        }
+        mCamera.stopPreview();
+        mCamera.release();
+        mCamera = null;
     }
 
     public boolean isPortrait() {
         return (mActivity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT);
     }
 
-
-    // TODO cleanup
-    public void setOneShotPreviewCallback(Camera.PreviewCallback callback) {
+    public void setOneShotPreviewCallback(PreviewCallback callback) {
         if (null == mCamera) {
             return;
         }
         mCamera.setOneShotPreviewCallback(callback);
     }
 
-    public void setPreviewCallback(Camera.PreviewCallback callback) {
+    public void setPreviewCallback(PreviewCallback callback) {
         if (null == mCamera) {
             return;
         }
@@ -301,4 +370,15 @@ public class DynamicSizeCameraPreview implements SurfaceHolder.Callback {
     public void setOnPreviewReady(PreviewReadyCallback cb) {
         mPreviewReadyCallback = cb;
     }
+
+
+    public void takePicture(Camera.PictureCallback mPictureCallback){
+        mCamera.takePicture(null, null, mPictureCallback);
+    }
+
+
 }
+
+
+
+
