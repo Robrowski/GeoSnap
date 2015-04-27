@@ -48,7 +48,8 @@ public class ActivityReceiver extends BroadcastReceiver {
         }
     }
 
-    private static int THRESHOLD_STILL = 70, THRESHOLD_MOVING = 50;
+    /** These numbers are estimated */
+    private static int THRESHOLD_STILL = 55, THRESHOLD_MOVING = 45;
 
 
     /** Decide whether the device is moving enough to warrant turning the location
@@ -66,14 +67,13 @@ public class ActivityReceiver extends BroadcastReceiver {
                 case DetectedActivity.ON_FOOT:
                 case DetectedActivity.RUNNING:
                 case DetectedActivity.WALKING:
-                      // TODO check for minimum threshold? Nah
-//                    if (da.getConfidence() >= THRESHOLD_MOVING)
-//                        return true; // Only return if really sure
-                    return true;
+                    if (da.getConfidence() >= THRESHOLD_MOVING)
+                        return true; // Only return if really sure
+                    break;
 
                 case DetectedActivity.STILL:
-                    // TODO consider the case where STILL is technically first, but running and
-                    // walking and on foot are also very high probability...
+                    // TODO Consider the case where STILL is technically first, but running and
+                    // TODO walking and on foot are also very high probability...
                     if (da.getConfidence() >= THRESHOLD_STILL)
                         return false; // Only return if really sure about being still
                     break;
@@ -85,8 +85,8 @@ public class ActivityReceiver extends BroadcastReceiver {
             }
         }
 
-        // Default case is true because probably not STILL...
-        return true;
+        // Default case is false because when TILT is present, it is usually alone...
+        return false;
     }
 
 

@@ -42,7 +42,7 @@
         <EditTextPreference
             android:title="Activity Interval"
             android:key="pref_activity_interval"
-            android:defaultValue="60"
+            android:defaultValue="15"
             android:summary="minimum seconds between updates"
             android:inputType="number"/>
         <CheckBoxPreference
