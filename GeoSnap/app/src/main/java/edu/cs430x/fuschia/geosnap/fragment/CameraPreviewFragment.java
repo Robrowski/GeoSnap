@@ -35,9 +35,12 @@ import edu.cs430x.fuschia.geosnap.camera.ImageBitmap;
 public class CameraPreviewFragment extends Fragment {
     private static final String TAG = "CameraPreviewFragment";
 
-    private ActionButton fab;
+    private ActionButton take_picture_button, swap_camera_button;
     private FrameLayout mLayout;
     private CameraPreview mPreview;
+
+    private static int FRONT = 0, BACK = 1;// Probably not right for ALL phones
+    private int cameraID = FRONT;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle b) {
@@ -46,15 +49,32 @@ public class CameraPreviewFragment extends Fragment {
         mLayout = (FrameLayout) view.findViewById(R.id.camera_preview_frame);
 
         // get the floating action camera button
-        fab = (ActionButton) view.findViewById(R.id.camera_button);
-        fab.playShowAnimation();
-        fab.setOnClickListener(new View.OnClickListener() {
+        take_picture_button = (ActionButton) view.findViewById(R.id.camera_button);
+        take_picture_button.playShowAnimation();
+        take_picture_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // get an image from the camera
                 Log.d(TAG, "Taking a picture!");
-                fab.setClickable(false); // Safety precaution
+                take_picture_button.setClickable(false); // Safety precaution
                 mPreview.takePicture(mPictureCallback);
+            }
+        });
+
+        swap_camera_button = (ActionButton) view.findViewById(R.id.switch_camera);
+        swap_camera_button.playShowAnimation();
+        swap_camera_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // get an image from the camera
+                Log.d(TAG, "Swapping cameras!");
+                swap_camera_button.setClickable(false); // Safety precaution
+
+                stopCameraPreview();
+                cameraID = (cameraID + 1 ) % 2;
+                startCameraPreview(cameraID);
+
+                swap_camera_button.setClickable(true); // Safety precaution
             }
         });
 
@@ -66,17 +86,26 @@ public class CameraPreviewFragment extends Fragment {
     @Override
     public void onResume() {
         Log.d(TAG, "Resumed");
-        super.onStart();
-        mPreview = new CameraPreview(getActivity(), 0, CameraPreview.LayoutMode.FitToParent);
-        LayoutParams previewLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-
-        mLayout.addView(mPreview, 0, previewLayoutParams);
+        super.onResume();
+        startCameraPreview(cameraID);
     }
 
     @Override
     public void onPause() {
         Log.d(TAG, "paused");
         super.onStop();
+        stopCameraPreview();
+    }
+
+    /** Start a camera preview, including a new camera reference */
+    private void startCameraPreview(int cam_id){
+        mPreview = new CameraPreview(getActivity(), cam_id, CameraPreview.LayoutMode.FitToParent);
+        LayoutParams previewLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        mLayout.addView(mPreview, 0, previewLayoutParams);
+    }
+
+    /** Stop the camera preview, remove the view and release the camera */
+    private void stopCameraPreview(){
         mPreview.stop();
         mLayout.removeView(mPreview); // This is necessary.
         mPreview = null;
