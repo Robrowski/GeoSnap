@@ -3,6 +3,7 @@ package edu.cs430x.fuschia.geosnap.adapters;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DataSetObserver;
+import android.graphics.Bitmap;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.joooonho.SelectableRoundedImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.data.DiscoveredProjection;
@@ -42,7 +44,9 @@ public class DiscoveredAdapter extends RecyclerView.Adapter<DiscoveredAdapter.Di
         mImageLoader = ImageLoader.getInstance();
         options = new DisplayImageOptions.Builder()
                 .cacheOnDisk(true)
-                .cacheInMemory(true)
+                .cacheInMemory(false)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .imageScaleType(ImageScaleType.EXACTLY)
                 .build();
     }
     @Override

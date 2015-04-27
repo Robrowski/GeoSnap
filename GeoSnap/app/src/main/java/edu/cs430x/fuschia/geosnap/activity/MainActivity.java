@@ -127,6 +127,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         // Create global configuration and initialize ImageLoader with this config
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+                .threadPoolSize(2)
                 .diskCache(new UnlimitedDiscCache(cacheDir))
                 .diskCacheFileNameGenerator(new HashCodeFileNameGenerator())
                 .writeDebugLogs()
