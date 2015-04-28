@@ -250,6 +250,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 Intent query_intent = new Intent(this, QueryPhotos.class);
                 query_intent.putExtra("com.google.android.location.LOCATION",LocationReceiver.location);
                 query_intent.putExtra("DEBUG", true);
+                LocationReceiver.forceLocationUpdate();
                 startService(query_intent);
 
                 return true;

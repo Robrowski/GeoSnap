@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 
 import edu.cs430x.fuschia.geosnap.network.geocloud.QueryPhotos;
+import edu.cs430x.fuschia.geosnap.service.GoogleApiLocationService;
 
 public class LocationReceiver extends BroadcastReceiver {
     public static final String TAG = "LocationReceiver";
@@ -32,15 +33,6 @@ public class LocationReceiver extends BroadcastReceiver {
         Intent newIntent = new Intent(context, QueryPhotos.class);
         newIntent.putExtra("com.google.android.location.LOCATION",location);
         context.startService(newIntent);
-
-//        // TODO ping geocloud for discovery?
-//        Collection<String> c = LatLngHelper.getBuckets(location);
-//        for (String s: c){
-//            // Send a query to the geo cloud
-//            // Primary query is in the S = bucket name
-//            //      All snaps within get checked against distance from the actual location
-//        }
-
     }
 
     /** only to be used when manually getting the last known location */
@@ -56,5 +48,10 @@ public class LocationReceiver extends BroadcastReceiver {
         return new LatLng(
                 LocationReceiver.location_latitude,
                 LocationReceiver.location_longitude);
+    }
+
+
+    public static void forceLocationUpdate(){
+        GoogleApiLocationService.updateCurrentLocation();
     }
 }
