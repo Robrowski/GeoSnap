@@ -12,6 +12,7 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import java.io.IOException;
 
 import edu.cs430x.fuschia.geocloud.geoCloud.GeoCloud;
+import edu.cs430x.fuschia.geosnap.data.DateHelper;
 
 /**
  * Created by Matt on 4/12/2015.
@@ -40,7 +41,8 @@ public class InsertPhoto extends AsyncTask<Pair<Context, Photo>, Void, Long>{
                     photo.imageUrl,
                     photo.latitude,
                     photo.longitude,
-                    photo.discoverability).execute().getInsertedID();
+                    photo.discoverability,
+                    DateHelper.GetCurrentTimestamp()).execute().getInsertedID();
         } catch (IOException e) {
             Log.e(TAG,e.getMessage());
             Long l = -0l;

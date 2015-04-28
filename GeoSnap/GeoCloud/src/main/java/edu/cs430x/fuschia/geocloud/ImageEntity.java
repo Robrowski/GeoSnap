@@ -18,7 +18,7 @@ public class ImageEntity {
     public float latitude;
     public float longitude;
     public String discoverability;
-    public String lifetime;
+    public String timestamp;
 
     @Index
     public List<String> geocells;
@@ -27,11 +27,12 @@ public class ImageEntity {
 
     }
 
-    public ImageEntity(String imageUrl,float lat, float lon, String discoverability, List<String> geocells){
+    public ImageEntity(String imageUrl,float lat, float lon, String discoverability, List<String> geocells, String timestamp){
         this.imageUrl = imageUrl;
         this.latitude = lat;
         this.longitude = lon;
         this.discoverability = discoverability;
+        this.timestamp = timestamp;
         this.geocells = geocells;
     }
 

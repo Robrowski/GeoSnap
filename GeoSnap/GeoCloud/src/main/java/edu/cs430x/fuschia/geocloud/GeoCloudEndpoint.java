@@ -37,7 +37,8 @@ public class GeoCloudEndpoint {
      public InsertResponseBean insertPhoto(@Named("photoUrl") String photoUrl,
                                            @Named("locLat") float locLat,
                                            @Named("locLon") float locLon,
-                                           @Named("discoverability") String discoverability) {
+                                           @Named("discoverability") String discoverability,
+                                           @Named("timestamp") String timestamp) {
 
         double lat = locLat;
         double lon = locLon;
@@ -49,7 +50,7 @@ public class GeoCloudEndpoint {
         List<String> cells = GeocellManager.generateGeoCell(p);
 
         // Create our Image Entity and save it to the datastore
-        ImageEntity toInsert = new ImageEntity(photoUrl,locLat,locLon,discoverability,cells);
+        ImageEntity toInsert = new ImageEntity(photoUrl,locLat,locLon,discoverability,cells,timestamp);
         Key<ImageEntity> insertedImage = ofy().save().entity(toInsert).now();
 
         // Send back the response with an OK status and the ID of the inserted Image

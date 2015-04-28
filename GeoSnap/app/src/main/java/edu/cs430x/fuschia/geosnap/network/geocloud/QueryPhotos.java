@@ -104,7 +104,7 @@ public class QueryPhotos extends IntentService {
                                                                     location.getLatitude(),
                                                                     location.getLongitude(),
                                                                     newDiscoverability,
-                                                                    newTimestamp);
+                                                                    i.getTimestamp());
 
 
                     // Made it here, therefore the snap is fully downloaded and ready to view
