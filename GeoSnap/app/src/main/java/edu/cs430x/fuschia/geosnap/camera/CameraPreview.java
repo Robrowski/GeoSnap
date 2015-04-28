@@ -10,6 +10,7 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -19,7 +20,10 @@ import java.util.List;
 /**
  * This class assumes the parent layout is FrameLayout.LayoutParams.
  */
-public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+public class CameraPreview extends SurfaceView implements
+        SurfaceHolder.Callback,
+        Camera.AutoFocusCallback,
+        View.OnClickListener{
     private static boolean DEBUGGING = true;
     private static final String LOG_TAG = "CameraPreviewSample";
     private static final String CAMERA_PARAM_ORIENTATION = "orientation";
@@ -81,6 +85,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         Camera.Parameters cameraParams = mCamera.getParameters();
         mPreviewSizeList = cameraParams.getSupportedPreviewSizes();
         mPictureSizeList = cameraParams.getSupportedPictureSizes();
+
+        setClickable(true);
+        setOnClickListener(this);
     }
 
     @Override
@@ -383,6 +390,17 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
 
+    @Override
+    public void onClick(View v) {
+        mCamera.autoFocus(this);
+    }
+
+    @Override
+    public void onAutoFocus(boolean success, Camera camera) {
+        if (!success){
+            Log.w(LOG_TAG, "Apparently failed to focus...");
+        }
+    }
 }
 
 
