@@ -1,7 +1,44 @@
-<android.support.v4.view.ViewPager
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/pager"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/main_frame"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="edu.cs430x.fuschia.geosnap.activity.MainActivity" />
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:visibility="invisible"
+        android:id="@+id/internet_connectivity_warning"
+        android:layout_gravity="center_horizontal|top"
+        android:text="No internet connection"
+        android:background="@color/fab_material_red_500"
+        android:textColor="@color/fab_material_white"
+        android:translationZ="20dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:visibility="invisible"
+        android:id="@+id/location_services_warning"
+        android:layout_gravity="center_horizontal|top"
+        android:text="No location services."
+        android:background="@color/fab_material_purple_500"
+        android:textColor="@color/fab_material_white"
+        android:translationZ="20dp"/>
+
+
+    <android.support.v4.view.ViewPager
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        tools:context="edu.cs430x.fuschia.geosnap.activity.MainActivity"
+        android:translationZ="0dp"/>
+
+
+
+
+</FrameLayout>

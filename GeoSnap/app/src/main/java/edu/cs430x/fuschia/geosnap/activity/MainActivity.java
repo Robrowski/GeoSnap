@@ -4,9 +4,12 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -17,6 +20,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
@@ -41,12 +45,15 @@ import edu.cs430x.fuschia.geosnap.network.geocloud.QueryPhotos;
 import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
 import edu.cs430x.fuschia.geosnap.network.imgur.services.GetService;
 import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImgurResponseListener;
+import edu.cs430x.fuschia.geosnap.network.imgur.utils.NetworkListener;
+import edu.cs430x.fuschia.geosnap.network.imgur.utils.NetworkUtils;
 import edu.cs430x.fuschia.geosnap.service.GoogleApiLocationService;
 import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener,
         DiscoveredSnapsFragment.OnFragmentInteractionListener,
-        OnImgurResponseListener {
+        OnImgurResponseListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String INTENT_SNAP_ID = "SNAP_ID", INTENT_FILE_PATH = "IMAGE_FILE_PATH", TAG = "MainActivity";
     public static final String INTENT_IMAGE_BYTE_ARRAY="IMAGE_BYTE_ARRAY";
@@ -59,6 +66,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
 
     private  Intent start_location_service_intent;
+
+    private NetworkListener mNetworkListener;
+
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -74,16 +84,23 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+    private View internet_connectivity_warning, location_connectivity_warning;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        PreferenceManager.setDefaultValues(this, R.xml.pref_main, false);
         setContentView(R.layout.activity_main);
 
         // Set up the action bar.
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        // Register shared preference listener
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);
+
+        // Set up warning bars
+        internet_connectivity_warning = findViewById(R.id.internet_connectivity_warning);
 
         // Create the adapter that will return a fragment for each of the
         // primary sections of the activity.
@@ -171,6 +188,25 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     }
 
     @Override
+    protected void onStart(){
+        super.onStart();
+        setNetworkConnectivityWarning(NetworkUtils.isConnected(this)); // Force UI update
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            mNetworkListener = new NetworkListener(this);
+            mNetworkListener.start();
+        } /// Else it won't update until onStart()
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            mNetworkListener.stop();
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -215,6 +251,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 DiscoveredSnapsDBHelper dbHelper = new DiscoveredSnapsDBHelper(this);
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 db.delete(DiscoveredContract.DiscoveredEntry.TABLE_NAME,null,null);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -266,9 +303,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         ImageParcelable image = new ImageParcelable(c);
         view_snap_intent.putExtra(INTENT_IMG_URL,image);
         startActivity(view_snap_intent);
-
-
-
     }
 
 
@@ -280,6 +314,29 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         Toast toast = Toast.makeText(this, "Image received from imgur", Toast.LENGTH_SHORT);
         toast.show();
     }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        switch (key){
+            case NetworkListener.PREF_NETWORK_STATE:
+                setNetworkConnectivityWarning(
+                        sharedPref.getBoolean(NetworkListener.PREF_NETWORK_STATE, false));
+                return;
+            default:
+                return;
+        }
+    }
+
+    public void setNetworkConnectivityWarning(boolean connected){
+        if (connected)
+            internet_connectivity_warning.setVisibility(View.INVISIBLE);
+        else
+            internet_connectivity_warning.setVisibility(View.VISIBLE);
+        return;
+    }
+
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
