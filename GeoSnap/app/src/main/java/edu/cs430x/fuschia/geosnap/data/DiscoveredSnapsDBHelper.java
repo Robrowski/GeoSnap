@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
 
 import edu.cs430x.fuschia.geosnap.data.DiscoveredContract.DiscoveredEntry;
 
@@ -14,6 +15,9 @@ import edu.cs430x.fuschia.geosnap.data.DiscoveredContract.DiscoveredEntry;
 public class DiscoveredSnapsDBHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
     private static final int DATABASE_VERSION = 1;
+
+    private static int LIFETIME_IN_HOURS = -24;
+    private static int LIFETIME_IN_MINUTES = -2;
 
     static final String DATABASE_NAME = "discovered.db";
 
@@ -118,5 +122,21 @@ public class DiscoveredSnapsDBHelper extends SQLiteOpenHelper {
 
         //At the end, we just want to know if anything was found. If it was, the snap exists.
         return (c.getCount() > 0);
+    }
+
+    /**
+     * Call whenever we want to update the list of snaps in the database to remove all expired snaps
+     */
+    public static void RemoveExpiredSnaps(Context currentContext)
+    {
+        DiscoveredSnapsDBHelper mDbHelper = new DiscoveredSnapsDBHelper(currentContext);
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        // Define 'where' part of query.
+        String selection = DiscoveredEntry.COLUMN_TIMESTAMP + " < ?";
+        // Specify arguments in placeholder order.
+        String[] selectionArgs = { DateHelper.AddHoursToCurrentTime(LIFETIME_IN_MINUTES) };
+        // Issue SQL statement.
+        db.delete(DiscoveredEntry.TABLE_NAME, selection, selectionArgs);
+        System.out.println("Database Deleted all before: " + DateHelper.AddHoursToCurrentTime(LIFETIME_IN_MINUTES));
     }
 }

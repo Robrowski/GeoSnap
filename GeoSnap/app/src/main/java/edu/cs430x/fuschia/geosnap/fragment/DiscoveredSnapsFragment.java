@@ -88,6 +88,7 @@ public class DiscoveredSnapsFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         mDbHelper = new DiscoveredSnapsDBHelper(getActivity());
+        mDbHelper.RemoveExpiredSnaps(getActivity().getApplicationContext());
 
         // get the database for reading, and query it for our projection to
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
