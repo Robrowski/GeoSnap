@@ -1,7 +1,6 @@
 package edu.cs430x.fuschia.geosnap.fragment;
 
 import android.app.Activity;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import edu.cs430x.fuschia.geosnap.R;
 
@@ -24,7 +26,12 @@ import edu.cs430x.fuschia.geosnap.R;
 public class SnapViewFragment extends Fragment {
     private static final String TAG = "SnapViewFragment", SNAP_ID = "SnapID";
 
+    public static final String INTENT_IMG_URL="IMAGE_URL";
+
     private OnFragmentInteractionListener mListener;
+
+    private ImageLoader mImageLoader;
+    private DisplayImageOptions options;
 
     /**
      * Use this factory method to create a new instance of
@@ -32,12 +39,12 @@ public class SnapViewFragment extends Fragment {
      *
      * @return A new instance of fragment SnapViewFragment.
      */
-    public static SnapViewFragment newInstance(String id) {
+    public static SnapViewFragment newInstance(String imgUrl) {
         SnapViewFragment fragment = new SnapViewFragment();
         Bundle args = new Bundle();
 
         // a reference into the local DB and do stuff that way?
-        args.putString(SNAP_ID, id);
+        args.putString(INTENT_IMG_URL, imgUrl);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,6 +57,11 @@ public class SnapViewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mImageLoader = ImageLoader.getInstance();
+//        options = new DisplayImageOptions.Builder()
+//                .cacheOnDisk(false)
+//                .cacheInMemory(true)
+//                .build();
     }
 
     @Override
@@ -59,9 +71,13 @@ public class SnapViewFragment extends Fragment {
 
         Log.i(TAG, "Loading snap file into SnapImageView");
         ImageView imageView = (ImageView) inflated.findViewById(R.id.snapView);
-        imageView.setImageBitmap(BitmapFactory.decodeFile(getActivity()
-                .getFileStreamPath(String.valueOf(getArguments().getString(SNAP_ID)) + ".png")
-                .getAbsolutePath()));
+
+        String url = getArguments().getString(INTENT_IMG_URL);
+        Log.i(TAG,url);
+        mImageLoader.displayImage(getArguments().getString(INTENT_IMG_URL),imageView);
+//        imageView.setImageBitmap(BitmapFactory.decodeFile(getActivity()
+//                .getFileStreamPath(String.valueOf(getArguments().getString(SNAP_ID)) + ".png")
+//                .getAbsolutePath()));
         Log.i(TAG, "Done Loading snap file into SnapImageView");
 
         return inflated;

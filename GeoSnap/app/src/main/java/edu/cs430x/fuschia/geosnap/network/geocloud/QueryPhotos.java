@@ -15,7 +15,6 @@ import android.view.View;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
@@ -60,10 +59,10 @@ public class QueryPhotos extends IntentService {
         }
 
         Location location = (Location) intent.getExtras().get("com.google.android.location.LOCATION");
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
-                .cacheOnDisk(true)
-                .cacheInMemory(true)
-                .build();
+//        DisplayImageOptions options = new DisplayImageOptions.Builder()
+//                .cacheOnDisk(false)
+//                .cacheInMemory(true)
+//                .build();
         try {
             GeoQueryResponseBean response = myApiService.queryPhotoByLocation(
                     (float)location.getLatitude(),(float)location.getLongitude()).execute();
@@ -85,7 +84,7 @@ public class QueryPhotos extends IntentService {
                     }
 
                     //       2: if not, add it and then download the image
-                    ImageLoader.getInstance().loadImage(string_url, options, new SimpleImageLoadingListener() {
+                    ImageLoader.getInstance().loadImage(string_url, new SimpleImageLoadingListener() {
                         @Override
                         public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                             // nothing, we are just caching it for later

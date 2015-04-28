@@ -21,7 +21,6 @@ import edu.cs430x.fuschia.geosnap.adapters.DiscoveredAdapter;
 import edu.cs430x.fuschia.geosnap.data.DiscoveredContract;
 import edu.cs430x.fuschia.geosnap.data.DiscoveredProjection;
 import edu.cs430x.fuschia.geosnap.data.DiscoveredSnapsDBHelper;
-import edu.cs430x.fuschia.geosnap.dummy.DummyContent;
 import edu.cs430x.fuschia.geosnap.network.geocloud.QueryPhotos;
 
 /**
@@ -53,6 +52,8 @@ public class DiscoveredSnapsFragment extends Fragment {
     private RecyclerView mRecyclerView;
 
     private DiscoveredSnapsDBHelper mDbHelper;
+
+    Cursor mdiscoveredCursor;
 
     /**
      * The Adapter which will be used to populate the ListView/GridView with
@@ -93,7 +94,7 @@ public class DiscoveredSnapsFragment extends Fragment {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         // TODO: create selection string for selecting only photos not posted by user?
-        Cursor discoveredCursor = db.query(DiscoveredContract.DiscoveredEntry.TABLE_NAME,
+        mdiscoveredCursor = db.query(DiscoveredContract.DiscoveredEntry.TABLE_NAME,
                 DiscoveredProjection.DISCOVERED_COLUMNS, // projection: what cols we want to retrieve
                 null, // selection: query string, (select photos not posted by user?)
                 null, // selection args: values for selection string
@@ -101,7 +102,8 @@ public class DiscoveredSnapsFragment extends Fragment {
                 null, // having
                 null); // order by
 
-        mAdapter = new DiscoveredAdapter(getActivity(),discoveredCursor);
+
+        mAdapter = new DiscoveredAdapter(getActivity(),mdiscoveredCursor);
     }
 
     @Override
@@ -123,7 +125,10 @@ public class DiscoveredSnapsFragment extends Fragment {
                     //TODO: change this to pass real data back for snap viewing
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
+                    if (!mdiscoveredCursor.moveToPosition(position)) {
+                        throw new IllegalStateException("couldn't move cursor to position " + position);
+                    }
+                    mListener.onFragmentInteraction(mdiscoveredCursor);
 
                 }
             }
@@ -176,6 +181,7 @@ public class DiscoveredSnapsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(String id);
+        public void onFragmentInteraction(Cursor c);
         // TODO rename to something that reflects the fact that a new activity for snap viewing
         // should be opened
     }
