@@ -80,8 +80,6 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
         fab1.setOnClickListener(optionClick);
         fab2.setOnClickListener(optionClick);
         fab3.setOnClickListener(optionClick);
-
-
     }
 
     public View.OnClickListener menuToggle = new View.OnClickListener(){
