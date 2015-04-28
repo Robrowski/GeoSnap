@@ -49,7 +49,7 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
     private final int mAnimationDelayPerItem = 50;
     private boolean mMenuOpened = false;
 
-    private String mDiscoverability;
+    private String mDiscoverability = Discoverability.DISC_MEDIUM;
     ActionButton fam;
 
     @Override
@@ -183,9 +183,9 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
     /** Whe the accept button is pressed, start trying to upload the image to the servers */
     public void onAccept(View v) {
         /*     Start upload     */
+        Log.i(TAG, "Started upload to imgur");
         new UploadService(createUpload(), this).execute();
         NavUtils.navigateUpFromSameTask(this);
-        Log.i(TAG, "Started upload to imgur");
     }
 
     /** When the reject button is pressed, the activity backs out to previous and
