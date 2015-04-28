@@ -17,7 +17,7 @@ public class DiscoveredSnapsDBHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     private static int LIFETIME_IN_HOURS = -24;
-    private static int LIFETIME_IN_MINUTES = -2;
+    private static int LIFETIME_IN_MINUTES = -1;
 
     static final String DATABASE_NAME = "discovered.db";
 
@@ -134,9 +134,8 @@ public class DiscoveredSnapsDBHelper extends SQLiteOpenHelper {
         // Define 'where' part of query.
         String selection = DiscoveredEntry.COLUMN_TIMESTAMP + " < ?";
         // Specify arguments in placeholder order.
-        String[] selectionArgs = { DateHelper.AddHoursToCurrentTime(LIFETIME_IN_MINUTES) };
+        String[] selectionArgs = { DateHelper.AddHoursToCurrentTime(LIFETIME_IN_HOURS) };
         // Issue SQL statement.
         db.delete(DiscoveredEntry.TABLE_NAME, selection, selectionArgs);
-        System.out.println("Database Deleted all before: " + DateHelper.AddHoursToCurrentTime(LIFETIME_IN_MINUTES));
     }
 }
