@@ -14,6 +14,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import edu.cs430x.fuschia.geosnap.R;
+import edu.cs430x.fuschia.geosnap.data.ImageParcelable;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,12 +40,12 @@ public class SnapViewFragment extends Fragment {
      *
      * @return A new instance of fragment SnapViewFragment.
      */
-    public static SnapViewFragment newInstance(String imgUrl) {
+    public static SnapViewFragment newInstance(ImageParcelable image) {
         SnapViewFragment fragment = new SnapViewFragment();
         Bundle args = new Bundle();
 
         // a reference into the local DB and do stuff that way?
-        args.putString(INTENT_IMG_URL, imgUrl);
+        args.putParcelable(INTENT_IMG_URL, image);
         fragment.setArguments(args);
         return fragment;
     }
@@ -58,10 +59,6 @@ public class SnapViewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mImageLoader = ImageLoader.getInstance();
-//        options = new DisplayImageOptions.Builder()
-//                .cacheOnDisk(false)
-//                .cacheInMemory(true)
-//                .build();
     }
 
     @Override
@@ -72,12 +69,10 @@ public class SnapViewFragment extends Fragment {
         Log.i(TAG, "Loading snap file into SnapImageView");
         ImageView imageView = (ImageView) inflated.findViewById(R.id.snapView);
 
-        String url = getArguments().getString(INTENT_IMG_URL);
+        ImageParcelable image = getArguments().getParcelable(INTENT_IMG_URL);
+        String url = image.getImageUrl();
         Log.i(TAG,url);
-        mImageLoader.displayImage(getArguments().getString(INTENT_IMG_URL),imageView);
-//        imageView.setImageBitmap(BitmapFactory.decodeFile(getActivity()
-//                .getFileStreamPath(String.valueOf(getArguments().getString(SNAP_ID)) + ".png")
-//                .getAbsolutePath()));
+        mImageLoader.displayImage(url,imageView);
         Log.i(TAG, "Done Loading snap file into SnapImageView");
 
         return inflated;

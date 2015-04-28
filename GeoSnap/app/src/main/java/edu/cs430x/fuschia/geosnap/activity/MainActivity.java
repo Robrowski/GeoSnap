@@ -33,8 +33,8 @@ import java.util.Locale;
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.activity.settings.MainSettingsActivity;
 import edu.cs430x.fuschia.geosnap.data.DiscoveredContract;
-import edu.cs430x.fuschia.geosnap.data.DiscoveredProjection;
 import edu.cs430x.fuschia.geosnap.data.DiscoveredSnapsDBHelper;
+import edu.cs430x.fuschia.geosnap.data.ImageParcelable;
 import edu.cs430x.fuschia.geosnap.fragment.CameraPreviewFragment;
 import edu.cs430x.fuschia.geosnap.fragment.DiscoveredSnapsFragment;
 import edu.cs430x.fuschia.geosnap.network.geocloud.QueryPhotos;
@@ -132,12 +132,15 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .cacheOnDisk(true)
                 .cacheInMemory(true)
+
                 .build();
 
         File cacheDir = StorageUtils.getCacheDirectory(this);
 
         // Create global configuration and initialize ImageLoader with this config
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+                .threadPriority(Thread.MAX_PRIORITY)
+                .denyCacheImageMultipleSizesInMemory()
                 .memoryCache(new WeakMemoryCache())
                 .defaultDisplayImageOptions(options)
                 .diskCache(new UnlimitedDiscCache(cacheDir))
@@ -260,15 +263,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         // Make intent to start new activity
         Intent view_snap_intent = new Intent(this, SnapViewActivity.class);
 
-        String url = c.getString(DiscoveredProjection.COL_PHOTO_URL);
-        if (url == null){
-            Log.i(TAG,"WHAT");
-        }
-        else{
-            Log.i(TAG,url);
-            view_snap_intent.putExtra(INTENT_IMG_URL,c.getString(DiscoveredProjection.COL_PHOTO_URL));
-            startActivity(view_snap_intent);
-        }
+        ImageParcelable image = new ImageParcelable(c);
+        view_snap_intent.putExtra(INTENT_IMG_URL,image);
+        startActivity(view_snap_intent);
 
 
 

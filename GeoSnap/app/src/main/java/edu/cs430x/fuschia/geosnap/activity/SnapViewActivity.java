@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import java.util.Locale;
 
 import edu.cs430x.fuschia.geosnap.R;
+import edu.cs430x.fuschia.geosnap.data.ImageParcelable;
 import edu.cs430x.fuschia.geosnap.fragment.SnapLocationFragment;
 import edu.cs430x.fuschia.geosnap.fragment.SnapViewFragment;
 
@@ -134,12 +135,13 @@ public class SnapViewActivity extends ActionBarActivity implements
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
+            ImageParcelable image = getIntent().getParcelableExtra(INTENT_IMG_URL);
             switch (position) {
                 case 0:
-                    String imgUrl= getIntent().getStringExtra(INTENT_IMG_URL);
-                    return SnapViewFragment.newInstance(imgUrl);
+
+                    return SnapViewFragment.newInstance(image);
                 case 1:
-                    return SnapLocationFragment.newInstance(42.32, -71.1 );
+                    return SnapLocationFragment.newInstance(image);
             }
             return null;
         }

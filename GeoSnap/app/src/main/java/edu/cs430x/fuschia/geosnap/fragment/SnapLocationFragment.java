@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import edu.cs430x.fuschia.geosnap.data.ImageParcelable;
 import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
 
 /**
@@ -32,6 +33,8 @@ public class SnapLocationFragment extends SupportMapFragment implements OnMapRea
             ARG_LATITUDE = "arg_latitude",
             ARG_LONGITUDE = "arg_longitude";
 
+    public static final String INTENT_IMG_URL="IMAGE_URL";
+
     private double latitude = 0, longitude = 0;
 
     /**
@@ -40,14 +43,13 @@ public class SnapLocationFragment extends SupportMapFragment implements OnMapRea
      *
      * @return A new instance of fragment SnapLocationFragment.
      */
-    public static SnapLocationFragment newInstance(double lat, double lon) {
+    public static SnapLocationFragment newInstance(ImageParcelable image) {
         // TODO how about making this take a reference to the DB on the phone...
         // can get discoverability, lat lon, building...
 
         SnapLocationFragment fragment = new SnapLocationFragment();
         Bundle args = new Bundle();
-        args.putDouble(ARG_LATITUDE, lat);
-        args.putDouble(ARG_LONGITUDE, lon);
+        args.putParcelable(INTENT_IMG_URL,image);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,8 +59,9 @@ public class SnapLocationFragment extends SupportMapFragment implements OnMapRea
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            latitude = getArguments().getDouble(ARG_LATITUDE);
-            longitude = getArguments().getDouble(ARG_LONGITUDE);
+            ImageParcelable image = getArguments().getParcelable(INTENT_IMG_URL);
+            latitude = image.getLat();
+            longitude = image.getLon();
         }
         getMapAsync(this); // ons onMapReady when the map is ready :D
         Log.i(TAG, "Waiting for map to be ready");
