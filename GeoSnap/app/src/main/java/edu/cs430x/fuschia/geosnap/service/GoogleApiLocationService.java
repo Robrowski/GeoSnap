@@ -36,7 +36,7 @@ public class GoogleApiLocationService extends Service implements
             PREF_ALLOW_LOCATION_SERVICE = "pref_allow_location_service";
 
     private PendingIntent locationPendingIntent, activityPendingIntent;
-    private GoogleApiClient mGoogleLocationClient;
+    private static GoogleApiClient mGoogleLocationClient;
 
     private static final int SECONDS = 60, MILLISECONDS = 1000;
 
@@ -79,8 +79,7 @@ public class GoogleApiLocationService extends Service implements
     @Override
     public void onConnected(Bundle bundle) {
         Log.w(TAG, "Google API services connected. Requesting activity and location updates");
-        Location l = LocationServices.FusedLocationApi.getLastLocation(mGoogleLocationClient);
-        LocationReceiver.setLastLocation(l);
+        updateCurrentLocation();
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -103,6 +102,12 @@ public class GoogleApiLocationService extends Service implements
             Log.d(TAG, "Disabling location, enabling activity updates");
             cancelLocationUpdates();
         }
+    }
+
+    /** Requests the last location */
+    public static void updateCurrentLocation() {
+        Location l = LocationServices.FusedLocationApi.getLastLocation(mGoogleLocationClient);
+        LocationReceiver.setLastLocation(l);
     }
 
     @Override

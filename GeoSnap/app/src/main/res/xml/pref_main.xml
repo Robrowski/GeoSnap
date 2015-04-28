@@ -52,6 +52,13 @@
             android:shouldDisableView="true"
             android:key="pref_activity_moving"
             android:defaultValue="true" />
+        <CheckBoxPreference
+            android:title="Network == connected"
+            android:visibility="invisible"
+            android:enabled="false"
+            android:shouldDisableView="true"
+            android:defaultValue="false"
+            android:key="pref_network_state" />
     </PreferenceCategory>
 
 

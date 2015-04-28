@@ -31,7 +31,7 @@
         android:id="@+id/switch_camera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|right"
+        android:layout_gravity="right"
         android:layout_marginBottom="@dimen/fab_margin"
         fab:type="MINI"
         fab:button_color="@color/fab_material_lime_500"
@@ -44,6 +44,6 @@
         fab:shadow_yOffset="1.0dp"
         fab:show_animation="@anim/fab_roll_from_down"
         fab:hide_animation="@anim/fab_roll_to_down"
-        />
+        android:layout_marginTop="40dp" />
 
 </FrameLayout>
