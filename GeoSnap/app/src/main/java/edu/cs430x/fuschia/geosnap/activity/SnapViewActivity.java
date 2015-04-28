@@ -32,6 +32,7 @@ public class SnapViewActivity extends ActionBarActivity implements
      */
     SectionsPagerAdapter mSectionsPagerAdapter;
 
+    public static final String INTENT_IMG_URL="IMAGE_URL";
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -135,7 +136,8 @@ public class SnapViewActivity extends ActionBarActivity implements
             // getItem is called to instantiate the fragment for the given page.
             switch (position) {
                 case 0:
-                    return SnapViewFragment.newInstance("mrl7Jl4");
+                    String imgUrl= getIntent().getStringExtra(INTENT_IMG_URL);
+                    return SnapViewFragment.newInstance(imgUrl);
                 case 1:
                     return SnapLocationFragment.newInstance(42.32, -71.1 );
             }

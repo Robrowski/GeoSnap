@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:id="@+id/camera_preview_frame"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clickable="true">
+    android:layout_height="match_parent" >
 
-    <!--<SurfaceView-->
-        <!--android:id="@+id/cpPreview"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="center"/>-->
 
     <com.software.shell.fab.ActionButton
         android:id="@+id/camera_button"

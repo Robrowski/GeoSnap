@@ -40,7 +40,7 @@ public class CameraPreviewFragment extends Fragment {
     private CameraPreview mPreview;
 
     private static int FRONT = 0, BACK = 1;// Probably not right for ALL phones
-    private int cameraID = FRONT;
+    private int mCameraId = FRONT;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle b) {
@@ -62,21 +62,28 @@ public class CameraPreviewFragment extends Fragment {
         });
 
         swap_camera_button = (ActionButton) view.findViewById(R.id.switch_camera);
-        swap_camera_button.playShowAnimation();
-        swap_camera_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // get an image from the camera
-                Log.d(TAG, "Swapping cameras!");
-                swap_camera_button.setClickable(false); // Safety precaution
 
-                stopCameraPreview();
-                cameraID = (cameraID + 1 ) % 2;
-                startCameraPreview(cameraID);
+        // Check to make sure there is a face-facing camera!
+        if (Camera.getNumberOfCameras() <= 1){
+            swap_camera_button.setClickable(false);
+            swap_camera_button.setVisibility(View.INVISIBLE);
+        } else {
+            swap_camera_button.playShowAnimation();
+            swap_camera_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // get an image from the camera
+                    Log.d(TAG, "Swapping cameras!");
+                    swap_camera_button.setClickable(false); // Safety precaution
 
-                swap_camera_button.setClickable(true); // Safety precaution
-            }
-        });
+                    stopCameraPreview();
+                    mCameraId = (mCameraId + 1) % 2;
+                    startCameraPreview(mCameraId);
+
+                    swap_camera_button.setClickable(true); // Safety precaution
+                }
+            });
+        }
 
         Log.d(TAG, "View created");
         return view;
@@ -87,7 +94,7 @@ public class CameraPreviewFragment extends Fragment {
     public void onResume() {
         Log.d(TAG, "Resumed");
         super.onResume();
-        startCameraPreview(cameraID);
+        startCameraPreview(mCameraId);
     }
 
     @Override
@@ -119,10 +126,17 @@ public class CameraPreviewFragment extends Fragment {
             Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
             Bitmap oldBitmap = bitmap;
 
+
+
             // In order to properly fix the rotation of our image, we create
             // a new bitmap with a 90 degree rotation transformation.
             Matrix matrix = new Matrix();
-            matrix.postRotate(90);
+            if (mCameraId == FRONT){
+                matrix.postRotate(90);
+            } else if (mCameraId == BACK){
+                matrix.preScale(1, -1); // Mirror image
+                matrix.postRotate(-90); // Rotate to make vertical
+            }
 
             bitmap = Bitmap.createBitmap(
                     bitmap,
@@ -133,6 +147,7 @@ public class CameraPreviewFragment extends Fragment {
                     matrix,
                     false
             );
+            Log.i(TAG, "w: " + String.valueOf(bitmap.getWidth()) + "  h: " + String.valueOf(bitmap.getHeight()));
 
             // Make intent to start activity to display the picture
             Context c = getActivity();

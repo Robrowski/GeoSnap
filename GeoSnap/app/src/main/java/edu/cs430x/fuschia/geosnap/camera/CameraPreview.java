@@ -10,6 +10,7 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -19,7 +20,10 @@ import java.util.List;
 /**
  * This class assumes the parent layout is FrameLayout.LayoutParams.
  */
-public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+public class CameraPreview extends SurfaceView implements
+        SurfaceHolder.Callback,
+        Camera.AutoFocusCallback,
+        View.OnClickListener{
     private static boolean DEBUGGING = true;
     private static final String LOG_TAG = "CameraPreviewSample";
     private static final String CAMERA_PARAM_ORIENTATION = "orientation";
@@ -81,6 +85,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         Camera.Parameters cameraParams = mCamera.getParameters();
         mPreviewSizeList = cameraParams.getSupportedPreviewSizes();
         mPictureSizeList = cameraParams.getSupportedPictureSizes();
+
+        setClickable(true);
+        setOnClickListener(this);
     }
 
     @Override
@@ -114,7 +121,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             if (DEBUGGING) { Log.v(LOG_TAG, "Desired Preview Size - w: " + width + ", h: " + height); }
             mPreviewSize = previewSize;
             mPictureSize = pictureSize;
-            mSurfaceConfiguring = adjustSurfaceLayoutSize(previewSize, portrait, width, height);
+
+            /** TODO This line is probably the dynamic part. If you uncomment it, it will shrink the
+             * width of the surface view. For me it took off 58 pixels to maintain aspect ratio
+             */
+//            mSurfaceConfiguring = adjustSurfaceLayoutSize(previewSize, portrait, width, height);
+
+
             // Continue executing this method if this method is called recursively.
             // Recursive call of surfaceChanged is very special case, which is a path from
             // the catch clause at the end of this method.
@@ -377,6 +390,17 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
 
+    @Override
+    public void onClick(View v) {
+        mCamera.autoFocus(this);
+    }
+
+    @Override
+    public void onAutoFocus(boolean success, Camera camera) {
+        if (!success){
+            Log.w(LOG_TAG, "Apparently failed to focus...");
+        }
+    }
 }
 
 

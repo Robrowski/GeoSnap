@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,8 @@ import android.widget.Toast;
 
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.utils.StorageUtils;
@@ -30,6 +33,7 @@ import java.util.Locale;
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.activity.settings.MainSettingsActivity;
 import edu.cs430x.fuschia.geosnap.data.DiscoveredContract;
+import edu.cs430x.fuschia.geosnap.data.DiscoveredProjection;
 import edu.cs430x.fuschia.geosnap.data.DiscoveredSnapsDBHelper;
 import edu.cs430x.fuschia.geosnap.fragment.CameraPreviewFragment;
 import edu.cs430x.fuschia.geosnap.fragment.DiscoveredSnapsFragment;
@@ -47,6 +51,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     public static final String INTENT_SNAP_ID = "SNAP_ID", INTENT_FILE_PATH = "IMAGE_FILE_PATH", TAG = "MainActivity";
     public static final String INTENT_IMAGE_BYTE_ARRAY="IMAGE_BYTE_ARRAY";
     public static final String INTENT_LATITUDE = "INTENT_LATITUDE", INTENT_LONGITUDE = "INTENT_LONGITUDE";
+
+    public static final String INTENT_IMG_URL="IMAGE_URL";
 
     private static final int DISCOVERED_PAGE = 0;
     private static final int CAMERA_PAGE = 1;
@@ -123,11 +129,17 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             startService(start_location_service_intent);
         }
 
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                .cacheOnDisk(true)
+                .cacheInMemory(true)
+                .build();
+
         File cacheDir = StorageUtils.getCacheDirectory(this);
 
         // Create global configuration and initialize ImageLoader with this config
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-                .threadPoolSize(2)
+                .memoryCache(new WeakMemoryCache())
+                .defaultDisplayImageOptions(options)
                 .diskCache(new UnlimitedDiscCache(cacheDir))
                 .diskCacheFileNameGenerator(new HashCodeFileNameGenerator())
                 .writeDebugLogs()
@@ -240,6 +252,26 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         // send it
         startActivity(view_snap_intent);
+    }
+
+    @Override
+    public void onFragmentInteraction(Cursor c){
+        Log.i(TAG, "Launching the snap viewing activity");
+        // Make intent to start new activity
+        Intent view_snap_intent = new Intent(this, SnapViewActivity.class);
+
+        String url = c.getString(DiscoveredProjection.COL_PHOTO_URL);
+        if (url == null){
+            Log.i(TAG,"WHAT");
+        }
+        else{
+            Log.i(TAG,url);
+            view_snap_intent.putExtra(INTENT_IMG_URL,c.getString(DiscoveredProjection.COL_PHOTO_URL));
+            startActivity(view_snap_intent);
+        }
+
+
+
     }
 
 
