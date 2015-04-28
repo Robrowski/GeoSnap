@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -42,9 +43,6 @@ import edu.cs430x.fuschia.geosnap.data.ImageParcelable;
 import edu.cs430x.fuschia.geosnap.fragment.CameraPreviewFragment;
 import edu.cs430x.fuschia.geosnap.fragment.DiscoveredSnapsFragment;
 import edu.cs430x.fuschia.geosnap.network.geocloud.QueryPhotos;
-import edu.cs430x.fuschia.geosnap.network.imgur.model.ImageResponse;
-import edu.cs430x.fuschia.geosnap.network.imgur.services.GetService;
-import edu.cs430x.fuschia.geosnap.network.imgur.services.OnImgurResponseListener;
 import edu.cs430x.fuschia.geosnap.network.imgur.utils.NetworkListener;
 import edu.cs430x.fuschia.geosnap.network.imgur.utils.NetworkUtils;
 import edu.cs430x.fuschia.geosnap.service.GoogleApiLocationService;
@@ -52,7 +50,6 @@ import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener,
         DiscoveredSnapsFragment.OnFragmentInteractionListener,
-        OnImgurResponseListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String INTENT_SNAP_ID = "SNAP_ID", INTENT_FILE_PATH = "IMAGE_FILE_PATH", TAG = "MainActivity";
@@ -84,7 +81,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
-    private View internet_connectivity_warning, location_connectivity_warning;
+    private View mInternetConnectivityWarning, mLocationConnectivityWarning;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +97,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 .registerOnSharedPreferenceChangeListener(this);
 
         // Set up warning bars
-        internet_connectivity_warning = findViewById(R.id.internet_connectivity_warning);
+        mInternetConnectivityWarning = findViewById(R.id.internet_connectivity_warning);
+        mLocationConnectivityWarning = findViewById(R.id.location_services_warning);
 
         // Create the adapter that will return a fragment for each of the
         // primary sections of the activity.
@@ -196,6 +194,26 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             mNetworkListener.start();
         } /// Else it won't update until onStart()
 
+        // Update location warning 
+        LocationManager lm = null;
+        boolean gps_enabled = false,network_enabled = false;
+        if(lm==null)
+            lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        try{
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch(Exception ex){}
+        try{
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch(Exception ex){}
+
+        Log.i(TAG, "GPS: "  + gps_enabled + "   Net: " + network_enabled);
+
+        if (!network_enabled && !gps_enabled){
+            mLocationConnectivityWarning.setVisibility(View.VISIBLE);
+        } else {
+            mLocationConnectivityWarning.setVisibility(View.INVISIBLE);
+        }
+
     }
 
     @Override
@@ -217,19 +235,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             case R.id.action_settings:
                 startActivity(new Intent(this, MainSettingsActivity.class));
                 return true;
-            case R.id.test_load_snap:
-                // Download a snap from imgur. Toast to signify completion
-                Log.w(TAG, "Requesting image from imgur: " + mock_id);
 
-                // TODO This is all it takes to download an image from imgur
-                new GetService(mock_id, this, this).execute();
 
-                return true;
-            case R.id.test_view_snap:
-                // Load a snap as a test
-                // This ID should be pulled from the on click listener...
-                onFragmentInteraction(mock_id);
-                return true;
             case R.id.test_location:
                 String txt = "lat: " + LocationReceiver.location_latitude + " lon: " + LocationReceiver.location_longitude;
                 Log.w(TAG, txt);
@@ -307,15 +314,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
 
     @Override
-    public void onImgurResponse(ImageResponse response) {
-        // Called every time an image is downloaded from imgur
-        // TODO update discovered snaps UI to reflect the discovery
-        // TODO notification to indicate image ready to be viewed
-        Toast toast = Toast.makeText(this, "Image received from imgur", Toast.LENGTH_SHORT);
-        toast.show();
-    }
-
-    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         switch (key){
@@ -330,9 +328,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     public void setNetworkConnectivityWarning(boolean connected){
         if (connected)
-            internet_connectivity_warning.setVisibility(View.INVISIBLE);
+            mInternetConnectivityWarning.setVisibility(View.INVISIBLE);
         else
-            internet_connectivity_warning.setVisibility(View.VISIBLE);
+            mInternetConnectivityWarning.setVisibility(View.VISIBLE);
         return;
     }
 
