@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,19 +10,71 @@
         android:layout_height="150dp"
         android:layout_gravity="center"
         android:layout_margin="2dp"
-        card_view:cardElevation="2dp"
-        card_view:cardCornerRadius="2dp">
+        card_view:cardBackgroundColor="@color/colorAccent"
+        card_view:cardElevation="4dp"
+        card_view:cardCornerRadius="3dp">
 
-        <com.joooonho.SelectableRoundedImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/image"
-            android:scaleType="centerCrop"
-            app:sriv_left_top_corner_radius="2dip"
-            app:sriv_right_top_corner_radius="2dip"
-            app:sriv_left_bottom_corner_radius="0dip"
-            app:sriv_right_bottom_corner_radius="0dp"/>
+            android:orientation="horizontal">
+            <com.joooonho.SelectableRoundedImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_margin="5dp"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:id="@+id/image"
+                android:scaleType="centerCrop"
+                android:src="@drawable/test_snap"
+                app:sriv_left_top_corner_radius="2dip"
+                app:sriv_right_top_corner_radius="2dip"
+                app:sriv_left_bottom_corner_radius="3dip"
+                app:sriv_right_bottom_corner_radius="2dip"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center_vertical">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:gravity="center">
+                    <TextView
+                        android:id="@+id/discoverText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:text="Secret"
+                        android:textSize="20sp" />
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/secret_icon_white"/>
+                    </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="25dp"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:text="Time Left: "/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:text="5 hr"/>
+                    </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+        
 
         <!--<TextView-->
             <!--android:id="@+id/info_text"-->
@@ -30,6 +82,6 @@
             <!--android:layout_height="match_parent" />-->
     </android.support.v7.widget.CardView>
 
-</LinearLayout>
+</FrameLayout>
     <!--card_view:cardUseCompatPadding="true"-->
 
