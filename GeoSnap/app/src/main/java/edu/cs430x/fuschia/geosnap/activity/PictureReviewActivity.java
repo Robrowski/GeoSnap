@@ -1,7 +1,6 @@
 package edu.cs430x.fuschia.geosnap.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,7 +19,6 @@ import com.software.shell.fab.ActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.cs430x.fuschia.geocommons.location.LatLngHelper;
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.camera.ImageBitmap;
 import edu.cs430x.fuschia.geosnap.network.geocloud.Discoverability;
@@ -237,14 +235,6 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
                 this.mDiscoverability);
         Pair<Context,Photo> args = new Pair<Context,Photo>(getApplicationContext(),photo);
         insertPhotoTask.execute(args);
-        // TODO parcel up Lat + Long for GeoCloud too
-        Intent i = getIntent();
-        float latitude = i.getFloatExtra(MainActivity.INTENT_LATITUDE, 0);
-        float longitude = i.getFloatExtra(MainActivity.INTENT_LONGITUDE, 0);
-        //TODO use this bucket with the Long/Lat... or calculate it server side with the same-ish call
-        String bucket_name = LatLngHelper.calcBucketName(
-                LocationReceiver.location_latitude,
-                LocationReceiver.location_longitude);
 
     }
 

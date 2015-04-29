@@ -1,1 +1,1 @@
-include ':app', ':GeoCloud',':geocommons'
+include ':app', ':GeoCloud', ':geocommons'
