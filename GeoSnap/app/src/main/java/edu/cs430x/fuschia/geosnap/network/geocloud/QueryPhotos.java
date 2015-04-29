@@ -7,8 +7,10 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
@@ -58,11 +60,9 @@ public class QueryPhotos extends IntentService {
             myApiService = builder.build();
         }
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Location location = (Location) intent.getExtras().get("com.google.android.location.LOCATION");
-//        DisplayImageOptions options = new DisplayImageOptions.Builder()
-//                .cacheOnDisk(false)
-//                .cacheInMemory(true)
-//                .build();
+
         try {
             GeoQueryResponseBean response = myApiService.queryPhotoByLocation(
                     (float)location.getLatitude(),(float)location.getLongitude()).execute();
@@ -74,8 +74,6 @@ public class QueryPhotos extends IntentService {
                 for (ImageEntity i: response.getImages()){
                     String string_url = "http://i.imgur.com/" + i.getImageUrl() + ".png";
                     Log.i(TAG,string_url);
-                    // TODO: 1: check if already found in our local db.
-                    // IF in DB already, then it is downloaded already, => break;
                     if(DiscoveredSnapsDBHelper.SnapExists(getApplicationContext(),
                                                         string_url))
                     {
@@ -111,10 +109,19 @@ public class QueryPhotos extends IntentService {
                     images_ready++; // TODO Keep track of number between queries?!?!
                 }
                 if (images_ready >0 && intent.getBooleanExtra("NOTIFICATION",true)){
-                    notifyNewSnaps(images_ready);
+                    if (sharedPref.contains("NOTIFY_COUNT")){
+                        int currentCount = sharedPref.getInt("NOTIFY_COUNT",0);
+                        int newCount = currentCount+images_ready;
+                        Log.v(TAG,"already had count: " + currentCount);
+                        sharedPref.edit().putInt("NOTIFY_COUNT",newCount).commit();
+                        notifyNewSnaps(newCount);
+                    }
+                    else{
+                        Log.v(TAG,"putting into shared pref:" + images_ready);
+                        sharedPref.edit().putInt("NOTIFY_COUNT",images_ready).commit();
+                        notifyNewSnaps(images_ready);
+                    }
                 }
-
-
             }
             else{
                 Log.i(TAG,"no photos discovered");

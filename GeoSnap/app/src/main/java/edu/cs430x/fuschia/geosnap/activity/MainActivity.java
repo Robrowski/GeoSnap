@@ -93,8 +93,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         // Register shared preference listener
-        PreferenceManager.getDefaultSharedPreferences(this)
-                .registerOnSharedPreferenceChangeListener(this);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPref.registerOnSharedPreferenceChangeListener(this);
 
         // Set up warning bars
         mInternetConnectivityWarning = findViewById(R.id.internet_connectivity_warning);
@@ -132,6 +132,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         // If this activity is launched from a notification, load the discovered page first
         if (getIntent().getBooleanExtra(QueryPhotos.SNAPS_DISCOVERED, false)){
+            Log.v(TAG,"notification clicked, reseting count");
+            sharedPref.edit().putInt("NOTIFY_COUNT",0).commit();
             mViewPager.setCurrentItem(DISCOVERED_PAGE);
         } else {
             mViewPager.setCurrentItem(CAMERA_PAGE);
