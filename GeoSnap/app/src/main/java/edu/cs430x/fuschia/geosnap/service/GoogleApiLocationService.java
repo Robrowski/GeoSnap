@@ -28,33 +28,23 @@ public class GoogleApiLocationService extends Service implements
     private static final String TAG = "GoogleLocationService";
     private static final int REQUEST_CODE = 8934230;
 
+    private SharedPreferences sharedPref;
     private PendingIntent locationPendingIntent, activityPendingIntent;
     private static GoogleApiClient mGoogleLocationClient;
 
     @Override
     public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("GoogleApiLocationService not for binding");
+        throw new UnsupportedOperationException("GoogleApiLocationService not for binding!");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
         // Called EVERY time the service is "started"
         super.onStartCommand(intent, flags, startId);
-        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         buildGoogleApiClient();
         buildPendingIntents();
 
-        /**************************************************************/
-        // If this service is not enabled, kill it!
-        // TODO this is for debugging only. Remove for final versions
-        if (!sharedPref.getBoolean(GeoConstants.GeoPrefs.PREF_ALLOW_LOCATION_SERVICE, true)){
-            Log.i(TAG, "Location + Activity service is disabled. Ruh roh.");
-            stopSelf(startId);
-            return START_NOT_STICKY;
-        }
-        /**************************************************************/
-
-        // Proceed as normal
         if(!mGoogleLocationClient.isConnected() || !mGoogleLocationClient.isConnecting())
             mGoogleLocationClient.connect();
         sharedPref.unregisterOnSharedPreferenceChangeListener(this);
@@ -105,7 +95,7 @@ public class GoogleApiLocationService extends Service implements
             cancelLocationUpdates();
         }
         mGoogleLocationClient.disconnect();
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+        sharedPref.unregisterOnSharedPreferenceChangeListener(this);
         Log.w(TAG, "Google location service destroyed");
         super.onDestroy();
     }
@@ -120,53 +110,82 @@ public class GoogleApiLocationService extends Service implements
     }
 
     private void buildPendingIntents(){
-        Intent newActivity = new Intent(this, ActivityReceiver.class).setAction(GeoConstants.GeoReceivers.BROADCAST_NEW_ACTIVITY);
-        activityPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), REQUEST_CODE, newActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+        Intent newActivity = new Intent(this, ActivityReceiver.class)
+                .setAction(GeoConstants.GeoReceivers.BROADCAST_NEW_ACTIVITY);
+        activityPendingIntent = PendingIntent.getBroadcast(
+                getApplicationContext(),
+                REQUEST_CODE,
+                newActivity,
+                PendingIntent.FLAG_CANCEL_CURRENT);
 
-        Intent newLocation = new Intent(this, LocationReceiver.class).setAction(GeoConstants.GeoReceivers.BROADCAST_NEW_LOCATION);
-        locationPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), REQUEST_CODE, newLocation, PendingIntent.FLAG_CANCEL_CURRENT);
+        Intent newLocation = new Intent(this, LocationReceiver.class)
+                .setAction(GeoConstants.GeoReceivers.BROADCAST_NEW_LOCATION);
+        locationPendingIntent = PendingIntent.getBroadcast(
+                getApplicationContext(),
+                REQUEST_CODE,
+                newLocation,
+                PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
 
     private void requestActivityUpdates() {
         cancelActivityUpdates();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
-        long ACTIVITY_DETECTION_MILLIS = Integer.parseInt(sharedPref.getString(GeoConstants.GeoPrefs.PREF_ACTIVITY_INTERVAL, "10")) * GeoConstants.MILLISECONDS;
-        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mGoogleLocationClient, ACTIVITY_DETECTION_MILLIS, activityPendingIntent);
+        long ACTIVITY_DETECTION_MILLIS = Integer.parseInt(
+                sharedPref.getString(
+                        GeoConstants.GeoPrefs.PREF_ACTIVITY_INTERVAL,
+                        GeoConstants.LocationDefaults.ACTIVITY_INTERVAL))
+                * GeoConstants.MILLISECONDS;
+        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
+                mGoogleLocationClient,
+                ACTIVITY_DETECTION_MILLIS,
+                activityPendingIntent);
     }
 
     /** request to request location updates */
     private void requestLocationUpdates(){
         // Remove previous request for location updates to be safe
         cancelLocationUpdates();
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleLocationClient, buildLocRequest(), locationPendingIntent);
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleLocationClient,
+                buildLocRequest(),
+                locationPendingIntent);
     }
 
     private void cancelActivityUpdates(){
-        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleLocationClient, activityPendingIntent);
+        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(
+                mGoogleLocationClient,
+                activityPendingIntent);
     }
 
     private void cancelLocationUpdates(){
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleLocationClient, locationPendingIntent);
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleLocationClient,
+                locationPendingIntent);
     }
 
     /* Build the request based on settings in the shared preference manager */
     private LocationRequest buildLocRequest(){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         return LocationRequest.create()
-                .setInterval(Integer.parseInt(
-                        sharedPref.getString(GeoConstants.GeoPrefs.PREF_INTERVAL, "31"))
-                        * GeoConstants.SECONDS
-                        *  GeoConstants.MILLISECONDS)      // 2 minutes
-                .setFastestInterval(Integer.parseInt(sharedPref.getString(
-                        GeoConstants.GeoPrefs.PREF_FASTEST_INTERVAL, "61"))
-                        * GeoConstants.MILLISECONDS) // 30 seconds
-                .setSmallestDisplacement(Float.parseFloat(sharedPref.getString(
-                        GeoConstants.GeoPrefs.PREF_SMALLEST_DISPLACEMENT, "0.1")))
-                .setPriority(getPreferredPriority(Integer.parseInt(sharedPref.getString(
-                        GeoConstants.GeoPrefs.PREF_REQUEST_PRIORITY, "0"))));
+                .setInterval( Integer.parseInt(
+                        sharedPref.getString(GeoConstants.GeoPrefs.PREF_INTERVAL,
+                                GeoConstants.LocationDefaults.LOCATION_INTERVAL))
+                        *  GeoConstants.SECONDS
+                        *  GeoConstants.MILLISECONDS )
+                .setFastestInterval(Integer.parseInt(
+                        sharedPref.getString(
+                                GeoConstants.GeoPrefs.PREF_FASTEST_INTERVAL,
+                                GeoConstants.LocationDefaults.FASTEST_INTERVAL))
+                        * GeoConstants.MILLISECONDS)
+                .setSmallestDisplacement(Float.parseFloat(
+                        sharedPref.getString(
+                                GeoConstants.GeoPrefs.PREF_SMALLEST_DISPLACEMENT,
+                                GeoConstants.LocationDefaults.SMALLEST_DISPLACEMENT)))
+                .setPriority(getPreferredPriority(Integer.parseInt(
+                        sharedPref.getString(
+                                GeoConstants.GeoPrefs.PREF_REQUEST_PRIORITY,
+                                GeoConstants.LocationDefaults.REQUEST_PRIORITY))));
     }
 
     /** Translate a given preference value to a LocationRequest flag.
@@ -197,10 +216,7 @@ public class GoogleApiLocationService extends Service implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         switch (key){
-            // TODO is it optimal to simply restart any/all API services when settings change?
-            // If any of these settings change, RESTART the location and activity service with new settings
             case GeoConstants.GeoPrefs.PREF_INTERVAL:
             case GeoConstants.GeoPrefs.PREF_FASTEST_INTERVAL:
             case GeoConstants.GeoPrefs.PREF_SMALLEST_DISPLACEMENT:
@@ -215,17 +231,6 @@ public class GoogleApiLocationService extends Service implements
                 mGoogleLocationClient.reconnect();
                 return;
 
-            /**************************************************************/
-            // TODO this is for debugging only. Remove for final versions
-            case GeoConstants.GeoPrefs.PREF_ALLOW_LOCATION_SERVICE:
-                if (!sharedPref.getBoolean(GeoConstants.GeoPrefs.PREF_ALLOW_LOCATION_SERVICE, true)){
-                    Log.i(TAG, "Location + Activity service is disabled. Ruh roh.");
-                    stopSelf();
-                } else {
-                    // Main activity will attempt to start it
-                }
-                /**************************************************************/
-                return;
             default:
                 Log.i(TAG, "This preference changed: " + key);
                 return;

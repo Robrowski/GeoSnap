@@ -17,8 +17,7 @@ public interface GeoConstants {
                 PREF_SMALLEST_DISPLACEMENT = "pref_smallest_displacement",
                 PREF_REQUEST_PRIORITY = "pref_request_priority",
                 PREF_ALLOW_ACTIVITY_RECOGNITION = "pref_allow_activity_recognition",
-                PREF_ACTIVITY_INTERVAL = "pref_activity_interval",
-                PREF_ALLOW_LOCATION_SERVICE = "pref_allow_location_service";
+                PREF_ACTIVITY_INTERVAL = "pref_activity_interval";
     }
 
 
@@ -27,6 +26,23 @@ public interface GeoConstants {
                 BROADCAST_NEW_ACTIVITY = "edu.cs430x.fuschia.geosnap.ACTIVITY_UPDATE";
 
     }
+
+    public interface Intents {
+        static final String INTENT_KEY_LOCATION = "com.google.android.location.LOCATION";
+    }
+
+
+    public interface LocationDefaults{
+        public static final String REQUEST_PRIORITY = "0", /* balanced power */
+                LOCATION_INTERVAL = "3", /* minutes between official GPS location requests  */
+                FASTEST_INTERVAL = "15", /* seconds between accepting location updates */
+                SMALLEST_DISPLACEMENT = "0.0", /* meters */
+                ACTIVITY_INTERVAL = "30"; /* seconds between activity updates*/
+
+
+    }
+
+
 
 
 }

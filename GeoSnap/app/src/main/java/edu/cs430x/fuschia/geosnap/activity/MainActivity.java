@@ -51,36 +51,15 @@ import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener,
         DiscoveredSnapsFragment.OnFragmentInteractionListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
+    private static final String TAG = "MainActivity";
+    public static final String INTENT_SNAP_ID = "SNAP_ID", INTENT_IMG_URL = "IMAGE_URL";
 
-    public static final String INTENT_SNAP_ID = "SNAP_ID", INTENT_FILE_PATH = "IMAGE_FILE_PATH", TAG = "MainActivity";
-    public static final String INTENT_IMAGE_BYTE_ARRAY="IMAGE_BYTE_ARRAY";
-    public static final String INTENT_LATITUDE = "INTENT_LATITUDE", INTENT_LONGITUDE = "INTENT_LONGITUDE";
-
-    public static final String INTENT_IMG_URL="IMAGE_URL";
-
-    private static final int DISCOVERED_PAGE = 0;
-    private static final int CAMERA_PAGE = 1;
-
+    private static final int DISCOVERED_PAGE = 0, CAMERA_PAGE = 1;
 
     private  Intent start_location_service_intent;
-
     private NetworkListener mNetworkListener;
-
-
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    ViewPager mViewPager;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager mViewPager;
     private View mInternetConnectivityWarning, mLocationConnectivityWarning;
 
     @Override
@@ -232,28 +211,19 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        String mock_id = "mrl7Jl4";
         switch (id){
             case R.id.action_settings:
                 startActivity(new Intent(this, MainSettingsActivity.class));
                 return true;
 
-
             case R.id.test_location:
-                String txt = "lat: " + LocationReceiver.location_latitude + " lon: " + LocationReceiver.location_longitude;
+                String txt = "lat: "
+                        + LocationReceiver.location_latitude
+                        + " lon: "
+                        + LocationReceiver.location_longitude;
                 Log.w(TAG, txt);
                 Toast t = Toast.makeText(this,txt,Toast.LENGTH_SHORT);
                 t.show();
-                return true;
-
-            // TODO Remove (Matt wants this until he finishes the material design of the notifications)
-            case R.id.test_discovered_snaps_notification:
-                Log.i(TAG, "Testing discovered snaps notification");
-                Intent query_intent = new Intent(this, QueryPhotos.class);
-                LocationReceiver.forceLocationUpdate();
-                query_intent.putExtra("com.google.android.location.LOCATION",LocationReceiver.location);
-                query_intent.putExtra("DEBUG", true);
-                startService(query_intent);
                 return true;
 
             case R.id.test_delete_db:

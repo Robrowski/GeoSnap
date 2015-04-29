@@ -25,6 +25,7 @@ import java.io.IOException;
 import edu.cs430x.fuschia.geocloud.geoCloud.GeoCloud;
 import edu.cs430x.fuschia.geocloud.geoCloud.model.GeoQueryResponseBean;
 import edu.cs430x.fuschia.geocloud.geoCloud.model.ImageEntity;
+import edu.cs430x.fuschia.geosnap.GeoConstants;
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.activity.MainActivity;
 import edu.cs430x.fuschia.geosnap.data.DateHelper;
@@ -61,7 +62,7 @@ public class QueryPhotos extends IntentService {
         }
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        Location location = (Location) intent.getExtras().get("com.google.android.location.LOCATION");
+        Location location = (Location) intent.getExtras().get(GeoConstants.Intents.INTENT_KEY_LOCATION);
 
         try {
             GeoQueryResponseBean response = myApiService.queryPhotoByLocation(
