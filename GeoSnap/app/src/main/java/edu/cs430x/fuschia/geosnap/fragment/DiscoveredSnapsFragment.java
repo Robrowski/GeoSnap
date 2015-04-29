@@ -58,7 +58,7 @@ public class DiscoveredSnapsFragment extends Fragment {
     SQLiteDatabase mDB;
     private static DiscoveredSnapsDBHelper mDbHelper;
 
-    Cursor mdiscoveredCursor;
+    private static Cursor mdiscoveredCursor;
 
     private static SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -190,6 +190,7 @@ public class DiscoveredSnapsFragment extends Fragment {
         Intent query_intent = new Intent(getActivity(), QueryPhotos.class);
         LocationReceiver.forceLocationUpdate();
         query_intent.putExtra("com.google.android.location.LOCATION",LocationReceiver.location);
+        query_intent.putExtra("NOTIFICATION",false);
         query_intent.putExtra("DEBUG", false);
         getActivity().startService(query_intent);
 
@@ -204,8 +205,8 @@ public class DiscoveredSnapsFragment extends Fragment {
             if (mAdapter != null && mSwipeRefreshLayout !=null){
                 SQLiteDatabase db = mDbHelper.getReadableDatabase();
                 Cursor updated = queryDB(db);
+                mdiscoveredCursor = updated;
                 mAdapter.changeCursor(updated);
-                mAdapter.notifyDataSetChanged();
                 if (mSwipeRefreshLayout.isRefreshing()) {
                     mSwipeRefreshLayout.setRefreshing(false);
                 }

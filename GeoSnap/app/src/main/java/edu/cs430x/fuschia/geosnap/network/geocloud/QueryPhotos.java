@@ -110,17 +110,18 @@ public class QueryPhotos extends IntentService {
                     // Made it here, therefore the snap is fully downloaded and ready to view
                     images_ready++; // TODO Keep track of number between queries?!?!
                 }
-                if (images_ready >0){
+                if (images_ready >0 && intent.getBooleanExtra("NOTIFICATION",true)){
                     notifyNewSnaps(images_ready);
                 }
 
-                Intent refreshIntent = new Intent();
-                refreshIntent.setAction("edu.cs430x.fuschia.geosnap.REFRESH_SNAPS");
-                sendBroadcast(refreshIntent);
+
             }
             else{
                 Log.i(TAG,"no photos discovered");
             }
+            Intent refreshIntent = new Intent();
+            refreshIntent.setAction("edu.cs430x.fuschia.geosnap.REFRESH_SNAPS");
+            sendBroadcast(refreshIntent);
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
         }

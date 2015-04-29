@@ -163,6 +163,4 @@ public class SnapViewActivity extends ActionBarActivity implements
             return null;
         }
     }
-
-
 }
