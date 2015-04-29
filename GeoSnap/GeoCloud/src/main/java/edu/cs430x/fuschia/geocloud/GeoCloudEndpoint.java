@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Named;
+import javax.swing.text.html.parser.Entity;
 
 import edu.cs430x.fuschia.geocloud.Constants.DiscoverRadius;
 import edu.cs430x.fuschia.geocloud.Constants.Discoverability;
@@ -135,6 +136,24 @@ public class GeoCloudEndpoint {
             response.setFoundImages(false);
         }
 
+        //TODO: Move this somewhere better. For now, delete expired on every query
+        deleteExpiredSnaps();
+
         return response;
+    }
+
+    /**
+     * Function to easily remove the snaps from the database that have expired.
+     */
+    private void deleteExpiredSnaps() {
+        //Get the current timestamp as a string.
+        String currentTimestamp = "";
+
+        //Get a list of all entities that have expired.
+        List<ImageEntity> expiredEntities;
+        expiredEntities = ofy().load().type(ImageEntity.class).filter("timestamp <", currentTimestamp).list();
+
+        //Delete all of the entities that we determined have expired.
+        ofy().delete().entities(expiredEntities);
     }
 }

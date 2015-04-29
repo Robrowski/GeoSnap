@@ -97,7 +97,6 @@ public class QueryPhotos extends IntentService {
                     // fails...
 
                     String newDiscoverability = i.getDiscoverability();
-                    String newTimestamp = DateHelper.GetCurrentTimestamp();
                     DiscoveredSnapsDBHelper.InsertSnapIntoDatabase( getApplicationContext(),
                                                                     "dur",
                                                                     string_url,
