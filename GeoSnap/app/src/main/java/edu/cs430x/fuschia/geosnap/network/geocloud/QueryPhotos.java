@@ -114,7 +114,9 @@ public class QueryPhotos extends IntentService {
                     notifyNewSnaps(images_ready);
                 }
 
-                // TODO: call receiver here, who could make sure listview is updated + send
+                Intent refreshIntent = new Intent();
+                refreshIntent.setAction("edu.cs430x.fuschia.geosnap.REFRESH_SNAPS");
+                sendBroadcast(refreshIntent);
             }
             else{
                 Log.i(TAG,"no photos discovered");
