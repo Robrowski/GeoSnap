@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import edu.cs430x.fuschia.geosnap.GeoConstants;
 import edu.cs430x.fuschia.geosnap.network.geocloud.QueryPhotos;
 import edu.cs430x.fuschia.geosnap.service.GoogleApiLocationService;
 
@@ -26,8 +27,11 @@ public class LocationReceiver extends BroadcastReceiver {
         location_latitude = location.getLatitude();
         location_longitude = location.getLongitude();
 
-        Toast t = Toast.makeText(context,"lat: " + location_latitude + " lon: " + location_longitude,Toast.LENGTH_SHORT);
-        t.show();
+        if (GeoConstants.DEBUG_TOASTS) {
+            Toast t = Toast.makeText(context, "lat: " + location_latitude
+                    + " lon: " + location_longitude, Toast.LENGTH_SHORT);
+            t.show();
+        }
         Log.w(TAG,"lat: " + location_latitude + " lon: " + location_longitude);
 
         Intent newIntent = new Intent(context, QueryPhotos.class);
