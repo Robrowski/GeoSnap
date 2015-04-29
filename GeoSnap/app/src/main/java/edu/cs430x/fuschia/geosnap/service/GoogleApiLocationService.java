@@ -16,32 +16,20 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import edu.cs430x.fuschia.geosnap.GeoConstants;
 import edu.cs430x.fuschia.geosnap.service.receivers.ActivityReceiver;
 import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
 
 public class GoogleApiLocationService extends Service implements
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, SharedPreferences.OnSharedPreferenceChangeListener {
+        GoogleApiClient.OnConnectionFailedListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = "GoogleLocationService";
     private static final int REQUEST_CODE = 8934230;
-    static final String BROADCAST_NEW_LOCATION = "edu.cs430x.fuschia.geosnap.LOCATION_UPDATE",
-            BROADCAST_NEW_ACTIVITY = "edu.cs430x.fuschia.geosnap.ACTIVITY_UPDATE";
-    private static final String PREF_INTERVAL = "pref_interval",
-            PREF_FASTEST_INTERVAL = "pref_fastest_interval",
-            PREF_SMALLEST_DISPLACEMENT = "pref_smallest_displacement",
-            PREF_REQUEST_PRIORITY = "pref_request_priority",
-            PREF_ALLOW_ACTIVITY_RECOGNITION = "pref_allow_activity_recognition",
-            PREF_ACTIVITY_INTERVAL = "pref_activity_interval",
-            PREF_ALLOW_LOCATION_SERVICE = "pref_allow_location_service";
 
     private PendingIntent locationPendingIntent, activityPendingIntent;
     private static GoogleApiClient mGoogleLocationClient;
-
-    private static final int SECONDS = 60, MILLISECONDS = 1000;
-
-    public GoogleApiLocationService() {
-    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -59,7 +47,7 @@ public class GoogleApiLocationService extends Service implements
         /**************************************************************/
         // If this service is not enabled, kill it!
         // TODO this is for debugging only. Remove for final versions
-        if (!sharedPref.getBoolean(PREF_ALLOW_LOCATION_SERVICE, true)){
+        if (!sharedPref.getBoolean(GeoConstants.GeoPrefs.PREF_ALLOW_LOCATION_SERVICE, true)){
             Log.i(TAG, "Location + Activity service is disabled. Ruh roh.");
             stopSelf(startId);
             return START_NOT_STICKY;
@@ -84,7 +72,7 @@ public class GoogleApiLocationService extends Service implements
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         // Case 1: activity disabled in pref
-        if (!sharedPref.getBoolean(PREF_ALLOW_ACTIVITY_RECOGNITION, true)){
+        if (!sharedPref.getBoolean(GeoConstants.GeoPrefs.PREF_ALLOW_ACTIVITY_RECOGNITION, true)){
             Log.d(TAG, "Enabling location, disabling activity updates");
             requestLocationUpdates(); // default
             cancelActivityUpdates();
@@ -95,7 +83,7 @@ public class GoogleApiLocationService extends Service implements
         requestActivityUpdates();
 
         // Case 2&3: activity receiver disable location - request location if moving
-        if (sharedPref.getBoolean(ActivityReceiver.PREF_ACTIVITY_MOVING, true)) {
+        if (sharedPref.getBoolean(GeoConstants.GeoPrefs.PREF_ACTIVITY_MOVING, true)) {
             Log.d(TAG, "Enabling location, enabling activity updates");
             requestLocationUpdates();
         } else {
@@ -132,10 +120,10 @@ public class GoogleApiLocationService extends Service implements
     }
 
     private void buildPendingIntents(){
-        Intent newActivity = new Intent(this, ActivityReceiver.class).setAction(BROADCAST_NEW_ACTIVITY);
+        Intent newActivity = new Intent(this, ActivityReceiver.class).setAction(GeoConstants.GeoReceivers.BROADCAST_NEW_ACTIVITY);
         activityPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), REQUEST_CODE, newActivity, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        Intent newLocation = new Intent(this, LocationReceiver.class).setAction(BROADCAST_NEW_LOCATION);
+        Intent newLocation = new Intent(this, LocationReceiver.class).setAction(GeoConstants.GeoReceivers.BROADCAST_NEW_LOCATION);
         locationPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), REQUEST_CODE, newLocation, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
@@ -144,7 +132,7 @@ public class GoogleApiLocationService extends Service implements
         cancelActivityUpdates();
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
-        long ACTIVITY_DETECTION_MILLIS = Integer.parseInt(sharedPref.getString(PREF_ACTIVITY_INTERVAL, "10")) * MILLISECONDS;
+        long ACTIVITY_DETECTION_MILLIS = Integer.parseInt(sharedPref.getString(GeoConstants.GeoPrefs.PREF_ACTIVITY_INTERVAL, "10")) * GeoConstants.MILLISECONDS;
         ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mGoogleLocationClient, ACTIVITY_DETECTION_MILLIS, activityPendingIntent);
     }
 
@@ -168,10 +156,17 @@ public class GoogleApiLocationService extends Service implements
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         return LocationRequest.create()
-                .setInterval(Integer.parseInt(sharedPref.getString(PREF_INTERVAL, "31")) * SECONDS * MILLISECONDS)      // 2 minutes
-                .setFastestInterval(Integer.parseInt(sharedPref.getString(PREF_FASTEST_INTERVAL, "61")) * MILLISECONDS) // 30 seconds
-                .setSmallestDisplacement(Float.parseFloat(sharedPref.getString(PREF_SMALLEST_DISPLACEMENT, "0.1")))
-                .setPriority(getPreferredPriority(Integer.parseInt(sharedPref.getString(PREF_REQUEST_PRIORITY, "0"))));
+                .setInterval(Integer.parseInt(
+                        sharedPref.getString(GeoConstants.GeoPrefs.PREF_INTERVAL, "31"))
+                        * GeoConstants.SECONDS
+                        *  GeoConstants.MILLISECONDS)      // 2 minutes
+                .setFastestInterval(Integer.parseInt(sharedPref.getString(
+                        GeoConstants.GeoPrefs.PREF_FASTEST_INTERVAL, "61"))
+                        * GeoConstants.MILLISECONDS) // 30 seconds
+                .setSmallestDisplacement(Float.parseFloat(sharedPref.getString(
+                        GeoConstants.GeoPrefs.PREF_SMALLEST_DISPLACEMENT, "0.1")))
+                .setPriority(getPreferredPriority(Integer.parseInt(sharedPref.getString(
+                        GeoConstants.GeoPrefs.PREF_REQUEST_PRIORITY, "0"))));
     }
 
     /** Translate a given preference value to a LocationRequest flag.
@@ -206,24 +201,24 @@ public class GoogleApiLocationService extends Service implements
         switch (key){
             // TODO is it optimal to simply restart any/all API services when settings change?
             // If any of these settings change, RESTART the location and activity service with new settings
-            case PREF_INTERVAL:
-            case PREF_FASTEST_INTERVAL:
-            case PREF_SMALLEST_DISPLACEMENT:
-            case PREF_REQUEST_PRIORITY:
-            case PREF_ACTIVITY_INTERVAL:
+            case GeoConstants.GeoPrefs.PREF_INTERVAL:
+            case GeoConstants.GeoPrefs.PREF_FASTEST_INTERVAL:
+            case GeoConstants.GeoPrefs.PREF_SMALLEST_DISPLACEMENT:
+            case GeoConstants.GeoPrefs.PREF_REQUEST_PRIORITY:
+            case GeoConstants.GeoPrefs.PREF_ACTIVITY_INTERVAL:
                 Log.i(TAG, "Location polling preferences changed");
                 mGoogleLocationClient.reconnect();
                 return;
-            case ActivityReceiver.PREF_ACTIVITY_MOVING:
-            case PREF_ALLOW_ACTIVITY_RECOGNITION:
+            case GeoConstants.GeoPrefs.PREF_ACTIVITY_MOVING:
+            case GeoConstants.GeoPrefs.PREF_ALLOW_ACTIVITY_RECOGNITION:
                 Log.i(TAG, "Updating location services based on movement");
                 mGoogleLocationClient.reconnect();
                 return;
 
             /**************************************************************/
             // TODO this is for debugging only. Remove for final versions
-            case PREF_ALLOW_LOCATION_SERVICE:
-                if (!sharedPref.getBoolean(PREF_ALLOW_LOCATION_SERVICE, true)){
+            case GeoConstants.GeoPrefs.PREF_ALLOW_LOCATION_SERVICE:
+                if (!sharedPref.getBoolean(GeoConstants.GeoPrefs.PREF_ALLOW_LOCATION_SERVICE, true)){
                     Log.i(TAG, "Location + Activity service is disabled. Ruh roh.");
                     stopSelf();
                 } else {
