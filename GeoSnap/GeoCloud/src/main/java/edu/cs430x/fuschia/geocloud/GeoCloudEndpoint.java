@@ -14,7 +14,10 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.googlecode.objectify.Key;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Named;
@@ -31,6 +34,10 @@ import static edu.cs430x.fuschia.geocloud.OfyService.ofy;
  */
 @Api(name = "geoCloud", version = "v1", namespace = @ApiNamespace(ownerDomain = "geocloud.fuschia.cs430x.edu", ownerName = "geocloud.fuschia.cs430x.edu", packagePath = ""))
 public class GeoCloudEndpoint {
+
+    static String dateFormatString = "yyyy/MM/dd HH:mm:ss";
+    static int MILLISECONDS_PER_HOUR = 3600000;
+
     /**
      * A simple endpoint method that takes a name and says Hi back
      */
@@ -94,11 +101,23 @@ public class GeoCloudEndpoint {
         nearbyImages = ofy().load().type(ImageEntity.class).filter("geocells in", cells).list();
         System.out.println("nearby images size: " + nearbyImages.size());
 
+        //Get the current timestamp as a string.
+        String expirationTimestamp = AddHoursToCurrentTime(-24);
+
         // We have all pictures within ~max radius of user, now we check to see if user is in bounds
         // of the individual radii
         Location user = new Location(locLat,locLon);
         ArrayList<ImageEntity> foundImages = new ArrayList<ImageEntity>();
         for (ImageEntity img : nearbyImages){
+
+            //Delete the snap if it has expired
+            if(img.timestamp.compareTo(expirationTimestamp) < 0)
+            {
+                ofy().delete().entity(img);
+                break;
+            }
+
+
             Location pt = new Location(img.latitude,img.longitude);
             double distance = user.distFrom(pt);
             System.out.println("distance: " + distance);
@@ -136,24 +155,36 @@ public class GeoCloudEndpoint {
             response.setFoundImages(false);
         }
 
-        //TODO: Move this somewhere better. For now, delete expired on every query
-        deleteExpiredSnaps();
-
         return response;
     }
 
     /**
-     * Function to easily remove the snaps from the database that have expired.
+     * Get the time in string format after adding some hours
+     * @param hours
+     * @return
      */
-    private void deleteExpiredSnaps() {
-        //Get the current timestamp as a string.
-        String currentTimestamp = "";
+    private static String AddHoursToCurrentTime(int hours)
+    {
+        DateFormat dateFormat = new SimpleDateFormat(dateFormatString);
 
-        //Get a list of all entities that have expired.
-        List<ImageEntity> expiredEntities;
-        expiredEntities = ofy().load().type(ImageEntity.class).filter("timestamp <", currentTimestamp).list();
+        Date current = new Date();
+        current.setTime(current.getTime() + hours * MILLISECONDS_PER_HOUR);
 
-        //Delete all of the entities that we determined have expired.
-        ofy().delete().entities(expiredEntities);
+        return dateFormat.format(current);
+    }
+
+    /**
+     * Get the time in string format after adding some minutes
+     * @param hours The hours to add.
+     * @return
+     */
+    private static String AddMinutesToCurrentTime(int minutes)
+    {
+        DateFormat dateFormat = new SimpleDateFormat(dateFormatString);
+
+        Date current = new Date();
+        current.setTime(current.getTime() + minutes * MILLISECONDS_PER_HOUR / 60);
+
+        return dateFormat.format(current);
     }
 }
