@@ -125,6 +125,7 @@
     <orderEntry type="library" exported="" name="fab-1.0.5" level="project" />
     <orderEntry type="library" exported="" name="play-services-games-7.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-wallet-7.0.0" level="project" />
+    <orderEntry type="module" module-name="geocommons" exported="" />
   </component>
 </module>
 
