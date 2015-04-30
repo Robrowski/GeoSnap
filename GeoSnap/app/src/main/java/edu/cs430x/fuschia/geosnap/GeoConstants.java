@@ -46,6 +46,17 @@ public interface GeoConstants {
             SURVEY_URL = "https://docs.google.com/forms/d/17NKWX2r4qtQKNzInEsYFxZ6--GR_xVXSVUEVeUHMwgw/viewform" ;
 
 
+    public class Discoverability {
+        public static final String DISC_SECRET = "secret";
+        public static final String DISC_MEDIUM = "medium";
+        public static final String DISC_FAR    = "far";
+    }
+
+    public class DiscoverRadius {
+        public static final int RAD_SECRET = 50;
+        public static final int RAD_MEDIUM = 100;
+        public static final int RAD_FAR    = 200;
+    }
 
 
 }
