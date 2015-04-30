@@ -3,6 +3,7 @@ package edu.cs430x.fuschia.geosnap.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -50,6 +51,8 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
     private final int mAnimationDelayPerItem = 50;
     private boolean mMenuOpened = false;
 
+    private Location mLocation;
+
     private String mDiscoverability = Discoverability.DISC_MEDIUM;
     ActionButton fam;
 
@@ -81,6 +84,9 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
         fab1.setOnClickListener(optionClick);
         fab2.setOnClickListener(optionClick);
         fab3.setOnClickListener(optionClick);
+
+        LocationReceiver.forceLocationUpdate();
+        mLocation = LocationReceiver.location;
     }
 
     public View.OnClickListener menuToggle = new View.OnClickListener(){
@@ -237,10 +243,18 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
         Log.i(TAG,imgur_image_id);
 
         // Send to the GeoCloud server
-        Photo photo = new Photo(imgur_image_id,
-                (float)LocationReceiver.location_latitude,
-                (float)LocationReceiver.location_longitude,
-                this.mDiscoverability);
+        Photo photo;
+        if (mLocation != null) {  // use the location from when the snap was taken
+            photo = new Photo(imgur_image_id,
+                    (float) mLocation.getLatitude(),
+                    (float) mLocation.getLongitude(),
+                    this.mDiscoverability);
+        } else { // Use what ever default lat lng is stored
+            photo = new Photo(imgur_image_id,
+                    (float) LocationReceiver.location_latitude,
+                    (float) LocationReceiver.location_longitude,
+                    this.mDiscoverability);
+        }
         Pair<Context,Photo> args = new Pair<Context,Photo>(getApplicationContext(),photo);
         insertPhotoTask.execute(args);
 
