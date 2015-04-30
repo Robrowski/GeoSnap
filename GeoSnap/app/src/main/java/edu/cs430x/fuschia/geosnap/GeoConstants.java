@@ -54,8 +54,8 @@ public interface GeoConstants {
     }
 
     public class DiscoverRadius {
-        public static final int RAD_SECRET = 50;
-        public static final int RAD_MEDIUM = 100;
+        public static final int RAD_SECRET = 20;
+        public static final int RAD_MEDIUM = 75;
         public static final int RAD_FAR    = 200;
     }
 
