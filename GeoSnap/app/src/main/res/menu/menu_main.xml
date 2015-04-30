@@ -12,12 +12,21 @@
         android:id="@+id/test_location"
         android:title="Test Last Location"
         />
-    <item
-        android:id="@+id/test_discovered_snaps_notification"
-        android:title="Test Discovered Snaps Notification"
-        />
+
     <item
         android:id="@+id/test_delete_db"
         android:title="Test delete database"
+        />
+
+
+    <item
+        android:id="@+id/launch_help"
+        android:title="Help"
+        />
+
+
+    <item
+        android:id="@+id/launch_post_survey"
+        android:title="Launch Post Survey"
         />
 </menu>

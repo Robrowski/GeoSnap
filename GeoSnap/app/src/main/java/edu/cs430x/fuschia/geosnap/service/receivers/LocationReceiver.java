@@ -22,7 +22,7 @@ public class LocationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i(TAG, "Got a location update");
-        location = (Location) intent.getExtras().get("com.google.android.location.LOCATION");
+        location = (Location) intent.getExtras().get(GeoConstants.Intents.INTENT_KEY_LOCATION);
 
         location_latitude = location.getLatitude();
         location_longitude = location.getLongitude();
@@ -35,7 +35,7 @@ public class LocationReceiver extends BroadcastReceiver {
         Log.w(TAG,"lat: " + location_latitude + " lon: " + location_longitude);
 
         Intent newIntent = new Intent(context, QueryPhotos.class);
-        newIntent.putExtra("com.google.android.location.LOCATION",location);
+        newIntent.putExtra(GeoConstants.Intents.INTENT_KEY_LOCATION, location);
         context.startService(newIntent);
     }
 

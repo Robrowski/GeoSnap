@@ -85,6 +85,14 @@
         </receiver>
 
         <receiver
+            android:name=".fragment.DiscoveredSnapsFragment$RefreshReceiver"
+            android:enabled="true" >
+            <intent-filter>
+                <action android:name="edu.cs430x.fuschia.geosnap.REFRESH_SNAPS" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
             android:name=".service.receivers.ActivityReceiver"
             android:enabled="true" >
             <intent-filter>
