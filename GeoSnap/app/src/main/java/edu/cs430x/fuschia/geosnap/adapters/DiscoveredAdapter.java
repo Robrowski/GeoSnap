@@ -16,6 +16,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import edu.cs430x.fuschia.geosnap.R;
+import edu.cs430x.fuschia.geosnap.data.DateHelper;
 import edu.cs430x.fuschia.geosnap.data.DiscoveredProjection;
 import edu.cs430x.fuschia.geosnap.network.geocloud.Discoverability;
 
@@ -64,17 +65,20 @@ public class DiscoveredAdapter extends RecyclerView.Adapter<DiscoveredAdapter.Di
         String timeStamp = mCursor.getString(DiscoveredProjection.COL_TIMESTAMP);
         mImageLoader.displayImage(imageUrl,discoveredViewHolder.imageView);
         discoveredViewHolder.discoverText.setText(discoverability);
-        discoveredViewHolder.timeLeft.setText(timeStamp);
+        String currentTime = DateHelper.GetCurrentTimestamp();
+        int hoursLeft = 24 - DateHelper.GetDifferenceBetweenTimestampsInHours(timeStamp,currentTime);
+        String hoursLeftText = hoursLeft + " hrs";
+        discoveredViewHolder.timeLeft.setText(hoursLeftText);
 
         switch (discoverability){
             case Discoverability.DISC_SECRET:
-                discoveredViewHolder.iconView.setImageResource(R.drawable.secret_icon_white);
+                discoveredViewHolder.iconView.setImageResource(R.drawable.secret_icon_black);
                 break;
             case Discoverability.DISC_MEDIUM:
-                discoveredViewHolder.iconView.setImageResource(R.drawable.medium_icon_white);
+                discoveredViewHolder.iconView.setImageResource(R.drawable.medium_icon_black);
                 break;
             case Discoverability.DISC_FAR:
-                discoveredViewHolder.iconView.setImageResource(R.drawable.far_icon_white);
+                discoveredViewHolder.iconView.setImageResource(R.drawable.far_icon_black);
                 break;
         }
 
