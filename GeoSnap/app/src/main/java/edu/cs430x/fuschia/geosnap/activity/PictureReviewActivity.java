@@ -122,8 +122,6 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
 
     public View.OnClickListener optionClick = new View.OnClickListener(){
 
-        //TODO: get icons for secret near and far and change the menu button on click
-        // for now, we change the color
         @Override
         public void onClick(View view) {
             toggleMenu();
@@ -217,7 +215,7 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
         Upload imgur_upload = new Upload();
         imgur_upload.bm = ImageBitmap.bm;
 
-        // TODO set these strings to real values... something useful like GPS? time?
+        // Anonymous information to maintain privacy of snaps
         imgur_upload.title = "Anonymous title";
         imgur_upload.description = "poop";
         return imgur_upload;
@@ -238,8 +236,7 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
         String imgur_image_id = response.data.id;
         Log.i(TAG,imgur_image_id);
 
-        // Send crap to the GeoCloud server
-        // TODO send crap to the GeoCloud Server...
+        // Send to the GeoCloud server
         Photo photo = new Photo(imgur_image_id,
                 (float)LocationReceiver.location_latitude,
                 (float)LocationReceiver.location_longitude,
