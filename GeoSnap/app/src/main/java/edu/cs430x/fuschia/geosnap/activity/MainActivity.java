@@ -215,16 +215,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 startActivity(new Intent(this, MainSettingsActivity.class));
                 return true;
 
-            case R.id.test_location:
-                String txt = "lat: "
-                        + LocationReceiver.location_latitude
-                        + " lon: "
-                        + LocationReceiver.location_longitude;
-                Log.w(TAG, txt);
-                Toast t = Toast.makeText(this,txt,Toast.LENGTH_SHORT);
-                t.show();
-                return true;
-
             case R.id.test_delete_db:
                 DiscoveredSnapsDBHelper dbHelper = new DiscoveredSnapsDBHelper(this);
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
