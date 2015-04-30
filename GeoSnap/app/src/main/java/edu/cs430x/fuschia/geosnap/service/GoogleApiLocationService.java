@@ -212,6 +212,7 @@ public class GoogleApiLocationService extends Service implements
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.e(TAG, "Google location client API connection failed");
+        Log.e(TAG, connectionResult.describeContents() + " " + connectionResult.getErrorCode());
     }
 
     @Override
