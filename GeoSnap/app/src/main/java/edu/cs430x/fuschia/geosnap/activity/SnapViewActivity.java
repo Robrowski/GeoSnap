@@ -1,5 +1,6 @@
 package edu.cs430x.fuschia.geosnap.activity;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 
 import java.util.Locale;
 
+import edu.cs430x.fuschia.geosnap.GeoConstants;
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.data.ImageParcelable;
 import edu.cs430x.fuschia.geosnap.fragment.SnapLocationFragment;
@@ -89,14 +91,19 @@ public class SnapViewActivity extends ActionBarActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()){
+            case R.id.launch_helpv:
+                Intent help_intent = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(GeoConstants.HELP_URL));
+                startActivity(help_intent);
+                return true;
+            case R.id.launch_post_surveyv:
+                Intent survey_intent = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(GeoConstants.SURVEY_URL));
+                startActivity(survey_intent);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);

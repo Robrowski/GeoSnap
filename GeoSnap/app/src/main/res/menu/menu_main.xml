@@ -17,4 +17,16 @@
         android:id="@+id/test_delete_db"
         android:title="Test delete database"
         />
+
+
+    <item
+        android:id="@+id/launch_help"
+        android:title="Help"
+        />
+
+
+    <item
+        android:id="@+id/launch_post_survey"
+        android:title="Launch Post Survey"
+        />
 </menu>

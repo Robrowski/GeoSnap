@@ -4,4 +4,15 @@
     tools:context="edu.cs430x.fuschia.geosnap.activity.SnapViewActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+
+    <item
+        android:id="@+id/launch_helpv"
+        android:title="Help"
+        />
+
+
+    <item
+        android:id="@+id/launch_post_surveyv"
+        android:title="Launch Post Survey"
+        />
 </menu>

@@ -1,7 +1,9 @@
 package edu.cs430x.fuschia.geosnap.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.NavUtils;
@@ -19,6 +21,7 @@ import com.software.shell.fab.ActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.cs430x.fuschia.geosnap.GeoConstants;
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.camera.ImageBitmap;
 import edu.cs430x.fuschia.geosnap.network.geocloud.Discoverability;
@@ -152,22 +155,30 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        switch (id) {
+        switch (item.getItemId()){
             case R.id.action_settings:
                 return true;
 
             case android.R.id.home:
                 onReject(null);
                 return true;
+            case R.id.launch_helpr:
+                Intent help_intent = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(GeoConstants.HELP_URL));
+                startActivity(help_intent);
+                return true;
+            case R.id.launch_post_surveyr:
+                Intent survey_intent = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(GeoConstants.SURVEY_URL));
+                startActivity(survey_intent);
+                return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public void onBackPressed()

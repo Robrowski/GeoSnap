@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -35,6 +36,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 import java.io.File;
 import java.util.Locale;
 
+import edu.cs430x.fuschia.geosnap.GeoConstants;
 import edu.cs430x.fuschia.geosnap.R;
 import edu.cs430x.fuschia.geosnap.activity.settings.MainSettingsActivity;
 import edu.cs430x.fuschia.geosnap.data.DiscoveredContract;
@@ -207,9 +209,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch (id){
             case R.id.action_settings:
@@ -231,6 +230,22 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 db.delete(DiscoveredContract.DiscoveredEntry.TABLE_NAME,null,null);
                 return true;
+
+            case R.id.launch_help:
+                Intent help_intent = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(GeoConstants.HELP_URL));
+                startActivity(help_intent);
+                return true;
+            case R.id.launch_post_survey:
+                Intent survey_intent = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(GeoConstants.SURVEY_URL));
+                startActivity(survey_intent);
+                return true;
+
+
+
         }
 
         return super.onOptionsItemSelected(item);

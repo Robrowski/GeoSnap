@@ -42,6 +42,9 @@ public interface GeoConstants {
 
     }
 
+    public static final String HELP_URL = "https://github.com/Robrowski/GeoSnap/wiki/Using-Geosnap!",
+            SURVEY_URL = "https://docs.google.com/forms/d/17NKWX2r4qtQKNzInEsYFxZ6--GR_xVXSVUEVeUHMwgw/viewform" ;
+
 
 
 
