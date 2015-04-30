@@ -14,7 +14,8 @@
         <CheckBoxPreference
             android:title="Allow Activity Recognition"
             android:key="pref_allow_activity_recognition"
-            android:summary="Use extra sensors to determine if location services should be on"/>
+            android:summary="Use extra sensors to determine if location services should be on"
+            android:defaultValue="true"/>
 
     </PreferenceCategory>
 </PreferenceScreen>

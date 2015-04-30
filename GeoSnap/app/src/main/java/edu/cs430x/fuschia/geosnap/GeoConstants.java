@@ -35,10 +35,10 @@ public interface GeoConstants {
 
 
     public interface LocationDefaults{
-        public static final String ACTIVITY_INTERVAL = "30",/* seconds between activity updates*/
-                LOCATION_INTERVAL = "1", /* minutes between official GPS location requests  */
-                FASTEST_INTERVAL = "15", /* seconds between accepting location updates */
-                SMALLEST_DISPLACEMENT = "1.0", /* meters */
+        public static final String ACTIVITY_INTERVAL = "5",/* seconds between activity updates*/
+                LOCATION_INTERVAL = "10", /* seconds between official GPS location requests  */
+                FASTEST_INTERVAL = "2", /* seconds between accepting location updates */
+                SMALLEST_DISPLACEMENT = "0.0", /* meters */
                 REQUEST_PRIORITY = String.valueOf(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
     }
