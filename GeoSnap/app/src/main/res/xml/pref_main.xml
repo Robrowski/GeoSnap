@@ -5,7 +5,7 @@
         android:key="pref_key_location_request_settings">
 
         <ListPreference
-            android:title="Request Priority"
+            android:title="GPS Mode"
             android:key="pref_request_priority"
             android:summary="These priorities impact quality and battery usage"
             android:entries="@array/location_priorities"
