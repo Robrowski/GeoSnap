@@ -3,6 +3,7 @@ package edu.cs430x.fuschia.geosnap.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -50,6 +51,8 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
     private final int mAnimationDelayPerItem = 50;
     private boolean mMenuOpened = false;
 
+    private Location mLocation;
+
     private String mDiscoverability = Discoverability.DISC_MEDIUM;
     ActionButton fam;
 
@@ -81,6 +84,9 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
         fab1.setOnClickListener(optionClick);
         fab2.setOnClickListener(optionClick);
         fab3.setOnClickListener(optionClick);
+
+        LocationReceiver.forceLocationUpdate();
+        mLocation = LocationReceiver.location;
     }
 
     public View.OnClickListener menuToggle = new View.OnClickListener(){
@@ -122,8 +128,6 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
 
     public View.OnClickListener optionClick = new View.OnClickListener(){
 
-        //TODO: get icons for secret near and far and change the menu button on click
-        // for now, we change the color
         @Override
         public void onClick(View view) {
             toggleMenu();
@@ -217,7 +221,7 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
         Upload imgur_upload = new Upload();
         imgur_upload.bm = ImageBitmap.bm;
 
-        // TODO set these strings to real values... something useful like GPS? time?
+        // Anonymous information to maintain privacy of snaps
         imgur_upload.title = "Anonymous title";
         imgur_upload.description = "poop";
         return imgur_upload;
@@ -238,12 +242,19 @@ public class PictureReviewActivity extends ActionBarActivity implements OnImgurR
         String imgur_image_id = response.data.id;
         Log.i(TAG,imgur_image_id);
 
-        // Send crap to the GeoCloud server
-        // TODO send crap to the GeoCloud Server...
-        Photo photo = new Photo(imgur_image_id,
-                (float)LocationReceiver.location_latitude,
-                (float)LocationReceiver.location_longitude,
-                this.mDiscoverability);
+        // Send to the GeoCloud server
+        Photo photo;
+        if (mLocation != null) {  // use the location from when the snap was taken
+            photo = new Photo(imgur_image_id,
+                    (float) mLocation.getLatitude(),
+                    (float) mLocation.getLongitude(),
+                    this.mDiscoverability);
+        } else { // Use what ever default lat lng is stored
+            photo = new Photo(imgur_image_id,
+                    (float) LocationReceiver.location_latitude,
+                    (float) LocationReceiver.location_longitude,
+                    this.mDiscoverability);
+        }
         Pair<Context,Photo> args = new Pair<Context,Photo>(getApplicationContext(),photo);
         insertPhotoTask.execute(args);
 

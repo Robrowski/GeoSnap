@@ -150,6 +150,10 @@ public class GoogleApiLocationService extends Service implements
                 mGoogleLocationClient,
                 buildLocRequest(),
                 locationPendingIntent);
+
+
+        LocationRequest lr = buildLocRequest();
+        Log.w(TAG, lr.toString());
     }
 
     private void cancelActivityUpdates(){
@@ -171,8 +175,7 @@ public class GoogleApiLocationService extends Service implements
                 .setInterval( Integer.parseInt(
                         sharedPref.getString(GeoConstants.GeoPrefs.PREF_INTERVAL,
                                 GeoConstants.LocationDefaults.LOCATION_INTERVAL))
-                        *  GeoConstants.SECONDS
-                        *  GeoConstants.MILLISECONDS )
+                        * GeoConstants.MILLISECONDS )
                 .setFastestInterval(Integer.parseInt(
                         sharedPref.getString(
                                 GeoConstants.GeoPrefs.PREF_FASTEST_INTERVAL,
@@ -212,6 +215,7 @@ public class GoogleApiLocationService extends Service implements
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.e(TAG, "Google location client API connection failed");
+        Log.e(TAG, connectionResult.describeContents() + " " + connectionResult.getErrorCode());
     }
 
     @Override

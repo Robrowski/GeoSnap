@@ -18,9 +18,6 @@ import edu.cs430x.fuschia.geosnap.data.ImageParcelable;
 import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
 
 /**
- * // TODO fragments can't have fragments in their layouts?!?! Very strange API thing...
- *
- *
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * to handle interaction events.
@@ -29,13 +26,10 @@ import edu.cs430x.fuschia.geosnap.service.receivers.LocationReceiver;
  */
 public class SnapLocationFragment extends SupportMapFragment implements OnMapReadyCallback {
 
-    private static final String TAG = "SnapLocationFragment",
-            ARG_LATITUDE = "arg_latitude",
-            ARG_LONGITUDE = "arg_longitude";
+    private static final String TAG = "SnapLocationFragment";
 
-    public static final String INTENT_IMG_URL="IMAGE_URL";
-
-    private double latitude = 0, longitude = 0;
+    public static final String INTENT_IMG_URL = "IMAGE_URL";
+    private ImageParcelable mImage;
 
     /**
      * Use this factory method to create a new instance of
@@ -44,9 +38,6 @@ public class SnapLocationFragment extends SupportMapFragment implements OnMapRea
      * @return A new instance of fragment SnapLocationFragment.
      */
     public static SnapLocationFragment newInstance(ImageParcelable image) {
-        // TODO how about making this take a reference to the DB on the phone...
-        // can get discoverability, lat lon, building...
-
         SnapLocationFragment fragment = new SnapLocationFragment();
         Bundle args = new Bundle();
         args.putParcelable(INTENT_IMG_URL,image);
@@ -59,9 +50,7 @@ public class SnapLocationFragment extends SupportMapFragment implements OnMapRea
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            ImageParcelable image = getArguments().getParcelable(INTENT_IMG_URL);
-            latitude = image.getLat();
-            longitude = image.getLon();
+            mImage = getArguments().getParcelable(INTENT_IMG_URL);
         }
         getMapAsync(this); // ons onMapReady when the map is ready :D
         Log.i(TAG, "Waiting for map to be ready");
@@ -71,8 +60,8 @@ public class SnapLocationFragment extends SupportMapFragment implements OnMapRea
     @Override
     public void onMapReady(GoogleMap mMap) {
         Log.i(TAG, "Map is ready! Adding markers now.");
-        LatLng snap_ll = new LatLng(latitude, longitude);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(snap_ll, 15));
+        LatLng snap_ll = new LatLng(mImage.getLat(), mImage.getLon());
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(snap_ll, 16));
         mMap.setMyLocationEnabled(false);
 
         /* place markers
@@ -90,11 +79,10 @@ public class SnapLocationFragment extends SupportMapFragment implements OnMapRea
                 .title("You")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
-        // TODO add a better shape that shows discoverability radius
         mMap.addCircle(new CircleOptions()
                 .center(snap_ll)
                 .fillColor(Color.argb(120,200, 0, 100))
-                .radius(50)); // Measured in meters
+                .radius(mImage.getDiscoverabilityRadius())); // Measured in meters
     }
 }
 

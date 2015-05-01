@@ -9,11 +9,6 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/test_location"
-        android:title="Test Last Location"
-        />
-
-    <item
         android:id="@+id/test_delete_db"
         android:title="Test delete database"
         />
@@ -22,6 +17,8 @@
     <item
         android:id="@+id/launch_help"
         android:title="Help"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/help_circle"
         />
 
 

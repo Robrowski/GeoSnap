@@ -4,6 +4,8 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import edu.cs430x.fuschia.geosnap.GeoConstants;
+
 /**
  * Created by Matt on 4/27/2015.
  */
@@ -104,5 +106,19 @@ public class ImageParcelable implements Parcelable {
         date            = pc.readString();
         lat             = pc.readDouble();
         lon             = pc.readDouble();
+    }
+
+    public double getDiscoverabilityRadius() {
+        switch(discoverability){
+            case GeoConstants.Discoverability.DISC_FAR:
+                return GeoConstants.DiscoverRadius.RAD_FAR;
+            case GeoConstants.Discoverability.DISC_MEDIUM:
+                return GeoConstants.DiscoverRadius.RAD_MEDIUM;
+            case GeoConstants.Discoverability.DISC_SECRET:
+                return GeoConstants.DiscoverRadius.RAD_SECRET;
+            default:
+                return GeoConstants.DiscoverRadius.RAD_FAR;
+        }
+
     }
 }

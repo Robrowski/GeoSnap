@@ -1,22 +1,18 @@
 <resources>
     <string name="app_name">GeoSnap</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
 
+    <!--Activities-->
+    <string name="title_activity_main">GeoSnap</string>
+    <string name="title_activity_snap_view">Discovery!</string>
+    <string name="title_activity_picture_preview">Picture Taken</string>
+    <string name="title_activity_main_settings">Settings</string>
 
+    <!--Tabs-->
     <string name="title_discovered_snap_list">Discovered Snaps</string>
     <string name="title_take_picture">Snap a Pic</string>
-
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_snap_view">SnapViewActivity</string>
-
-
     <string name="title_map_view">Location</string>
     <string name="title_snap_view">The Snap</string>
-    <string name="title_activity_picture_preview">PicturePreviewActivity</string>
-    <string name="title_activity_maps">Map</string>
-    <string name="title_activity_main_settings">MainSettingsActivity</string>
+
 </resources>

@@ -1,5 +1,7 @@
 package edu.cs430x.fuschia.geosnap;
 
+import com.google.android.gms.location.LocationRequest;
+
 /**
  * Created by Robrowski on 4/28/2015.
  */
@@ -33,12 +35,11 @@ public interface GeoConstants {
 
 
     public interface LocationDefaults{
-        public static final String REQUEST_PRIORITY = "0", /* balanced power */
-                LOCATION_INTERVAL = "3", /* minutes between official GPS location requests  */
-                FASTEST_INTERVAL = "15", /* seconds between accepting location updates */
+        public static final String ACTIVITY_INTERVAL = "5",/* seconds between activity updates*/
+                LOCATION_INTERVAL = "10", /* seconds between official GPS location requests  */
+                FASTEST_INTERVAL = "2", /* seconds between accepting location updates */
                 SMALLEST_DISPLACEMENT = "0.0", /* meters */
-                ACTIVITY_INTERVAL = "30"; /* seconds between activity updates*/
-
+                REQUEST_PRIORITY = String.valueOf(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
     }
 
@@ -46,6 +47,17 @@ public interface GeoConstants {
             SURVEY_URL = "https://docs.google.com/forms/d/17NKWX2r4qtQKNzInEsYFxZ6--GR_xVXSVUEVeUHMwgw/viewform" ;
 
 
+    public class Discoverability {
+        public static final String DISC_SECRET = "secret";
+        public static final String DISC_MEDIUM = "medium";
+        public static final String DISC_FAR    = "far";
+    }
+
+    public class DiscoverRadius {
+        public static final int RAD_SECRET = 20;
+        public static final int RAD_MEDIUM = 75;
+        public static final int RAD_FAR    = 200;
+    }
 
 
 }

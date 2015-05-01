@@ -90,14 +90,13 @@ public class QueryPhotos extends IntentService {
                         }
                     });
 
-                    // TODO NOW that the image is viewable, commit to phone's DB as a final step
-                    // that triggers UI updates, etc.
+
                     // Commit to phone's DB AFTER downloading image from imgur JUST IN CASE imgur
                     // fails...
 
                     String newDiscoverability = i.getDiscoverability();
                     DiscoveredSnapsDBHelper.InsertSnapIntoDatabase( getApplicationContext(),
-                                                                    "dur",
+                                                                    "dur", /* TODO dur */
                                                                     string_url,
                                                                     location.getLatitude(),
                                                                     location.getLongitude(),
@@ -106,7 +105,7 @@ public class QueryPhotos extends IntentService {
 
 
                     // Made it here, therefore the snap is fully downloaded and ready to view
-                    images_ready++; // TODO Keep track of number between queries?!?!
+                    images_ready++;
                 }
                 if (images_ready >0 && intent.getBooleanExtra("NOTIFICATION",true)){
                     if (sharedPref.contains("NOTIFY_COUNT")){

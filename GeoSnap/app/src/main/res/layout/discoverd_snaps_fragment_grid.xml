@@ -6,11 +6,19 @@
     android:layout_height="match_parent"
     tools:context="edu.cs430x.fuschia.geosnap.fragment.DiscoveredSnapsFragment">
 
-    <!-- TODO Fill this layout up and make it pretty for large screens that could show more than a list-->
 
-    <GridView android:id="@android:id/list" 
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" 
-        android:numColumns="2" />
+    <!-- This layout is for the discovered snaps list on a regular/small screen -->
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/discovered_list"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </FrameLayout>

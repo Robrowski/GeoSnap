@@ -2,12 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="edu.cs430x.fuschia.geosnap.activity.SnapViewActivity">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
 
     <item
         android:id="@+id/launch_helpv"
         android:title="Help"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/help_circle"
         />
 
 
